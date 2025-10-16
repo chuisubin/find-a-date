@@ -5,8 +5,14 @@ const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Supabase Auth API
-export async function signUp(email, password) {
-  return await supabase.auth.signUp({ email, password });
+export async function signUp(email, password, displayName) {
+  return await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { username: displayName },
+    },
+  });
 }
 
 export async function signIn(email, password) {

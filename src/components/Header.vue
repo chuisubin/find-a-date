@@ -67,6 +67,10 @@ function toggleDarkMode() {
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
 }
 
+const onAuthSuccess = () => {
+  showAuth.value = false;
+  fetchUser();
+};
 async function fetchUser() {
   const { data } = await getCurrentUser();
   userStore.setUser(data?.user || null);
@@ -77,10 +81,7 @@ async function handleLogout() {
   userStore.clearUser();
 }
 
-function onAuthSuccess() {
-  fetchUser();
-  showAuth.value = false;
-}
+
 
 onMounted(() => {
   const theme = localStorage.getItem('theme');

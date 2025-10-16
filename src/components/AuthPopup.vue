@@ -7,11 +7,11 @@
     <form v-if="activeTab === 'login'" @submit.prevent="handleLogin">
       <div class="mb-4">
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Email</label>
-        <input v-model="login.email" class="input w-full " required type="email" />
+  <input v-model="login.email" class="input w-full " required type="email" autocomplete="email" />
       </div>
       <div class="mb-4">
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Password</label>
-        <input v-model="login.password" type="password" class="input w-full " required />
+  <input v-model="login.password" type="password" class="input w-full " required autocomplete="current-password" />
       </div>
       <button type="submit" class="btn w-full ">Login</button>
       <div v-if="loginError" class="mt-2 text-red-500 dark:text-pink-400 text-sm">{{ loginError }}</div>
@@ -19,15 +19,15 @@
     <form v-else @submit.prevent="handleRegister">
       <div class="mb-4">
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Email</label>
-        <input v-model="register.email" class="input w-full " required type="email" />
+  <input v-model="register.email" class="input w-full " required type="email" autocomplete="email" />
       </div>
       <div class="mb-4">
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Username</label>
-        <input v-model="register.username" class="input w-full " required />
+        <input v-model="register.username" class="input w-full " required autocomplete="username"/>
       </div>
       <div class="mb-4">
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Password</label>
-        <input v-model="register.password" type="password" class="input w-full " required />
+  <input v-model="register.password" type="password" class="input w-full " required autocomplete="new-password" />
       </div>
       <button type="submit" class=" w-full   btn ">Register</button>
       <div v-if="registerError" class="mt-2 text-red-500 dark:text-pink-400 text-sm">{{ registerError }}</div>
@@ -42,11 +42,9 @@
 <script setup>
 import { ref, defineEmits } from 'vue';
 import { signIn, signUp, getCurrentUser } from '../api/supabase.js';
-import { useUserStore } from '../stores/user';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
-const userStore = useUserStore();
 
 const emit = defineEmits(['close', 'auth-success']);
 
@@ -75,13 +73,11 @@ async function handleLogin() {
       loginError.value = error.message || 'Login failed';
     } else {
       loginError.value = '';
-  toast.success('Login successful!');
+
+    toast.success('Login successful!');
       // 取得 user 資料並存入 pinia
-      const { data } = await getCurrentUser();
-        console.log("data",data );
-        userStore.setUser(data?.user || null);
-        emit('auth-success');
-   
+      emit('onAuthSuccess')
+
     }
   } catch (err) {
     loginError.value = 'Network error';
@@ -93,14 +89,16 @@ async function handleRegister() {
   registerSuccess.value = '';
   try {
     // Supabase Auth 只支援 email/password 註冊
-    const { error } = await signUp(register.value.email, register.value.password);
+  const { error } = await signUp(register.value.email, register.value.password, register.value.username);
     if (error) {
       registerError.value = error.message || 'Register failed';
     } else {
       registerError.value = '';
       registerSuccess.value = 'Register successful!';
       register.value = { email: '', username: '', password: '' };
-      setTimeout(() => emit('auth-success'), 200);
+      toast.success('Register successful!');
+
+      emit('onAuthSuccess');
     }
     // 如需儲存 username，註冊後可再寫入 profile table
   } catch (err) {

@@ -1,0 +1,29 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.card {
+	@apply rounded-xl bg-card-light shadow-xl p-6;
+}
+.dark .card {
+	@apply bg-card-dark;
+}
+.btn {
+	@apply px-4 py-2 rounded-xl font-bold  text-white transition bg-primary-light;
+}
+.dark .btn {
+	@apply bg-primary-dark text-white;
+}
+.input {
+	@apply px-3 py-2 rounded-xl bg-input-light border-2 border-primary-light text-black;
+}
+ .dark .input {
+	@apply bg-input-dark border-primary-dark text-white placeholder:text-gray-300;
+}
+.heading {
+	@apply  text-heading-light font-extrabold text-3xl;
+}
+.dark .heading {
+	@apply text-heading-dark;
+}

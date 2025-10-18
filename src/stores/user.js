@@ -4,7 +4,6 @@ import { defineStore } from "pinia";
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);
   function setUser(u) {
-    console.log("change ing", u);
     user.value = u;
   }
   function clearUser() {

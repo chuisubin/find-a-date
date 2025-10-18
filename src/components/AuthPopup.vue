@@ -13,7 +13,7 @@
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Password</label>
   <input v-model="login.password" type="password" class="input w-full " required autocomplete="current-password" />
       </div>
-      <button type="submit" class="btn w-full ">Login</button>
+  <button type="submit" class="enter_btn btn w-full">Login</button>
       <div v-if="loginError" class="mt-2 text-red-500 dark:text-pink-400 text-sm">{{ loginError }}</div>
     </form>
     <form v-else @submit.prevent="handleRegister">
@@ -29,7 +29,7 @@
         <label class="block mb-1 text-gray-700 dark:text-gray-200">Password</label>
   <input v-model="register.password" type="password" class="input w-full " required autocomplete="new-password" />
       </div>
-      <button type="submit" class=" w-full   btn ">Register</button>
+  <button type="submit" class="enter_btn btn w-full">Register</button>
       <div v-if="registerError" class="mt-2 text-red-500 dark:text-pink-400 text-sm">{{ registerError }}</div>
       <div v-if="registerSuccess" class="mt-2 text-green-600 dark:text-yellow-400 text-sm">{{ registerSuccess }}</div>
     </form>
@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, defineEmits } from 'vue';
-import { signIn, signUp, getCurrentUser } from '../api/supabase.js';
+import { signIn, signUp,  } from '../api/user';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
@@ -68,7 +68,11 @@ function tabClass(tab) {
 async function handleLogin() {
   loginError.value = '';
   try {
-    const { error } = await signIn(login.value.email, login.value.password);
+    let payload = {
+      email: login.value.email,
+      password: login.value.password
+    };
+    const { error } = await signIn(payload);
     if (error) {
       loginError.value = error.message || 'Login failed';
     } else {
@@ -89,7 +93,12 @@ async function handleRegister() {
   registerSuccess.value = '';
   try {
     // Supabase Auth 只支援 email/password 註冊
-  const { error } = await signUp(register.value.email, register.value.password, register.value.username);
+    let payload = {
+      email: register.value.email,
+      password: register.value.password,
+      username: register.value.username
+    }
+  const { error } = await signUp(payload);
     if (error) {
       registerError.value = error.message || 'Register failed';
     } else {

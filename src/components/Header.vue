@@ -43,7 +43,8 @@ import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import Popup from './Popup.vue';
 import AuthPopup from './AuthPopup.vue';
-import { getCurrentUser, signOut, supabase } from '../api/supabase.js';
+import { getCurrentUser, signOut,  } from '../api/user';
+import {supabase} from '../api/supabase';
 import { useUserStore } from '../stores/user';
 
 

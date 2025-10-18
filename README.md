@@ -37,12 +37,6 @@ npm run dev
 
 如需串接 Supabase，請參考 src/api/supabase.js 範例。
 
-# Find-a-Date Monorepo
-
-This project uses a Monorepo structure with separate `frontend` and `backend` folders.
-
-## Frontend
-
 - **Framework:** Vue.js 3
 - **Styling:** Tailwind CSS
 - **Build Tool:** Vite
@@ -53,26 +47,4 @@ This project uses a Monorepo structure with separate `frontend` and `backend` fo
 cd frontend
 npm install
 npm run dev
-```
-
-## Backend
-
-- **Framework:** Node.js (Express.js)
-
-### Setup & Run
-
-```powershell
-cd backend
-npm install
-npm start
-```
-
----
-
-## Folder Structure
-
-```
-find-a-date/
-  frontend/   # Vue.js + Tailwind
-  backend/    # Express.js API
 ```

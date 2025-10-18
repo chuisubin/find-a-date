@@ -21,6 +21,30 @@
  .dark .input {
 	@apply bg-input-dark border-primary-dark text-white placeholder:text-gray-300;
 }
+.btn{
+	@apply px-4 py-2 rounded-xl font-bold  text-white transition;
+}
+.enter_btn {
+	@apply bg-green-500 hover:bg-green-600 text-white ;
+}
+.dark .enter_btn {
+	@apply bg-green-700 hover:bg-green-800 text-white;
+}
+.enter_btn:disabled,
+.enter_btn[disabled] {
+	@apply bg-green-300 text-white opacity-60 cursor-not-allowed hover:bg-green-300;
+}
+.dark .enter_btn:disabled,
+.dark .enter_btn[disabled] {
+	@apply bg-green-900 text-white opacity-50 cursor-not-allowed hover:bg-green-900;
+}
+
+.cancel_btn {
+	@apply bg-gray-400 hover:bg-gray-500 text-white ;
+}
+.dark .cancel_btn {
+	@apply bg-gray-600 hover:bg-gray-700 text-white;
+}
 .heading {
 	@apply  text-heading-light font-extrabold text-3xl;
 }

@@ -13,6 +13,8 @@
     "find-a-date-monorepo": "file:..",
     "pinia": "^3.0.3",
     "vue": "^3.4.0",
+    "vue-datepicker-next": "^1.0.3",
+    "vue-router": "^4.6.3",
     "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {

@@ -1,5 +1,16 @@
 import { supabase } from "./supabase";
 
+export async function fetchUserName(userId) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("id, username, email")
+    .eq("id", userId)
+    .maybeSingle();
+  console.log("fetchUserName", data, error);
+  if (error || !data) return userId;
+  return data?.username || data?.email || userId;
+}
+
 export async function signUp(payload) {
   const { email, password, username } = payload;
   // 註冊 Auth 帳號
@@ -12,7 +23,7 @@ export async function signUp(payload) {
   });
   if (error || !data?.user) return { data, error };
 
-  // 同步寫入 users table
+  //   同步寫入 users table
   const userProfile = {
     id: data.user.id,
     email,

@@ -6,11 +6,21 @@
         <button class="btn" @click="onConnectEvent">Connect Event</button>
       </div>
       <CreateEventPopup v-model="showCreateEventPopup" @created="fetchMyEvents" />
+      <ConnectEventPopup v-model="showConnectEventPopup" />
       <h2 class="text-xl font-bold mb-2">My Events</h2>
       <ul>
-        <li v-for="event in myEvents" :key="event.id" class="card mb-2 p-4 flex justify-between items-center">
-          <span>{{ event.title }}</span>
-          <span class="text-xs text-gray-400">{{ event.id }}</span>
+        <li v-for="event in myEvents" :key="event.id" class="card mb-2 p-4">
+          <div class="font-bold text-lg">{{ event.title }}</div>
+          <div class="mb-1 text-sm text-gray-500">{{ event.description }}</div>
+          <div class="mb-1 text-xs">
+            Owner: <span class="font-semibold">{{ ownerNames && ownerNames[event.owner_id] ? ownerNames[event.owner_id] : event.owner_id }}</span>
+          </div>
+          <div v-if="event.max_members" class="mb-1 text-xs">
+            Members: <span class="font-semibold">{{ event.member_count || 1 }}</span> / <span class="font-semibold">{{ event.max_members }}</span>
+          </div>
+          <div v-else class="mb-1 text-xs">
+            Members: <span class="font-semibold">{{ event.member_count || 1 }}</span> (No limit)
+          </div>
         </li>
         <li v-if="myEvents.length === 0" class="text-gray-400 text-center py-8">No events found.</li>
       </ul>
@@ -27,24 +37,38 @@
 import { ref, onMounted, watchEffect, watch } from 'vue';
 import { useUserStore } from '../stores/user';
 import CreateEventPopup from '../components/CreateEventPopup.vue';
-import { fetchUserEvents } from '../api/event';
+import ConnectEventPopup from '../components/ConnectEventPopup.vue';
+import { fetchUserEventsWithMemberCount } from '../api/event';
+import { fetchUserName } from '../api/user';
 
 const userStore = useUserStore();
 const myEvents = ref([]);
+const ownerNames = ref({});
 const showCreateEventPopup = ref(false);
+const showConnectEventPopup = ref(false);
 const fetching = ref(false);
 
 async function fetchMyEvents() {
-    if (fetching.value) return;
+  if (fetching.value) return;
   if (!userStore.user) {
     myEvents.value = [];
     return;
   }
-    try {
-        console.log('fetchMyEvents', userStore.user.id);
-        fetching.value = true;
-    myEvents.value = await fetchUserEvents(userStore.user.id) || [];
-  
+  try {
+    console.log('fetchMyEvents', userStore.user.id);
+    fetching.value = true;
+    myEvents.value = await fetchUserEventsWithMemberCount(userStore.user.id) || [];
+    // Fetch owner names for each event
+      for (const event of myEvents.value) {
+        console.log('event', event);
+      if (event.owner_id && !ownerNames.value[event.owner_id]) {
+        try {
+          ownerNames.value[event.owner_id] = await fetchUserName(event.owner_id);
+        } catch (e) {
+          ownerNames.value[event.owner_id] = event.owner_id;
+        }
+      }
+    }
   } catch (e) {
     myEvents.value = [];
   } finally {
@@ -57,10 +81,8 @@ function onCreateEvent() {
 }
 
 function onConnectEvent() {
-  // TODO: 彈出連結活動表單或導向連結頁
-  alert('Connect Event clicked');
+  showConnectEventPopup.value = true;
 }
-
 
 watch(
   () => userStore.user,

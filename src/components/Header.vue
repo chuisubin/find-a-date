@@ -1,9 +1,8 @@
 <template>
   <header class="bg-blue-600 text-white py-4 shadow dark:bg-gray-900 dark:text-gray-100">
     <div class="container mx-auto flex justify-between items-center px-4">
-      <h1 class="text-2xl font-bold">Find a Date</h1>
+        <a href="#" class=" hover:underline text-2xl font-bold">Find a Date</a>
       <nav class="flex items-center">
-        <a href="#" class="ml-4 hover:underline">Home</a>
         <template v-if="user">
           <span class="ml-4 font-semibold">{{ user.user_metadata?.username || user.email }}</span>
           <button

@@ -1,7 +1,7 @@
 <template>
   <Popup v-model="show" @close="close">
-    <template #default>
-      <div class="p-4">
+  
+      <div class="p-4 text-black dark:text-white">
         <h3 class="text-lg font-bold mb-2">Create Event</h3>
         <form @submit.prevent="handleCreateEvent">
          
@@ -18,8 +18,18 @@
             <input v-model.number="newEventDeadlineDays" type="number" min="1" class="input w-full" required />
           </div>
           <div class="mb-2">
+            <label class="block mb-1">Max Members</label>
+            <div class="flex items-center gap-2">
+              <input v-model.number="newEventMaxMembers" :disabled="unlimitedMembers" type="number" min="1" class="input w-full"  />
+              <label class="flex items-center gap-1">
+                <input type="checkbox" v-model="unlimitedMembers" />
+                Unlimited
+              </label>
+            </div>
+          </div>
+          <div class="mb-2">
             <label class="block mb-1">Enable Date Range</label>
-            <DatePicker v-model:value="enableDateRange" type="date"  format="YYYY-MM-DD"  :disabled-date="disableBeforeToday"	 range value-type="date"  class="w-full" input-class="input w-full" required />
+            <DatePicker v-model:value="enableDateRange" type="date"  format="YYYY-MM-DD"  :disabled-date="disableBeforeToday"	 range value-type="date"  class="w-full text-white" input-class="input w-full" required />
           </div>
           <div class="flex justify-center gap-2 mt-4">
             <button type="button" class="btn cancel_btn" @click="close">Cancel</button>
@@ -27,12 +37,11 @@
           </div>
         </form>
       </div>
-    </template>
+
   </Popup>
 </template>
 
 <script setup>
-const today = new Date();
 import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
 import { formatDateLocal } from '../utils/dateFormat.js';
@@ -52,6 +61,14 @@ const newEventTitle = ref("");
 const newEventDescription = ref("");
 const newEventDeadlineDays = ref(1);
 const userStore = useUserStore();
+const newEventMaxMembers = ref();
+const unlimitedMembers = ref(false);
+
+watch(unlimitedMembers, (val) => {
+  if (val) {
+    newEventMaxMembers.value = undefined;
+  }
+});
 
 watch(() => props.modelValue, (val) => {
   show.value = val;
@@ -88,13 +105,16 @@ const endDateFormatted = formatDateLocal(endDate);
       deadline_date: deadlineDate,
       enable_start_date: startDate,
       enable_end_date: endDate,
+      max_members: unlimitedMembers.value ? null : newEventMaxMembers.value || null,
     });
-    show.value = false;
-    newEventTitle.value = "";
-    newEventDescription.value = "";
-    newEventDeadlineDays.value = 1;
-    enableDateRange.value = [];
-    emit('created');
+  show.value = false;
+  newEventTitle.value = "";
+  newEventDescription.value = "";
+  newEventDeadlineDays.value = 1;
+  enableDateRange.value = [];
+  newEventMaxMembers.value = undefined;
+  unlimitedMembers.value = false;
+  emit('created');
   } catch (e) {
     alert('Failed to create event');
   }

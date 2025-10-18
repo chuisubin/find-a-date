@@ -29,6 +29,7 @@ export async function createEvent({
   deadline_date,
   enable_start_date,
   enable_end_date,
+  max_members = null,
 }) {
   const { data, error } = await supabase
     .from("events")
@@ -40,6 +41,7 @@ export async function createEvent({
         enable_start_date,
         enable_end_date,
         description,
+        max_members,
       },
     ])
     .select();

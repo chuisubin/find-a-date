@@ -51,3 +51,6 @@
 .dark .heading {
 	@apply text-heading-dark;
 }
+.dark .mx-icon-calendar svg {
+	fill: #fff !important;
+}

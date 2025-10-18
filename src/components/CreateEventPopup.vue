@@ -46,7 +46,7 @@ import DatePicker from 'vue-datepicker-next';
 import 'vue-datepicker-next/index.css';
 import { formatDateLocal } from '../utils/dateFormat.js';
 const enableDateRange = ref([]);
-import { ref, watch, defineEmits } from 'vue';
+import { ref, watch,  } from 'vue';
 import Popup from '../components/Popup.vue';
 import { createEvent } from '../api/event';
 import { useUserStore } from '../stores/user';

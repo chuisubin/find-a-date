@@ -4,7 +4,7 @@ import EventPage from "../pages/EventPage.vue";
 
 const routes = [
   { path: "/", component: HomePage },
-  { path: "/event/:id", component: EventPage, props: true },
+  { path: "/event/:code", component: EventPage, props: true },
 ];
 
 const router = createRouter({

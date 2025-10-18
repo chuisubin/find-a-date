@@ -40,7 +40,7 @@
 
 
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref,  } from 'vue';
 import { signIn, signUp,  } from '../api/user';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';

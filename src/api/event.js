@@ -10,6 +10,16 @@ export async function fetchEventById(eventId) {
   return data;
 }
 
+export async function fetchEventByPublicCode(public_code) {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*, users:owner_id(username, email)")
+    .eq("public_code", public_code)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 // export async function fetchUserEvents(userId) {
 //   // 透過 events_members 關聯表查詢 user 參加的所有 events
 //   console.log("fetchUserEvents userId", userId);
@@ -87,4 +97,16 @@ export async function fetchUserEventsWithMemberCount(userId) {
     event.member_count = memberCounts[event.id] || 1;
   }
   return events;
+}
+
+export async function fetchEventMembers(eventId) {
+  const { data, error } = await supabase
+    .from("events_members")
+    .select("user_id, users(username, email)")
+    .eq("event_id", eventId);
+  if (error) throw error;
+  // 回傳 user name/email 陣列
+  return data.map(
+    (item) => item.users?.username || item.users?.email || item.user_id
+  );
 }

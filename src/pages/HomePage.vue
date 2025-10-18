@@ -10,6 +10,8 @@
       <h2 class="text-xl font-bold mb-2">My Events</h2>
       <ul>
         <li v-for="event in myEvents" :key="event.id" class="card mb-2 p-4">
+                      <div class="font-bold text-lg">{{ event.public_code }}</div>
+
           <div class="font-bold text-lg">{{ event.title }}</div>
           <div class="mb-1 text-sm text-gray-500">{{ event.description }}</div>
           <div class="mb-1 text-xs">

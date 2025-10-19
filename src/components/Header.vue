@@ -14,13 +14,13 @@
         </div>
         <div v-else>
           <button
-            @click="showAuth = true"
+            @click="userStore.openAuthPopup()"
             class="ml-4 px-4 py-1 rounded bg-white text-blue-600 dark:bg-gray-800 dark:text-blue-300 border border-blue-300 dark:border-blue-600 font-semibold shadow hover:bg-blue-50 dark:hover:bg-gray-700 transition"
           >
             Login / Register
           </button>
-          <Popup v-model="showAuth" :enableClickOutside="true">
-            <AuthPopup @close="showAuth = false" @auth-success="onAuthSuccess" />
+          <Popup v-model="showAuthPopup" :enableClickOutside="true">
+            <AuthPopup @close="userStore.closeAuthPopup()" @auth-success="onAuthSuccess" />
           </Popup>
         </div>
         <button
@@ -39,36 +39,25 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
-import Popup from './Popup.vue';
-import AuthPopup from './AuthPopup.vue';
-import { getCurrentUser, signOut,  } from '../api/user';
-import {supabase} from '../api/supabase';
+import { useThemeStore } from '../stores/theme';
 import { useUserStore } from '../stores/user';
-
+import AuthPopup from './AuthPopup.vue';
+import Popup from './Popup.vue';
+import { supabase } from '../api/supabase';
+import { getCurrentUser, signOut } from '../api/user';
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
-const isDark = ref(false);
-const showAuth = ref(false);
-
-function updateHtmlClass() {
-  const html = document.documentElement;
-  if (isDark.value) {
-    html.classList.add('dark');
-  } else {
-    html.classList.remove('dark');
-  }
-}
+const { user, showAuthPopup } = storeToRefs(userStore);
+const themeStore = useThemeStore();
+const { isDark } = storeToRefs(themeStore);
 
 function toggleDarkMode() {
-  isDark.value = !isDark.value;
-  updateHtmlClass();
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
+  themeStore.toggleDark();
 }
 
 const onAuthSuccess = () => {
-  showAuth.value = false;
+  userStore.closeAuthPopup();
   fetchUser();
 };
 async function fetchUser() {
@@ -81,12 +70,8 @@ async function handleLogout() {
   userStore.clearUser();
 }
 
-
-
 onMounted(() => {
-  const theme = localStorage.getItem('theme');
-  isDark.value = theme === 'dark';
-  updateHtmlClass();
+  themeStore.initTheme();
   fetchUser();
   // 監聽登入狀態變化
   supabase.auth.onAuthStateChange((_event, session) => {

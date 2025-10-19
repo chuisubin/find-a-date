@@ -16,7 +16,7 @@
       <EventRoleBar
         :userId="userStore.user?.id"
         :ownerId="event?.owner_id"
-        :members="memberIds"
+        :members="members"
         @join="handleJoin"
         @leave="handleLeave"
       />
@@ -29,9 +29,8 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
-import { fetchEventByPublicCode, fetchEventMembers } from '../api/event';
+import { fetchEventByPublicCode, fetchEventMembers, joinEvent } from '../api/event';
 import EventRoleBar from '../components/EventRoleBar.vue';
-import { supabase } from '../api/supabase';
 
 const route = useRoute();
 const event = ref(null);
@@ -39,7 +38,6 @@ const loading = ref(true);
 const members = ref([]);
 const ownerName = ref('');
 const userStore = useUserStore();
-const memberIds = ref([]);
 
 async function fetchEvent() {
   loading.value = true;
@@ -52,33 +50,37 @@ async function fetchEvent() {
     }
     if (userStore.user && event.value?.id) {
       members.value = await fetchEventMembers(event.value.id);
-      // 取得所有 member 的 id
-      const { data } = await supabase
-        .from('events_members')
-        .select('user_id')
-        .eq('event_id', event.value.id);
-      memberIds.value = data ? data.map(item => item.user_id) : [];
+    
     } else {
       members.value = [];
-      memberIds.value = [];
     }
   } catch (e) {
     event.value = null;
     members.value = [];
     ownerName.value = '';
-    memberIds.value = [];
   }
   loading.value = false;
 }
 
-function handleJoin() {
-  // TODO: 加入 event 的 API
-  alert('Join event!');
-}
-function handleLeave() {
-  // TODO: 退出 event 的 API
-  alert('Leave event!');
-}
+  async function handleJoin() {
+    if (!userStore.user) {
+      alert('請先登入');
+      return;
+    }
+    if (!event.value?.id) {
+      alert('活動資料錯誤');
+      return;
+    }
+    try {
+      await joinEvent(event.value.id, userStore.user.id);
+      // 重新取得成員列表
+      members.value = await fetchEventMembers(event.value.id);
+      alert('成功加入活動!');
+    } catch (e) {
+      alert('加入失敗: ' + (e.message || e));
+    }
+  }
+
 
 onMounted(() => {
   fetchEvent();

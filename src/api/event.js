@@ -88,8 +88,10 @@ export async function fetchUserEventsWithMemberCount(userId) {
     .from("events_members")
     .select("event_id, events(*)")
     .eq("user_id", userId);
+  console.log("fetchUserEventsWithMemberCount data", data);
   if (error) throw error;
   const events = data?.map((item) => item.events) || [];
+  // const memberCounts = data?.map((item) => item.users) || [];
   const eventIds = events.map((e) => e.id);
   // 查詢所有 event 的 member 數
   const memberCounts = await fetchEventsMemberCounts(eventIds);
@@ -103,11 +105,20 @@ export async function fetchUserEventsWithMemberCount(userId) {
 export async function fetchEventMembers(eventId) {
   const { data, error } = await supabase
     .from("events_members")
-    .select("user_id, users(username, email)")
+    .select("user_id, users(id, username, email)")
     .eq("event_id", eventId);
   if (error) throw error;
   // 回傳 user name/email 陣列
   return data.map(
     (item) => item.users?.username || item.users?.email || item.user_id
   );
+}
+
+export async function joinEvent(eventId, userId) {
+  const { data, error } = await supabase
+    .from("events_members")
+    .insert([{ event_id: eventId, user_id: userId }]);
+  console.log("joinEvent response data", data);
+  if (error) throw error;
+  return data;
 }

@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "@supabase/supabase-js": "^2.75.0",
     "find-a-date-monorepo": "file:..",
     "pinia": "^3.0.3",
+    "v-calendar": "^3.1.2",
     "vue": "^3.4.0",
     "vue-datepicker-next": "^1.0.3",
     "vue-router": "^4.6.3",

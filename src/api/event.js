@@ -13,25 +13,15 @@ export async function fetchEventById(eventId) {
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
-    .select("*, users:owner_id(username, email)")
+    .select(
+      "*, users:owner_id(username, email), events_members(user_id, users(username, email))"
+    )
     .eq("public_code", public_code)
     .limit(1)
     .single();
   if (error) throw error;
   return data;
 }
-
-// export async function fetchUserEvents(userId) {
-//   // 透過 events_members 關聯表查詢 user 參加的所有 events
-//   console.log("fetchUserEvents userId", userId);
-//   const { data, error } = await supabase
-//     .from("events_members")
-//     .select("event_id, events(*)");
-//   // .eq("user_id", userId);
-//   if (error) throw error;
-//   // 回傳 events 資料
-//   return data?.map((item) => item.events) || [];
-// }
 
 export async function createEvent({
   title,
@@ -67,51 +57,18 @@ export async function createEvent({
   return data;
 }
 
-export async function fetchEventsMemberCounts(eventIds) {
-  if (!eventIds || eventIds.length === 0) return {};
-  const { data, error } = await supabase
-    .from("events_members")
-    .select("event_id")
-    .in("event_id", eventIds);
-  if (error) throw error;
-  // 統計每個 event_id 的 member 數
-  const counts = {};
-  for (const item of data) {
-    counts[item.event_id] = (counts[item.event_id] || 0) + 1;
-  }
-  return counts;
-}
-
-export async function fetchUserEventsWithMemberCount(userId) {
+export async function fetchUserEventsByUserId(userId) {
   // 查詢 user 參加的所有 events
   const { data, error } = await supabase
     .from("events_members")
-    .select("event_id, events(*)")
+    .select(
+      "event_id, events(*, events_members(user_id, users(username, email)))"
+    )
     .eq("user_id", userId);
-  console.log("fetchUserEventsWithMemberCount data", data);
   if (error) throw error;
   const events = data?.map((item) => item.events) || [];
-  // const memberCounts = data?.map((item) => item.users) || [];
-  const eventIds = events.map((e) => e.id);
-  // 查詢所有 event 的 member 數
-  const memberCounts = await fetchEventsMemberCounts(eventIds);
-  // 整合 member 數到 events
-  for (const event of events) {
-    event.member_count = memberCounts[event.id] || 1;
-  }
-  return events;
-}
 
-export async function fetchEventMembers(eventId) {
-  const { data, error } = await supabase
-    .from("events_members")
-    .select("user_id, users(id, username, email)")
-    .eq("event_id", eventId);
-  if (error) throw error;
-  // 回傳 user name/email 陣列
-  return data.map(
-    (item) => item.users?.username || item.users?.email || item.user_id
-  );
+  return events;
 }
 
 export async function joinEvent(eventId, userId) {

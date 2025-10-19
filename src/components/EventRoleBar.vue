@@ -16,7 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['join', 'leave']);
 
 const isOwner = computed(() => props.userId && props.userId === props.ownerId);
-const isMember = computed(() => props.userId && props.members && props.members.includes(props.userId));
+const isMember = computed(() => props.userId && props.members && props.members.some(m => m.user_id === props.userId));
 
 function onJoin() {
   emit('join');

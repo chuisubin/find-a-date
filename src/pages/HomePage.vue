@@ -40,7 +40,7 @@ import { ref, onMounted, watchEffect, watch } from 'vue';
 import { useUserStore } from '../stores/user';
 import CreateEventPopup from '../components/CreateEventPopup.vue';
 import ConnectEventPopup from '../components/ConnectEventPopup.vue';
-import { fetchUserEventsWithMemberCount } from '../api/event';
+import { fetchUserEventsByUserId } from '../api/event';
 import { fetchUserName } from '../api/user';
 
 const userStore = useUserStore();
@@ -59,7 +59,7 @@ async function fetchMyEvents() {
   try {
     console.log('fetchMyEvents', userStore.user.id);
     fetching.value = true;
-    myEvents.value = await fetchUserEventsWithMemberCount(userStore.user.id) || [];
+    myEvents.value = await fetchUserEventsByUserId(userStore.user.id) || [];
     // Fetch owner names for each event
       for (const event of myEvents.value) {
         console.log('event', event);

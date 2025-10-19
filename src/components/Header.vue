@@ -1,9 +1,9 @@
 <template>
   <header class="bg-blue-600 text-white py-4 shadow dark:bg-gray-900 dark:text-gray-100">
     <div class="container mx-auto flex justify-between items-center px-4">
-        <a href="#" class=" hover:underline text-2xl font-bold">Find a Date</a>
+        <a href="/" class=" hover:underline text-2xl font-bold">Find a Date</a>
       <nav class="flex items-center">
-        <template v-if="user">
+        <div v-if="user">
           <span class="ml-4 font-semibold">{{ user.user_metadata?.username || user.email }}</span>
           <button
             @click="handleLogout"
@@ -11,8 +11,8 @@
           >
             Logout
           </button>
-        </template>
-        <template v-else>
+        </div>
+        <div v-else>
           <button
             @click="showAuth = true"
             class="ml-4 px-4 py-1 rounded bg-white text-blue-600 dark:bg-gray-800 dark:text-blue-300 border border-blue-300 dark:border-blue-600 font-semibold shadow hover:bg-blue-50 dark:hover:bg-gray-700 transition"
@@ -22,7 +22,7 @@
           <Popup v-model="showAuth" :enableClickOutside="true">
             <AuthPopup @close="showAuth = false" @auth-success="onAuthSuccess" />
           </Popup>
-        </template>
+        </div>
         <button
           @click="toggleDarkMode"
           class="ml-6 px-3 py-1 rounded bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition"

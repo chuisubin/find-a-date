@@ -15,6 +15,7 @@ export async function fetchEventByPublicCode(public_code) {
     .from("events")
     .select("*, users:owner_id(username, email)")
     .eq("public_code", public_code)
+    .limit(1)
     .single();
   if (error) throw error;
   return data;

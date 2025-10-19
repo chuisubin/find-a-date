@@ -19,7 +19,8 @@
 </template>
 
 <script setup>
-import { ref, watch,  } from 'vue';
+import { ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Popup from '../components/Popup.vue';
 
 const props = defineProps({
@@ -29,6 +30,7 @@ const emit = defineEmits(['update:modelValue', 'connected']);
 
 const show = ref(props.modelValue);
 const eventCode = ref("");
+const router = useRouter();
 
 watch(() => props.modelValue, (val) => {
   show.value = val;
@@ -43,8 +45,8 @@ function close() {
 
 async function handleConnectEvent() {
   if (!eventCode.value.trim()) return;
-  // TODO: connect event logic
-  emit('connected', eventCode.value);
+  // 跳轉到 event page 並帶入 public code
+  router.push(`/event/${eventCode.value.trim()}`);
   show.value = false;
   eventCode.value = "";
 }

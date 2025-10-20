@@ -1,3 +1,11 @@
+// 更新 event description
+export async function updateEventDescription(eventId, newDescription) {
+  const { error } = await supabase
+    .from("events")
+    .update({ description: newDescription })
+    .eq("id", eventId);
+  if (error) throw error;
+}
 // 更新 event title
 export async function updateEventTitle(eventId, newTitle) {
   const { error } = await supabase

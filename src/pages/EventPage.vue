@@ -129,7 +129,7 @@ import EventRoleBar from "../components/EventRoleBar.vue";
 import { storeToRefs } from "pinia";
 import { useThemeStore } from "../stores/theme";
 import { toast } from "vue3-toastify";
-import { updateEventTitle } from "../api/event";
+import { updateEventTitle, updateEventDescription } from "../api/event";
 import { supabase } from "../api/supabase";
 // textarea 自動拉高高度
 import { nextTick } from "vue";
@@ -162,12 +162,7 @@ function cancelEditDesc() {
 async function saveDesc() {
   if (!event.value?.id) return;
   try {
-    // 直接用 supabase 更新 description
-    const { error } = await supabase
-      .from("events")
-      .update({ description: editedDesc.value })
-      .eq("id", event.value.id);
-    if (error) throw error;
+    await updateEventDescription(event.value.id, editedDesc.value);
     event.value.description = editedDesc.value;
     toast.success("描述已更新");
     editingDesc.value = false;

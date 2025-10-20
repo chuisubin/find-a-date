@@ -43,7 +43,6 @@
 import { ref,  } from 'vue';
 import { signIn, signUp,  } from '../api/user';
 import { toast } from 'vue3-toastify';
-import 'vue3-toastify/dist/index.css';
 
 
 const emit = defineEmits(['close', 'auth-success']);
@@ -114,4 +113,6 @@ async function handleRegister() {
     registerError.value = 'Network error';
   }
 }
+
+
 </script>

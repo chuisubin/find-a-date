@@ -1,7 +1,7 @@
 <template>
   <header class="bg-blue-600 text-white py-4 shadow dark:bg-gray-900 dark:text-gray-100">
     <div class="container mx-auto flex justify-between items-center px-4">
-        <a href="/" class=" hover:underline text-2xl font-bold">Find a Date</a>
+        <a href="/" class="  text-2xl font-bold">夾日期</a>
       <nav class="flex items-center">
         <div v-if="user">
           <span class="ml-4 font-semibold">{{ user.user_metadata?.username || user.email }}</span>
@@ -46,6 +46,8 @@ import Popup from './Popup.vue';
 import { supabase } from '../api/supabase';
 import { getCurrentUser, signOut } from '../api/user';
 import { storeToRefs } from 'pinia';
+import { toast } from 'vue3-toastify';
+
 
 const userStore = useUserStore();
 const { user, showAuthPopup } = storeToRefs(userStore);
@@ -68,6 +70,8 @@ async function fetchUser() {
 async function handleLogout() {
   await signOut();
   userStore.clearUser();
+  toast.success('Logout successful!');
+
 }
 
 onMounted(() => {

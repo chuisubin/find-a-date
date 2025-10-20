@@ -2,95 +2,184 @@
   <div class="max-w-7xl mx-auto py-4 px-4">
     <div v-if="loading" class="text-gray-400">Loading...</div>
     <div v-else-if="event">
-      <div class=" mb-4">
-        <div class="flex flex-row items-start justify-between w-full">
-        <h1 class="font-semibold text-5xl mb-2">{{ event.title }}</h1>
-        <div class="flex flex-row gap-2">
-          <div class="bg-red-500 text-white text-center p-2 rounded-md cursor-pointer" @click="toggleDeadlineView">
-            Deadline: {{ deadlineViewText }}
+      <div class="mb-4">
+        <div class="   w-full">
+          <div class="items-start justify-between flex flex-row">
+          <div class="flex items-center gap-2 mb-2">
+            <h1 v-if="!editingTitle" class="font-semibold text-5xl">
+              {{ event.title }}
+            </h1>
+            <input
+              v-else
+              v-model="editedTitle"
+              class="font-semibold text-5xl border-b border-gray-400 bg-transparent outline-none"
+            />
+            <button
+              v-if="isOwner && !editingTitle"
+              @click="startEditTitle"
+              class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
+            >
+              Edit
+            </button>
+            <button
+              v-if="editingTitle"
+              @click="saveTitle"
+              class="ml-2 px-2 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
+            >
+              Save
+            </button>
+            <button
+              v-if="editingTitle"
+              @click="cancelEditTitle"
+              class="ml-1 px-2 py-1 text-sm rounded bg-gray-400 hover:bg-gray-500 text-white"
+            >
+              Cancel
+            </button>
           </div>
-          <EventRoleBar
-        :userId="userStore.user?.id"
-        :ownerId="event?.owner_id"
-        :members="members"
-        @join="handleJoin"
-        @leave="handleLeave"
-      /></div>
+          <div
+            class="bg-red-500 text-white text-center p-2 rounded-md cursor-pointer"
+            @click="toggleDeadlineView"
+          >
+            {{ deadlineViewText }}
+          </div>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <p v-if="!editingDesc" class="mb-2 text-sm">
+              {{ event.description }}
+            </p>
+            <textarea
+              v-else
+              v-model="editedDesc"
+              class="mb-2 text-sm border-b border-gray-400 bg-transparent outline-none w-full no-scrollbar custom-no-resize"
+              rows="1"
+              ref="descTextarea"
+              @input="autoResizeDesc"
+            ></textarea>
+            <button
+              v-if="isOwner && !editingDesc"
+              @click="startEditDesc"
+              class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
+            >
+              Edit
+            </button>
+            <button
+              v-if="editingDesc"
+              @click="saveDesc"
+              class="ml-2 px-2 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
+            >
+              Save
+            </button>
+            <button
+              v-if="editingDesc"
+              @click="cancelEditDesc"
+              class="ml-1 px-2 py-1 text-sm rounded bg-gray-400 hover:bg-gray-500 text-white"
+            >
+              Cancel
+            </button>
+          </div>
+          <div class="text-xs mb-2">Code: {{ event.public_code }}</div>
         </div>
-        <p class=" mb-2 text-sm">{{ event.description }}</p>
-        <div class="text-xs  mb-2">Code: {{ event.public_code }}</div>
-       
-      </div>
-      <div class="m-2 border p-1 border-gray-300 rounded">
-        <!-- 持續展開的多選日曆，使用 selectedDates ref 同步選擇 -->
-        <v-calendar
-          is-expanded
-          :attributes="calendarAttributes"
-          :multiple="true"
-          @dayclick="handleSelect"
-          borderless transparent 
-          expanded 
-          :initial-page="initialPage"
-          :min-date="event.enable_start_date"
-          :max-date="event.enable_end_date"
-          :is-dark="isDark"
-          title-position="left"
-          :rows="2"
-          :disabled-dates="disabledDates"
+        <EventCalendar
+          :event="event"
         />
-      </div>
-       <div class=" mt-2 ">
+        <div class="mt-2 flex flex-row justify-between items-start">
+          <div>
           參與者:
           <div class="flex flex-row gap-1 flex-wrap">
-          <p  v-for="member of members" :key="member.user_id"
-          class="w-fit py-1 px-4"
-          :class="member.user_id == owner.user_id?'bg-green-600 text-white ':''"
-          >
-           <span v-if="member.user_id == owner.user_id" class="font-bold">搞手:</span>
-           {{ member.username }}
+            <p
+              v-for="member of members"
+              :key="member.user_id"
+              class="w-fit py-1 px-4"
+              :class="
+                member.user_id == owner.user_id
+                  ? 'bg-green-600 text-white '
+                  : ''
+              "
+            >
+              <span v-if="member.user_id == owner.user_id" class="font-bold"
+                >搞手:</span
+              >
+              {{ member.username }}
             </p>
-          </div>          
+            </div>
+          </div>
+          <EventRoleBar
+            :userId="userStore.user?.id"
+            :ownerId="event?.owner_id"
+            :members="members"
+            @join="handleJoin"
+            @leave="handleLeave"
+          />
         </div>
+      </div>
+      <div></div>
+      <!-- <div v-else class="text-red-500">Event not found.</div> -->
     </div>
-    <div v-else class="text-red-500">Event not found.</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 // v-calendar 必須已安裝: npm install v-calendar
 // 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/user";
-import {
-  fetchEventByPublicCode,
-  joinEvent,
-} from "../api/event";
+import { fetchEventByPublicCode, joinEvent } from "../api/event";
 import EventRoleBar from "../components/EventRoleBar.vue";
-import { storeToRefs } from 'pinia';
-import { useThemeStore } from '../stores/theme';
-import { toast } from 'vue3-toastify';
+import { storeToRefs } from "pinia";
+import { useThemeStore } from "../stores/theme";
+import { toast } from "vue3-toastify";
+import { updateEventTitle } from "../api/event";
+import { supabase } from "../api/supabase";
+// textarea 自動拉高高度
+import { nextTick } from "vue";
+import EventCalendar from "../components/event/EventCalendar.vue";
+
+
+const descTextarea = ref(null);
+
+function autoResizeDesc() {
+  nextTick(() => {
+    const el = descTextarea.value;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    }
+  });
+}
+const editingDesc = ref(false);
+const editedDesc = ref("");
+
+function startEditDesc() {
+  editedDesc.value = event.value?.description || "";
+  editingDesc.value = true;
+}
+
+function cancelEditDesc() {
+  editingDesc.value = false;
+}
+
+async function saveDesc() {
+  if (!event.value?.id) return;
+  try {
+    // 直接用 supabase 更新 description
+    const { error } = await supabase
+      .from("events")
+      .update({ description: editedDesc.value })
+      .eq("id", event.value.id);
+    if (error) throw error;
+    event.value.description = editedDesc.value;
+    toast.success("描述已更新");
+    editingDesc.value = false;
+  } catch (e) {
+    toast.error("描述更新失敗");
+  }
+}
 
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
 
-// 禁用範圍外日期
-const disabledDates = computed(() => {
-  const start = event.value?.enable_start_date;
-  const end = event.value?.enable_end_date;
-  if (!start || !end) return [];
-  const result = [];
-  const startDate = new Date(start);
-  const endDate = new Date(end);
-  // 生成範圍外的日期
-  for (let d = new Date(2000, 0, 1); d < startDate; d.setDate(d.getDate() + 1)) {
-    result.push(d.toISOString().split('T')[0]);
-  }
-  for (let d = new Date(endDate.getTime() + 86400000); d < new Date(2100, 0, 1); d.setDate(d.getDate() + 1)) {
-    result.push(d.toISOString().split('T')[0]);
-  }
-  return result;
-});
+
 
 const route = useRoute();
 const event = ref(null);
@@ -98,45 +187,33 @@ const loading = ref(true);
 const members = ref([]);
 const owner = ref(null);
 const userStore = useUserStore();
+const editingTitle = ref(false);
+const editedTitle = ref("");
 
-// 日曆標記與多選
-// 多選日期 state
-const selectedDates = ref([]);
-
-const initialPage = computed(() => { //enable_start_date=YYYY-MM-DD,  initialPage need { month: 4, year: 2019 }
-  const date = event.value?.enable_start_date;
-  if (!date) return null;
-  const [year, month] = date.split("-").map(Number);
-  return { year, month };
-});
 
 const isOwner = computed(() => {
-  return userStore.user && event.value && userStore.user.id === event.value.owner_id;
+  return (
+    userStore.user && event.value && userStore.user.id === event.value.owner_id
+  );
 });
-const showDeadlineAsDays = ref(false);
+const showDeadlineAsDays = ref(true);
 const toggleDeadlineView = () => {
   showDeadlineAsDays.value = !showDeadlineAsDays.value;
 };
 
 const deadlineViewText = computed(() => {
-  if (!event.value?.deadline_date) return '';
+  if (!event.value?.deadline_date) return "";
   if (!showDeadlineAsDays.value) return event.value.deadline_date;
   // 計算剩餘天數
   const today = new Date();
   const deadline = new Date(event.value.deadline_date);
   // 計算相差毫秒數
-  const diffTime = deadline.setHours(0,0,0,0) - today.setHours(0,0,0,0);
+  const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   if (diffDays > 0) return `剩餘 ${diffDays} 天`;
-  if (diffDays === 0) return '今天截止';
-  return '已截止';
+  if (diffDays === 0) return "今天截止";
+  return "已截止";
 });
-
-const calendarAttributes = ref([
-  { key: 'marked_by_member', dates: ['2025-10-30'], highlight: 'blue' },
-  { key: 'selected', dates: selectedDates.value, highlight: 'green' }
-]);
-
 
 
 
@@ -197,30 +274,33 @@ onMounted(() => {
   fetchEvent();
 });
 
-const handleSelect = (day) => {
-  // 未登入則打開 Auth Popup
-  if (!userStore.user) {
-    userStore.openAuthPopup();
-    return;
-  }
-  // 以本地日期字串
-  const dateObj = day.date;
-  const yyyy = dateObj.getFullYear();
-  const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const dd = String(dateObj.getDate()).padStart(2, '0');
-  const dateStr = `${yyyy}-${mm}-${dd}`;
-  // 如果是 disabled 日期則不處理
-  if (disabledDates.value.includes(dateStr)) return;
-  const index = selectedDates.value.findIndex(d => d === dateStr);
-  if (index !== -1) {
-    selectedDates.value.splice(index, 1);
-  } else {
-    selectedDates.value.push(dateStr);
-  }
-};
 
+function startEditTitle() {
+  editedTitle.value = event.value?.title || "";
+  editingTitle.value = true;
+}
+function cancelEditTitle() {
+  editingTitle.value = false;
+}
+
+async function saveTitle() {
+  if (!editedTitle.value.trim() || !event.value?.id) return;
+  try {
+    await updateEventTitle(event.value.id, editedTitle.value.trim());
+    event.value.title = editedTitle.value.trim();
+    toast.success("標題已更新");
+    editingTitle.value = false;
+  } catch (e) {
+    toast.error("標題更新失敗");
+  }
+}
 </script>
 
 <style scoped>
-
+.no-scrollbar {
+  overflow: hidden !important;
+}
+.custom-no-resize {
+  resize: none !important;
+}
 </style>

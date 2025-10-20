@@ -1,3 +1,11 @@
+// 更新 event title
+export async function updateEventTitle(eventId, newTitle) {
+  const { error } = await supabase
+    .from("events")
+    .update({ title: newTitle })
+    .eq("id", eventId);
+  if (error) throw error;
+}
 import { supabase } from "./supabase";
 
 export async function fetchEventById(eventId) {

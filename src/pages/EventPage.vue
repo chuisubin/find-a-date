@@ -1,17 +1,21 @@
 <template>
-  <div class="max-w-xl mx-auto py-4 px-4">
+  <div class="max-w-7xl mx-auto py-4 px-4">
     <div v-if="loading" class="text-gray-400">Loading...</div>
     <div v-else-if="event">
       <div class=" mb-4">
         <div class="flex flex-row items-start justify-between w-full">
         <h1 class="font-semibold text-5xl mb-2">{{ event.title }}</h1>
+        <div class="flex flex-row gap-2">
+          <div class="bg-red-500 text-white text-center p-2 rounded-md cursor-pointer" @click="toggleDeadlineView">
+            Deadline: {{ deadlineViewText }}
+          </div>
           <EventRoleBar
         :userId="userStore.user?.id"
         :ownerId="event?.owner_id"
         :members="members"
         @join="handleJoin"
         @leave="handleLeave"
-      />
+      /></div>
         </div>
         <p class=" mb-2 text-sm">{{ event.description }}</p>
         <div class="text-xs  mb-2">Code: {{ event.public_code }}</div>
@@ -37,12 +41,15 @@
       </div>
        <div class=" mt-2 ">
           參與者:
-          <p v-if="members.length" v-for="member of members" 
+          <div class="flex flex-row gap-1 flex-wrap">
+          <p  v-for="member of members" :key="member.user_id"
+          class="w-fit py-1 px-4"
+          :class="member.user_id == owner.user_id?'bg-green-600 text-white ':''"
           >
-        <span v-if="member.user_id == owner.user_id" class="font-bold">owner:</span>
+           <span v-if="member.user_id == owner.user_id" class="font-bold">搞手:</span>
            {{ member.username }}
             </p>
-          <span v-else>None</span>
+          </div>          
         </div>
     </div>
     <div v-else class="text-red-500">Event not found.</div>
@@ -62,6 +69,8 @@ import {
 import EventRoleBar from "../components/EventRoleBar.vue";
 import { storeToRefs } from 'pinia';
 import { useThemeStore } from '../stores/theme';
+import { toast } from 'vue3-toastify';
+
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
 
@@ -103,6 +112,24 @@ const initialPage = computed(() => { //enable_start_date=YYYY-MM-DD,  initialPag
 
 const isOwner = computed(() => {
   return userStore.user && event.value && userStore.user.id === event.value.owner_id;
+});
+const showDeadlineAsDays = ref(false);
+const toggleDeadlineView = () => {
+  showDeadlineAsDays.value = !showDeadlineAsDays.value;
+};
+
+const deadlineViewText = computed(() => {
+  if (!event.value?.deadline_date) return '';
+  if (!showDeadlineAsDays.value) return event.value.deadline_date;
+  // 計算剩餘天數
+  const today = new Date();
+  const deadline = new Date(event.value.deadline_date);
+  // 計算相差毫秒數
+  const diffTime = deadline.setHours(0,0,0,0) - today.setHours(0,0,0,0);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) return `剩餘 ${diffDays} 天`;
+  if (diffDays === 0) return '今天截止';
+  return '已截止';
 });
 
 const calendarAttributes = ref([

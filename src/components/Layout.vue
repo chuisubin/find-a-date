@@ -10,10 +10,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import Header from './Header.vue';
-export default {
-  name: 'Layout',
-  components: { Header },
-};
 </script>
+
+

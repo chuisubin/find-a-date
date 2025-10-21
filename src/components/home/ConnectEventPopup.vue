@@ -21,7 +21,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import Popup from '../components/Popup.vue';
+import Popup from '@/components/Popup.vue';
 
 const props = defineProps({
   modelValue: Boolean

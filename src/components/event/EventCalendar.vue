@@ -17,7 +17,7 @@
     :rows="2"
     :disabled-dates="disabledDates"
   />
-  <div class="flex gap-2 mt-2" v-if="isJoinedMember">
+  <div class="flex gap-2 mt-2" v-if="isJoinedMember && isDatesModified">
     <button @click="saveAvailabilities" class="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600">Save</button>
     <button @click="cancelSelection" class="px-3 py-1 rounded bg-gray-400 text-white hover:bg-gray-500">Cancel</button>
   </div>
@@ -27,12 +27,12 @@
 <script lang="ts" setup>
 // user_id 對應 username 映射
 
-import { supabase } from '../../api/supabase';
+import { supabase } from '@/api/supabase';
 import { toast } from 'vue3-toastify';
-import { saveAvailabilities as saveAvailabilitiesApi } from '../../api/event';
+import { saveAvailabilities as saveAvailabilitiesApi } from '@/api/event';
 import { ref, computed, watch } from 'vue';
-import { useUserStore } from '../../stores/user';
-import { useThemeStore } from '../../stores/theme';
+import { useUserStore } from '@/stores/user';
+import { useThemeStore } from '@/stores/theme';
 import { storeToRefs } from "pinia";
 
 const props = defineProps({
@@ -74,10 +74,12 @@ const mySavedDates = computed(() => {
 
 
 const selectedDates = ref<string[]>(mySavedDates.value.slice());
+const isDatesModified = ref(false);
 
 // 當 availabilities 變動時，selectedDates 也要同步
 watch(mySavedDates, (newDates) => {
   selectedDates.value = newDates.slice();
+  isDatesModified.value = false;
 });
 
 // 保存 selectedDates 到 availabilities table
@@ -91,6 +93,7 @@ async function saveAvailabilities() {
     });
     props.fetchEvent();
     toast.success('已儲存可用日期');
+    isDatesModified.value = false;
   } catch (e) {
     toast.error('儲存失敗');
   }
@@ -102,7 +105,8 @@ const isJoinedMember = computed(() => {
 });
 
 function cancelSelection() {
-  selectedDates.value = mySavedDates.value.slice() ;
+  selectedDates.value = mySavedDates.value.slice();
+  isDatesModified.value = false;
 }
 
 
@@ -194,6 +198,8 @@ const handleSelect = (day) => {
   } else {
     selectedDates.value.push(dateStr);
   }
+  // 檢查是否有修改
+  isDatesModified.value = JSON.stringify(selectedDates.value.slice().sort()) !== JSON.stringify(mySavedDates.value.slice().sort());
 };
 </script>
 

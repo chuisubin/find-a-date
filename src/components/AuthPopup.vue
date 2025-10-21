@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref,  } from 'vue';
-import { signIn, signUp,  } from '../api/user';
+import { signIn, signUp,  } from '@/api/user';
 import { toast } from 'vue3-toastify';
 
 

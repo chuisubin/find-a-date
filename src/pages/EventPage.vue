@@ -126,17 +126,17 @@ import { ref, onMounted, watch, computed } from "vue";
 // v-calendar 必須已安裝: npm install v-calendar
 // 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
 import { useRoute } from "vue-router";
-import { useUserStore } from "../stores/user";
-import { fetchEventByPublicCode, joinEvent, leaveEvent } from "../api/event";
-import EventRoleBar from "../components/EventRoleBar.vue";
+import { useUserStore } from "@/stores/user";
+import { fetchEventByPublicCode, joinEvent, leaveEvent } from "@/api/event";
+import EventRoleBar from "@/components/event/EventRoleBar.vue";
 import { storeToRefs } from "pinia";
-import { useThemeStore } from "../stores/theme";
+import { useThemeStore } from "@/stores/theme";
 import { toast } from "vue3-toastify";
-import { updateEventTitle, updateEventDescription } from "../api/event";
-import { supabase } from "../api/supabase";
+import { updateEventTitle, updateEventDescription } from "@/api/event";
+import { supabase } from "@/api/supabase";
 // textarea 自動拉高高度
 import { nextTick } from "vue";
-import EventCalendar from "../components/event/EventCalendar.vue";
+import EventCalendar from "@/components/event/EventCalendar.vue";
 import { debounce } from 'lodash';
 
 

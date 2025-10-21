@@ -38,7 +38,7 @@ export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
     .select(
-      "*, users:owner_id(username, email), events_members(user_id, users(username, email)), availabilities(*)"
+      "*, users:owner_id(username), events_members(user_id, users(username)), availabilities(*)"
     )
     .eq("public_code", public_code)
     .limit(1)
@@ -85,9 +85,7 @@ export async function fetchUserEventsByUserId(userId) {
   // 查詢 user 參加的所有 events
   const { data, error } = await supabase
     .from("events_members")
-    .select(
-      "event_id, events(*, events_members(user_id, users(username, email)))"
-    )
+    .select("event_id, events(*, events_members(user_id, users(username)))")
     .eq("user_id", userId);
   if (error) throw error;
   const events = data?.map((item) => item.events) || [];

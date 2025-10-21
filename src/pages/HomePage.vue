@@ -45,11 +45,11 @@
 <script setup>
 import { ref, onMounted, watchEffect, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '../stores/user';
-import CreateEventPopup from '../components/CreateEventPopup.vue';
-import ConnectEventPopup from '../components/ConnectEventPopup.vue';
-import { fetchUserEventsByUserId } from '../api/event';
-import { fetchUserName } from '../api/user';
+import { useUserStore } from '@/stores/user';
+import CreateEventPopup from '@/components/home/CreateEventPopup.vue';
+import ConnectEventPopup from '@/components/home/ConnectEventPopup.vue';
+import { fetchUserEventsByUserId } from '@/api/event';
+import { fetchUserName } from '@/api/user';
 const router = useRouter();
 function goToEvent(publicCode) {
   router.push({ path: `/event/${publicCode}` });

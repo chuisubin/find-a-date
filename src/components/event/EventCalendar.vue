@@ -1,26 +1,51 @@
 <template>
 <div class="m-2 border p-1 border-gray-300 rounded">
           <!-- 持續展開的多選日曆，使用 selectedDates ref 同步選擇 -->
-          <v-calendar
-            is-expanded
-            :attributes="calendarAttributes"
-            :multiple="true"
-            @dayclick="handleSelect"
-            borderless
-            transparent
-            expanded
-            :initial-page="initialPage"
-            :min-date="props.event.enable_start_date"
-            :max-date="props.event.enable_end_date"
-            :is-dark="isDark"
-            title-position="left"
-            :rows="2"
-            :disabled-dates="disabledDates"
-          />
+  <v-calendar
+    is-expanded
+    :attributes="calendarAttributes"
+    :multiple="true"
+    @dayclick="handleSelect"
+    borderless
+    transparent
+    expanded
+    :initial-page="initialPage"
+    :min-date="props.event.enable_start_date"
+    :max-date="props.event.enable_end_date"
+    :is-dark="isDark"
+    title-position="left"
+    :rows="2"
+    :disabled-dates="disabledDates"
+  />
+  <div class="flex gap-2 mt-2">
+    <button @click="saveAvailabilities" class="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600">Save</button>
+    <button @click="cancelSelection" class="px-3 py-1 rounded bg-gray-400 text-white hover:bg-gray-500">Cancel</button>
+  </div>
         </div>
 </template>
 
 <script lang="ts" setup>
+import { supabase } from '../../api/supabase';
+import { toast } from 'vue3-toastify';
+import { saveAvailabilities as saveAvailabilitiesApi } from '../../api/event';
+// 保存 selectedDates 到 availabilities table
+async function saveAvailabilities() {
+  if (!userStore.user || !props.event?.id) return;
+  try {
+    await saveAvailabilitiesApi({
+      user_id: userStore.user.id,
+      event_id: props.event.id,
+      available_dates: selectedDates.value
+    });
+    toast.success('已儲存可用日期');
+  } catch (e) {
+    toast.error('儲存失敗');
+  }
+}
+
+function cancelSelection() {
+  selectedDates.value = [];
+}
 import { ref, computed, watch } from 'vue';
 import { useUserStore } from '../../stores/user';
 import { useThemeStore } from '../../stores/theme';
@@ -38,8 +63,23 @@ const selectedDates = ref([]);
 const { isDark } = storeToRefs(themeStore);
 
 const calendarAttributes = ref([
-  { key: "marked_by_member", dates: ["2025-10-30"], dot:'green' },
-  { key: "selected", dates: selectedDates.value, highlight: "green" },
+  { key: "marked_by_member", dates: ["2025-10-30"], dot: 'green', popover: {
+      label: 'Take Noah to basketball practice.',
+    }, },
+  { key: "marked_by_member2", dates: ["2025-10-30"], dot: 'red', popover: {
+      label: 'Take Noah to basketball practice22.',
+    },  },
+  { key: "marked_by_member3", dates: ["2025-10-30"], dot: 'blue' },
+  { key: "marked_by_member4", dates: ["2025-10-30"], dot: 'yellow' },
+  { key: "marked_by_member5", dates: ["2025-10-30"], dot: 'red' },
+  { key: "marked_by_member6", dates: ["2025-10-30"], dot: 'yellow' },
+  { key: "marked_by_member7", dates: ["2025-10-30"], dot: 'yellow' },
+
+
+  { key: "selected", dates: selectedDates.value ,  highlight: {
+      color: 'green',
+      fillMode: 'outline',
+    },},
 ]);
 
 const initialPage = computed(() => {

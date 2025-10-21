@@ -95,3 +95,24 @@ export async function joinEvent(eventId, userId) {
   if (error) throw error;
   return data;
 }
+
+export async function saveAvailabilities({
+  user_id,
+  event_id,
+  available_dates,
+}) {
+  // 先刪除舊資料
+  const { error: delError } = await supabase
+    .from("availabilities")
+    .delete()
+    .eq("user_id", user_id)
+    .eq("event_id", event_id);
+  if (delError) throw delError;
+  // 再插入新資料
+  const { error: insError } = await supabase.from("availabilities").insert({
+    user_id,
+    event_id,
+    available_dates,
+  });
+  if (insError) throw insError;
+}

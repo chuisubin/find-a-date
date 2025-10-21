@@ -79,7 +79,7 @@ async function handleLogin() {
 
     toast.success('Login successful!');
       // 取得 user 資料並存入 pinia
-      emit('onAuthSuccess')
+      emit('auth-success')
 
     }
   } catch (err) {
@@ -106,7 +106,7 @@ async function handleRegister() {
       register.value = { email: '', username: '', password: '' };
       toast.success('Register successful!');
 
-      emit('onAuthSuccess');
+      emit('auth-success');
     }
     // 如需儲存 username，註冊後可再寫入 profile table
   } catch (err) {

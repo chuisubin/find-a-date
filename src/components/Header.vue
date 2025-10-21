@@ -58,14 +58,15 @@ function toggleDarkMode() {
   themeStore.toggleDark();
 }
 
-const onAuthSuccess = () => {
-  userStore.closeAuthPopup();
-  fetchUser();
-};
 async function fetchUser() {
   const { data } = await getCurrentUser();
   userStore.setUser(data?.user || null);
 }
+const onAuthSuccess = async () => {
+  await fetchUser();
+  userStore.closeAuthPopup();
+};
+
 
 async function handleLogout() {
   await signOut();
@@ -74,12 +75,5 @@ async function handleLogout() {
 
 }
 
-onMounted(() => {
-  themeStore.initTheme();
-  fetchUser();
-  // 監聽登入狀態變化
-  supabase.auth.onAuthStateChange((_event, session) => {
-    userStore.setUser(session?.user || null);
-  });
-});
+
 </script>

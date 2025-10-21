@@ -26,7 +26,7 @@
               >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
             </div>
             <button
-              v-if="isOwner && !editingTitle"
+              v-if="isOwner && !editingTitle && event.status === 'voting'"
               @click="startEditTitle"
               class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
             >
@@ -67,7 +67,7 @@
               @input="autoResizeDesc"
             ></textarea>
             <button
-              v-if="isOwner && !editingDesc"
+              v-if="isOwner && !editingDesc && event.status === 'voting'"
               @click="startEditDesc"
               class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
             >
@@ -116,12 +116,13 @@
             </div>
           </div>
           <EventRoleBar
-            :userId="userStore.user?.id"
-            :ownerId="event?.owner_id"
-            :members="members"
-            @join="handleJoin"
-            @leave="handleLeave"
-          />
+              :userId="userStore.user?.id"
+              :ownerId="event?.owner_id"
+              :members="members"
+              :disabled="event.status !== 'voting'"
+              @join="handleJoin"
+              @leave="handleLeave"
+            />
         </div>
       </div>
       <div class="mt-8">
@@ -130,10 +131,25 @@
           <ul>
             <li v-for="(item, idx) in topDates" :key="item.date" class="mb-2 flex items-center gap-2">
               <span class="font-bold text-lg">{{ idx + 1 }}.</span>
-              <span class="px-3 py-1 rounded bg-blue-100 text-blue-700">{{ item.date }}</span>
+              <span
+                  class="px-3 py-1 rounded bg-blue-100 text-blue-700"
+                  :class="{ 'cursor-pointer hover:bg-blue-300': isOwner && event.status === 'voting' }"
+                  @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
+                >{{ item.date }}</span>
               <span class="text-sm text-gray-500">{{ item.count }} 人可行</span>
             </li>
           </ul>
+        <Popup v-model="showConfirmDatePopup" :showClose="true">
+            <div class="p-4">
+              <h3 class="text-lg font-bold mb-2">確認最終日期</h3>
+              <div class="mb-4">你確定要將 <span class="font-bold text-blue-700">{{ confirmDate }}</span> 設為最終活動日期嗎？</div>
+              <div class="flex gap-2 justify-end">
+                <button class="btn cancel_btn" @click="showConfirmDatePopup = false">取消</button>
+                <button class="btn enter_btn" @click="confirmFinalDate" :disabled="confirming">確定</button>
+              </div>
+            </div>
+          </Popup>
+          
         </div>
       </div>
       <!-- <div v-else class="text-red-500">Event not found.</div> -->
@@ -142,24 +158,54 @@
 </template>
 
 <script setup>
+import Popup from '@/components/Popup.vue';
+// 你需要在 src/api/event.js 新增 updateEventFinalDate API
+
 import { ref, onMounted, watch, computed } from "vue";
 // v-calendar 必須已安裝: npm install v-calendar
 // 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
 import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
-import { fetchEventByPublicCode, joinEvent, leaveEvent } from "@/api/event";
+import {
+  fetchEventByPublicCode, joinEvent, leaveEvent,
+  updateEventTitle, updateEventDescription ,updateEventFinalDate
+ } from "@/api/event";
 import EventRoleBar from "@/components/event/EventRoleBar.vue";
 import { storeToRefs } from "pinia";
 import { useThemeStore } from "@/stores/theme";
 import { toast } from "vue3-toastify";
-import { updateEventTitle, updateEventDescription } from "@/api/event";
 import { supabase } from "@/api/supabase";
 // textarea 自動拉高高度
 import { nextTick } from "vue";
 import EventCalendar from "@/components/event/EventCalendar.vue";
 import { debounce } from 'lodash';
 
+const showConfirmDatePopup = ref(false);
+const confirmDate = ref("");
+const confirming = ref(false);
 
+function openConfirmDate(date) {
+  confirmDate.value = date;
+  showConfirmDatePopup.value = true;
+}
+
+async function confirmFinalDate() {
+  if (!event.value?.id || !confirmDate.value) return;
+  confirming.value = true;
+  try {
+    // API: 更新 event status/confirm_date_start/confirm_date_end
+    await updateEventFinalDate(event.value.id, confirmDate.value);
+    event.value.status = "decided";
+    event.value.confirm_date_start = confirmDate.value;
+    event.value.confirm_date_end = confirmDate.value;
+    toast.success("已設定最終日期");
+    showConfirmDatePopup.value = false;
+  } catch (e) {
+    toast.error("設定失敗");
+  } finally {
+    confirming.value = false;
+  }
+}
 const descTextarea = ref(null);
 
 function autoResizeDesc() {

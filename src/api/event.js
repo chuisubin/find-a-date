@@ -1,3 +1,15 @@
+// 設定最終日期並決定活動
+export async function updateEventFinalDate(eventId, date) {
+  const { error } = await supabase
+    .from("events")
+    .update({
+      status: "decided",
+      confirm_start_date: date,
+      confirm_end_date: date,
+    })
+    .eq("id", eventId);
+  if (error) throw error;
+}
 export async function leaveEvent(eventId, userId) {
   const { error } = await supabase
     .from("events_members")
@@ -29,6 +41,7 @@ export async function fetchEventById(eventId) {
     .from("events")
     .select("*")
     .eq("id", eventId)
+    .neq("status", "closed")
     .single();
   if (error) throw error;
   return data;

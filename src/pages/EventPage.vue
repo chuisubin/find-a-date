@@ -1,7 +1,9 @@
 <template>
   <div class="max-w-7xl mx-auto py-4 px-4">
-    <div v-if="loading" class="text-gray-400">Loading...</div>
-    <div v-else-if="event">
+    <div v-if="loading" class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center">
+      <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
+      </div>
+    <div v-if="event">
       <div class="mb-4">
         <div class="   w-full">
           <div class="items-start justify-between flex flex-row">
@@ -267,7 +269,7 @@ const handleLeave = async () => {
   alert("Leave event functionality not implemented yet.");
 };
 
-const debouncedFetchEvent = debounce(fetchEvent, 300);
+const debouncedFetchEvent = debounce(fetchEvent, 1000);
 
 watch(() => userStore.user, () => {
   debouncedFetchEvent();

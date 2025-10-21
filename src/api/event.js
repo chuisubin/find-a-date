@@ -30,7 +30,7 @@ export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
     .select(
-      "*, users:owner_id(username, email), events_members(user_id, users(username, email))"
+      "*, users:owner_id(username, email), events_members(user_id, users(username, email)), availabilities(*)"
     )
     .eq("public_code", public_code)
     .limit(1)

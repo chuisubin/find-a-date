@@ -134,6 +134,7 @@ import { supabase } from "../api/supabase";
 // textarea 自動拉高高度
 import { nextTick } from "vue";
 import EventCalendar from "../components/event/EventCalendar.vue";
+import { debounce } from 'lodash';
 
 
 const descTextarea = ref(null);
@@ -265,9 +266,13 @@ const handleLeave = async () => {
   alert("Leave event functionality not implemented yet.");
 };
 
-onMounted(() => {
-  fetchEvent();
-});
+const debouncedFetchEvent = debounce(fetchEvent, 300);
+
+watch(() => userStore.user, () => {
+  debouncedFetchEvent();
+},
+{ immediate: true }
+);
 
 
 function startEditTitle() {

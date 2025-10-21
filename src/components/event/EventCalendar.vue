@@ -14,7 +14,7 @@
     :max-date="props.event.enable_end_date"
     :is-dark="isDark"
     title-position="left"
-    :rows="2"
+  :rows="calendarRows"
     :disabled-dates="disabledDates"
   />
   <div class="flex gap-2 mt-2" v-if="isJoinedMember && isDatesModified">
@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts" setup>
+
 // user_id 對應 username 映射
 
 import { supabase } from '@/api/supabase';
@@ -50,7 +51,15 @@ const userStore = useUserStore();
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
 
-
+// 根據日期範圍自動切 rows
+const calendarRows = computed(() => {
+  const start = props.event?.enable_start_date;
+  const end = props.event?.enable_end_date;
+  if (!start || !end) return 2;
+  const [sy, sm] = start.split("-").map(Number);
+  const [ey, em] = end.split("-").map(Number);
+  return sy === ey && sm === em ? 1 : 2;
+});
 const userIdToUsername = computed(() => {
   const members = props.event?.events_members || [];
   const map = {};

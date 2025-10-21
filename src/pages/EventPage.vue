@@ -81,6 +81,7 @@
         </div>
         <EventCalendar
           :event="event"
+          :fetchEvent="fetchEvent"
         />
         <div class="mt-2 flex flex-row justify-between items-start">
           <div>

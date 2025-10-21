@@ -46,6 +46,10 @@ const props = defineProps({
   event: {
     type: Object,
     required: true
+  },
+  fetchEvent: {
+    type: Function,
+    required: true
   }
 });
 
@@ -73,6 +77,7 @@ async function saveAvailabilities() {
       event_id: props.event.id,
       available_dates: selectedDates.value
     });
+    props.fetchEvent();
     toast.success('已儲存可用日期');
   } catch (e) {
     toast.error('儲存失敗');
@@ -80,7 +85,7 @@ async function saveAvailabilities() {
 }
 
 function cancelSelection() {
-  selectedDates.value = [];
+  selectedDates.value = mySavedDates.value.slice() ;
 }
 
 

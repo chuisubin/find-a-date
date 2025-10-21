@@ -25,9 +25,45 @@
 </template>
 
 <script lang="ts" setup>
+// user_id 對應 username 映射
+const userIdToUsername = computed(() => {
+  const members = props.event?.events_members || [];
+  const map = {};
+  members.forEach(m => {
+    map[m.user_id] = m.users?.username || m.user_id;
+  });
+  return map;
+});
 import { supabase } from '../../api/supabase';
 import { toast } from 'vue3-toastify';
 import { saveAvailabilities as saveAvailabilitiesApi } from '../../api/event';
+import { ref, computed, watch } from 'vue';
+import { useUserStore } from '../../stores/user';
+import { useThemeStore } from '../../stores/theme';
+import { storeToRefs } from "pinia";
+
+const props = defineProps({
+  event: {
+    type: Object,
+    required: true
+  }
+});
+
+const userStore = useUserStore();
+const themeStore = useThemeStore();
+const { isDark } = storeToRefs(themeStore);
+
+// 取得 event 的 availabilities
+const availabilities = computed(() => props.event?.availabilities || []);
+
+// 自己已儲存的日期
+const mySavedDates = computed(() => {
+  const my = availabilities.value.find(a => a.user_id === userStore.user?.id);
+  return my ? my.available_dates : [];
+});
+
+const selectedDates = ref<string[]>(mySavedDates.value.slice());
+
 // 保存 selectedDates 到 availabilities table
 async function saveAvailabilities() {
   if (!userStore.user || !props.event?.id) return;
@@ -46,41 +82,42 @@ async function saveAvailabilities() {
 function cancelSelection() {
   selectedDates.value = [];
 }
-import { ref, computed, watch } from 'vue';
-import { useUserStore } from '../../stores/user';
-import { useThemeStore } from '../../stores/theme';
-import { storeToRefs } from "pinia";
 
-const props = defineProps({
-  event: {
-    type: Object,
-    required: true
-  }
+
+
+// 用於顏色分配（可自訂更多顏色）
+const memberColors = ['red', 'blue', 'yellow', 'purple', 'orange', 'teal', 'pink'];
+
+
+
+
+// 其他成員的日期
+const otherMembers = computed(() => {
+  return availabilities.value.filter(a => a.user_id !== userStore.user?.id);
 });
-const themeStore = useThemeStore();
-const userStore = useUserStore();
-const selectedDates = ref([]);
-const { isDark } = storeToRefs(themeStore);
 
-const calendarAttributes = ref([
-  { key: "marked_by_member", dates: ["2025-10-30"], dot: 'green', popover: {
-      label: 'Take Noah to basketball practice.',
-    }, },
-  { key: "marked_by_member2", dates: ["2025-10-30"], dot: 'red', popover: {
-      label: 'Take Noah to basketball practice22.',
-    },  },
-  { key: "marked_by_member3", dates: ["2025-10-30"], dot: 'blue' },
-  { key: "marked_by_member4", dates: ["2025-10-30"], dot: 'yellow' },
-  { key: "marked_by_member5", dates: ["2025-10-30"], dot: 'red' },
-  { key: "marked_by_member6", dates: ["2025-10-30"], dot: 'yellow' },
-  { key: "marked_by_member7", dates: ["2025-10-30"], dot: 'yellow' },
-
-
-  { key: "selected", dates: selectedDates.value ,  highlight: {
-      color: 'green',
-      fillMode: 'outline',
-    },},
-]);
+const calendarAttributes = computed(() => {
+  const attrs = [];
+  // 自己選的日期（light）
+  if (selectedDates.value.length) {
+    attrs.push({
+      key: 'selected',
+      dates: selectedDates.value,
+      highlight: { color: 'green', fillMode: 'light' },
+    });
+  }
+  // 其他成員
+  otherMembers.value.forEach((a, idx) => {
+    const username = userIdToUsername.value[a.user_id] || a.user_id;
+    attrs.push({
+      key: `member_${a.user_id}`,
+      dates: a.available_dates,
+      dot: memberColors[idx % memberColors.length],
+      popover: { label: `成員: ${username}` }
+    });
+  });
+  return attrs;
+});
 
 const initialPage = computed(() => {
   //enable_start_date=YYYY-MM-DD,  initialPage need { month: 4, year: 2019 }

@@ -12,7 +12,16 @@
         <li v-for="event in myEvents" :key="event.id" class="card mb-2 p-4 flex items-center justify-between">
           <div>
             <div class="font-bold text-lg">{{ event.public_code }}</div>
-            <div class="font-bold text-lg">{{ event.title }}</div>
+            <div class="flex items-center gap-2">
+              <div class="font-bold text-lg">{{ event.title }}</div>
+              <span v-if="event.status" class="px-2 py-1 rounded text-xs font-semibold"
+                :class="{
+                  'bg-blue-100 text-blue-700': event.status === 'voting',
+                  'bg-green-100 text-green-700': event.status === 'decided',
+                  'bg-gray-200 text-gray-600': event.status === 'closed'
+                }"
+              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
+            </div>
             <div class="mb-1 text-sm text-gray-500">{{ event.description }}</div>
             <div class="mb-1 text-xs">
               Owner: <span class="font-semibold">{{ ownerNames && ownerNames[event.owner_id] ? ownerNames[event.owner_id] : event.owner_id }}</span>

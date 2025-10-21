@@ -67,6 +67,7 @@ export async function createEvent({
         enable_end_date,
         description,
         max_members,
+        status: "voting",
       },
     ])
     .select();

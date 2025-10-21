@@ -8,14 +8,23 @@
         <div class="   w-full">
           <div class="items-start justify-between flex flex-row">
           <div class="flex items-center gap-2 mb-2">
-            <h1 v-if="!editingTitle" class="font-semibold text-5xl">
-              {{ event.title }}
-            </h1>
-            <input
-              v-else
-              v-model="editedTitle"
-              class="font-semibold text-5xl border-b border-gray-400 bg-transparent outline-none"
-            />
+            <div class="flex items-center gap-3">
+              <h1 v-if="!editingTitle" class="font-semibold text-5xl">
+                {{ event.title }}
+              </h1>
+              <input
+                v-else
+                v-model="editedTitle"
+                class="font-semibold text-5xl border-b border-gray-400 bg-transparent outline-none"
+              />
+              <span v-if="event.status" class="px-3 py-1 rounded text-base font-semibold"
+                :class="{
+                  'bg-blue-100 text-blue-700': event.status === 'voting',
+                  'bg-green-100 text-green-700': event.status === 'decided',
+                  'bg-gray-200 text-gray-600': event.status === 'closed'
+                }"
+              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
+            </div>
             <button
               v-if="isOwner && !editingTitle"
               @click="startEditTitle"
@@ -115,7 +124,18 @@
           />
         </div>
       </div>
-      <div></div>
+      <div class="mt-8">
+        <div v-if="event && event.availabilities && event.availabilities.length" class="mb-6">
+          <h2 class="heading text-xl mb-2">最多人共同選擇的日期</h2>
+          <ul>
+            <li v-for="(item, idx) in topDates" :key="item.date" class="mb-2 flex items-center gap-2">
+              <span class="font-bold text-lg">{{ idx + 1 }}.</span>
+              <span class="px-3 py-1 rounded bg-blue-100 text-blue-700">{{ item.date }}</span>
+              <span class="text-sm text-gray-500">{{ item.count }} 人可行</span>
+            </li>
+          </ul>
+        </div>
+      </div>
       <!-- <div v-else class="text-red-500">Event not found.</div> -->
     </div>
   </div>
@@ -177,6 +197,24 @@ async function saveDesc() {
 
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
+
+// 統計所有最多人共同選擇的日期（不限3個，只要人數相同且最多都顯示）
+const topDates = computed(() => {
+  if (!event.value || !event.value.availabilities) return [];
+  const dateCount = {};
+  event.value.availabilities.forEach(a => {
+    (a.available_dates || []).forEach(date => {
+      dateCount[date] = (dateCount[date] || 0) + 1;
+    });
+  });
+  const arr = Object.entries(dateCount)
+    .map(([date, count]) => ({ date, count }));
+  if (!arr.length) return [];
+  const maxCount = Math.max(...arr.map(item => item.count));
+  return arr
+    .filter(item => item.count === maxCount)
+    .sort((a, b) => a.date.localeCompare(b.date));
+});
 
 
 

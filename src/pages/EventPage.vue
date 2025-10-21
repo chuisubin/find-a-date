@@ -127,7 +127,7 @@ import { ref, onMounted, watch, computed } from "vue";
 // 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
 import { useRoute } from "vue-router";
 import { useUserStore } from "../stores/user";
-import { fetchEventByPublicCode, joinEvent } from "../api/event";
+import { fetchEventByPublicCode, joinEvent, leaveEvent } from "../api/event";
 import EventRoleBar from "../components/EventRoleBar.vue";
 import { storeToRefs } from "pinia";
 import { useThemeStore } from "../stores/theme";
@@ -247,26 +247,40 @@ async function handleJoin() {
     return;
   }
   if (!event.value?.id) {
-    alert("活動資料錯誤");
+    toast.error("活動資料錯誤");
     return;
   }
   try {
     await joinEvent(event.value.id, userStore.user.id);
-    // 1入到成員列表
-    members.value.push({
-      user_id: userStore.user.id,
-      username: userStore.user.username,
-      email: userStore.user.email,
-    });
-
-    alert("成功加入活動!");
+    await fetchEvent();
+    toast.success("成功加入活動!");
   } catch (e) {
-    alert("加入失敗: " + (e.message || e));
+    toast.error("加入失敗: " + (e.message || e));
   }
 }
 
 const handleLeave = async () => {
-  alert("Leave event functionality not implemented yet.");
+  if (!userStore.user) {
+    userStore.openAuthPopup();
+    return;
+  }
+  if (!event.value?.id) {
+    toast.error("活動資料錯誤");
+    return;
+  }
+  try {
+    await leaveEvent(event.value.id, userStore.user.id);
+    // 從成員列表移除
+    const idx = members.value.findIndex(m => m.user_id === userStore.user.id);
+    if (idx !== -1) {
+      members.value.splice(idx, 1);
+    }
+        await fetchEvent();
+
+    toast.success("已離開活動!");
+  } catch (e) {
+    toast.error("離開失敗: " + (e.message || e));
+  }
 };
 
 const debouncedFetchEvent = debounce(fetchEvent, 1000);

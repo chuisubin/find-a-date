@@ -1,3 +1,11 @@
+export async function leaveEvent(eventId, userId) {
+  const { error } = await supabase
+    .from("events_members")
+    .delete()
+    .eq("event_id", eventId)
+    .eq("user_id", userId);
+  if (error) throw error;
+}
 // 更新 event description
 export async function updateEventDescription(eventId, newDescription) {
   const { error } = await supabase

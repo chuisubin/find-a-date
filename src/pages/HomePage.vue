@@ -18,10 +18,10 @@
               Owner: <span class="font-semibold">{{ ownerNames && ownerNames[event.owner_id] ? ownerNames[event.owner_id] : event.owner_id }}</span>
             </div>
             <div v-if="event.max_members" class="mb-1 text-xs">
-              Members: <span class="font-semibold">{{ event.member_count || 1 }}</span> / <span class="font-semibold">{{ event.max_members }}</span>
+              Members: <span class="font-semibold">{{ event.events_members.length || 1 }}</span> / <span class="font-semibold">{{ event.max_members }}</span>
             </div>
             <div v-else class="mb-1 text-xs">
-              Members: <span class="font-semibold">{{ event.member_count || 1 }}</span> (No limit)
+              Members: <span class="font-semibold">{{ event.events_members.length || 1 }}</span> (No limit)
             </div>
           </div>
           <button @click="goToEvent(event.public_code)" class="ml-4 p-2 rounded-full hover:bg-gray-200 transition">

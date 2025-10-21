@@ -17,7 +17,7 @@
     :rows="2"
     :disabled-dates="disabledDates"
   />
-  <div class="flex gap-2 mt-2">
+  <div class="flex gap-2 mt-2" v-if="isJoinedMember">
     <button @click="saveAvailabilities" class="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600">Save</button>
     <button @click="cancelSelection" class="px-3 py-1 rounded bg-gray-400 text-white hover:bg-gray-500">Cancel</button>
   </div>
@@ -26,14 +26,7 @@
 
 <script lang="ts" setup>
 // user_id 對應 username 映射
-const userIdToUsername = computed(() => {
-  const members = props.event?.events_members || [];
-  const map = {};
-  members.forEach(m => {
-    map[m.user_id] = m.users?.username || m.user_id;
-  });
-  return map;
-});
+
 import { supabase } from '../../api/supabase';
 import { toast } from 'vue3-toastify';
 import { saveAvailabilities as saveAvailabilitiesApi } from '../../api/event';
@@ -57,8 +50,21 @@ const userStore = useUserStore();
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
 
+
+const userIdToUsername = computed(() => {
+  const members = props.event?.events_members || [];
+  const map = {};
+  members.forEach(m => {
+    map[m.user_id] = m.users?.username || m.user_id;
+  });
+  return map;
+});
+
 // 取得 event 的 availabilities
-const availabilities = computed(() => props.event?.availabilities || []);
+const availabilities = computed(() => {
+  console.log('availabilities change', props.event);
+  return props.event?.availabilities || [];
+});
 
 // 自己已儲存的日期
 const mySavedDates = computed(() => {
@@ -66,7 +72,13 @@ const mySavedDates = computed(() => {
   return my ? my.available_dates : [];
 });
 
+
 const selectedDates = ref<string[]>(mySavedDates.value.slice());
+
+// 當 availabilities 變動時，selectedDates 也要同步
+watch(mySavedDates, (newDates) => {
+  selectedDates.value = newDates.slice();
+});
 
 // 保存 selectedDates 到 availabilities table
 async function saveAvailabilities() {
@@ -83,6 +95,11 @@ async function saveAvailabilities() {
     toast.error('儲存失敗');
   }
 }
+
+const isJoinedMember = computed(() => {
+  if (!userStore.user || !props.event) return false;
+  return props.event.events_members.some(m => m.user_id === userStore.user?.id);
+});
 
 function cancelSelection() {
   selectedDates.value = mySavedDates.value.slice() ;

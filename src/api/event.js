@@ -136,3 +136,11 @@ export async function saveAvailabilities({
   });
   if (insError) throw insError;
 }
+
+export async function closeEvent(eventId) {
+  const { error: insError } = await supabase
+    .from("events")
+    .update({ status: "closed" })
+    .eq("id", eventId);
+  if (insError) throw insError;
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto py-4 px-4">
+  <div class="max-w-7xl mx-auto  ">
     <div v-if="loading" class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center">
       <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
       </div>
@@ -122,6 +122,7 @@
               :disabled="event.status !== 'voting'"
               @join="handleJoin"
               @leave="handleLeave"
+              @closeEvent="confirmCloseEvent"
             />
         </div>
       </div>
@@ -168,7 +169,8 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import {
   fetchEventByPublicCode, joinEvent, leaveEvent,
-  updateEventTitle, updateEventDescription ,updateEventFinalDate
+  updateEventTitle, updateEventDescription, updateEventFinalDate,
+  closeEvent
  } from "@/api/event";
 import EventRoleBar from "@/components/event/EventRoleBar.vue";
 import { storeToRefs } from "pinia";
@@ -184,65 +186,22 @@ const showConfirmDatePopup = ref(false);
 const confirmDate = ref("");
 const confirming = ref(false);
 
-function openConfirmDate(date) {
-  confirmDate.value = date;
-  showConfirmDatePopup.value = true;
-}
-
-async function confirmFinalDate() {
-  if (!event.value?.id || !confirmDate.value) return;
-  confirming.value = true;
-  try {
-    // API: 更新 event status/confirm_date_start/confirm_date_end
-    await updateEventFinalDate(event.value.id, confirmDate.value);
-    event.value.status = "decided";
-    event.value.confirm_date_start = confirmDate.value;
-    event.value.confirm_date_end = confirmDate.value;
-    toast.success("已設定最終日期");
-    showConfirmDatePopup.value = false;
-  } catch (e) {
-    toast.error("設定失敗");
-  } finally {
-    confirming.value = false;
-  }
-}
 const descTextarea = ref(null);
 
-function autoResizeDesc() {
-  nextTick(() => {
-    const el = descTextarea.value;
-    if (el) {
-      el.style.height = "auto";
-      el.style.height = el.scrollHeight + "px";
-    }
-  });
-}
 const editingDesc = ref(false);
 const editedDesc = ref("");
 
-function startEditDesc() {
-  editedDesc.value = event.value?.description || "";
-  editingDesc.value = true;
-}
-
-function cancelEditDesc() {
-  editingDesc.value = false;
-}
-
-async function saveDesc() {
-  if (!event.value?.id) return;
-  try {
-    await updateEventDescription(event.value.id, editedDesc.value);
-    event.value.description = editedDesc.value;
-    toast.success("描述已更新");
-    editingDesc.value = false;
-  } catch (e) {
-    toast.error("描述更新失敗");
-  }
-}
-
 const themeStore = useThemeStore();
 const { isDark } = storeToRefs(themeStore);
+const route = useRoute();
+const event = ref(null);
+const loading = ref(true);
+const members = ref([]);
+const owner = ref(null);
+const userStore = useUserStore();
+const editingTitle = ref(false);
+const editedTitle = ref("");
+
 
 // 統計所有最多人共同選擇的日期（不限3個，只要人數相同且最多都顯示）
 const topDates = computed(() => {
@@ -263,15 +222,6 @@ const topDates = computed(() => {
 });
 
 
-
-const route = useRoute();
-const event = ref(null);
-const loading = ref(true);
-const members = ref([]);
-const owner = ref(null);
-const userStore = useUserStore();
-const editingTitle = ref(false);
-const editedTitle = ref("");
 
 
 const isOwner = computed(() => {
@@ -299,6 +249,61 @@ const deadlineViewText = computed(() => {
 });
 
 
+
+function openConfirmDate(date) {
+  confirmDate.value = date;
+  showConfirmDatePopup.value = true;
+}
+
+async function confirmFinalDate() {
+  if (!event.value?.id || !confirmDate.value) return;
+  confirming.value = true;
+  try {
+    // API: 更新 event status/confirm_date_start/confirm_date_end
+    await updateEventFinalDate(event.value.id, confirmDate.value);
+    event.value.status = "decided";
+    event.value.confirm_date_start = confirmDate.value;
+    event.value.confirm_date_end = confirmDate.value;
+    toast.success("已設定最終日期");
+    showConfirmDatePopup.value = false;
+  } catch (e) {
+    toast.error("設定失敗");
+  } finally {
+    confirming.value = false;
+  }
+}
+
+
+function autoResizeDesc() {
+  nextTick(() => {
+    const el = descTextarea.value;
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = el.scrollHeight + "px";
+    }
+  });
+}
+
+function startEditDesc() {
+  editedDesc.value = event.value?.description || "";
+  editingDesc.value = true;
+}
+
+function cancelEditDesc() {
+  editingDesc.value = false;
+}
+
+async function saveDesc() {
+  if (!event.value?.id) return;
+  try {
+    await updateEventDescription(event.value.id, editedDesc.value);
+    event.value.description = editedDesc.value;
+    toast.success("描述已更新");
+    editingDesc.value = false;
+  } catch (e) {
+    toast.error("描述更新失敗");
+  }
+}
 
 async function fetchEvent() {
   loading.value = true;
@@ -395,6 +400,13 @@ async function saveTitle() {
     toast.error("標題更新失敗");
   }
 }
+
+
+const confirmCloseEvent = async() => {
+  //關閉事件後導回首頁
+ await closeEvent(event.value.id);
+  window.location.href = "/";
+};
 </script>
 
 <style scoped>

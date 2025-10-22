@@ -1,7 +1,7 @@
 <template>
   <Popup v-model="show" @close="close">
   
-      <div class="p-4 text-black dark:text-white">
+      <div class=" text-black dark:text-white">
         <h3 class="text-lg font-bold mb-2">Create Event</h3>
         <form @submit.prevent="handleCreateEvent">
          

@@ -1,5 +1,5 @@
 <template>
-<div class="m-2 border p-1 border-gray-300 rounded">
+<div class="my-2 border p-1 border-gray-300 rounded">
           <!-- 持續展開的多選日曆，使用 selectedDates ref 同步選擇 -->
   <v-calendar
     is-expanded

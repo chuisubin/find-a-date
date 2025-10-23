@@ -17,13 +17,7 @@
                 v-model="editedTitle"
                 class="font-semibold text-5xl border-b border-gray-400 bg-transparent outline-none"
               />
-              <span v-if="event.status" class="px-3 py-1 rounded text-base font-semibold"
-                :class="{
-                  'bg-blue-100 text-blue-700': event.status === 'voting',
-                  'bg-green-100 text-green-700': event.status === 'decided',
-                  'bg-gray-200 text-gray-600': event.status === 'closed'
-                }"
-              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
+             
             </div>
             <button
               v-if="isOwner && !editingTitle && event.status === 'voting'"
@@ -46,10 +40,16 @@
             >
               Cancel
             </button>
+             <span v-if="event.status" class="px-3 py-1 rounded text-base font-semibold"
+                :class="{
+                  'bg-blue-100 text-blue-700': event.status === 'voting',
+                  'bg-green-100 text-green-700': event.status === 'decided',
+                  'bg-gray-200 text-gray-600': event.status === 'closed'
+                }"
+              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
           </div>
           <div
-            class="bg-red-500 text-white text-center p-2 rounded-md cursor-pointer"
-            @click="toggleDeadlineView"
+            class="bg-red-500 text-white text-center p-2 rounded-md "
           >
             {{ deadlineViewText }}
           </div>
@@ -178,242 +178,42 @@ import { useThemeStore } from "@/stores/theme";
 import { toast } from "vue3-toastify";
 import { supabase } from "@/api/supabase";
 // textarea 自動拉高高度
-import { nextTick } from "vue";
 import EventCalendar from "@/components/event/EventCalendar.vue";
-import { debounce } from 'lodash';
+import { useEvent } from '@/hooks/useEvent';
 
-const showConfirmDatePopup = ref(false);
-const confirmDate = ref("");
-const confirming = ref(false);
+const {
+  showConfirmDatePopup,
+  confirmDate,
+  confirming,
+  descTextarea,
+  editingDesc,
+  editedDesc,
+  themeStore,
+  isDark,
+  route,
+  event,
+  loading,
+  members,
+  owner,
+  userStore,
+  editingTitle,
+  editedTitle,
+  topDates,
+  isOwner,
+  deadlineViewText,
+  openConfirmDate,
+  confirmFinalDate,
+  autoResizeDesc,
+  startEditDesc,
+  cancelEditDesc,
+  saveDesc,
+  fetchEvent,
+  handleJoin,
+  handleLeave,
+  startEditTitle,
+  cancelEditTitle,
+  saveTitle,
+  confirmCloseEvent
+} = useEvent();
 
-const descTextarea = ref(null);
-
-const editingDesc = ref(false);
-const editedDesc = ref("");
-
-const themeStore = useThemeStore();
-const { isDark } = storeToRefs(themeStore);
-const route = useRoute();
-const event = ref(null);
-const loading = ref(true);
-const members = ref([]);
-const owner = ref(null);
-const userStore = useUserStore();
-const editingTitle = ref(false);
-const editedTitle = ref("");
-
-
-// 統計所有最多人共同選擇的日期（不限3個，只要人數相同且最多都顯示）
-const topDates = computed(() => {
-  if (!event.value || !event.value.availabilities) return [];
-  const dateCount = {};
-  event.value.availabilities.forEach(a => {
-    (a.available_dates || []).forEach(date => {
-      dateCount[date] = (dateCount[date] || 0) + 1;
-    });
-  });
-  const arr = Object.entries(dateCount)
-    .map(([date, count]) => ({ date, count }));
-  if (!arr.length) return [];
-  const maxCount = Math.max(...arr.map(item => item.count));
-  return arr
-    .filter(item => item.count === maxCount)
-    .sort((a, b) => a.date.localeCompare(b.date));
-});
-
-
-
-
-const isOwner = computed(() => {
-  return (
-    userStore.user && event.value && userStore.user.id === event.value.owner_id
-  );
-});
-const showDeadlineAsDays = ref(true);
-const toggleDeadlineView = () => {
-  showDeadlineAsDays.value = !showDeadlineAsDays.value;
-};
-
-const deadlineViewText = computed(() => {
-  if (!event.value?.deadline_date) return "";
-  if (!showDeadlineAsDays.value) return event.value.deadline_date;
-  // 計算剩餘天數
-  const today = new Date();
-  const deadline = new Date(event.value.deadline_date);
-  // 計算相差毫秒數
-  const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays > 0) return `剩餘 ${diffDays} 天`;
-  if (diffDays === 0) return "今天截止";
-  return "已截止";
-});
-
-
-
-function openConfirmDate(date) {
-  confirmDate.value = date;
-  showConfirmDatePopup.value = true;
-}
-
-async function confirmFinalDate() {
-  if (!event.value?.id || !confirmDate.value) return;
-  confirming.value = true;
-  try {
-    // API: 更新 event status/confirm_date_start/confirm_date_end
-    await updateEventFinalDate(event.value.id, confirmDate.value);
-    event.value.status = "decided";
-    event.value.confirm_date_start = confirmDate.value;
-    event.value.confirm_date_end = confirmDate.value;
-    toast.success("已設定最終日期");
-    showConfirmDatePopup.value = false;
-  } catch (e) {
-    toast.error("設定失敗");
-  } finally {
-    confirming.value = false;
-  }
-}
-
-
-function autoResizeDesc() {
-  nextTick(() => {
-    const el = descTextarea.value;
-    if (el) {
-      el.style.height = "auto";
-      el.style.height = el.scrollHeight + "px";
-    }
-  });
-}
-
-function startEditDesc() {
-  editedDesc.value = event.value?.description || "";
-  editingDesc.value = true;
-}
-
-function cancelEditDesc() {
-  editingDesc.value = false;
-}
-
-async function saveDesc() {
-  if (!event.value?.id) return;
-  try {
-    await updateEventDescription(event.value.id, editedDesc.value);
-    event.value.description = editedDesc.value;
-    toast.success("描述已更新");
-    editingDesc.value = false;
-  } catch (e) {
-    toast.error("描述更新失敗");
-  }
-}
-
-async function fetchEvent() {
-  loading.value = true;
-  try {
-    event.value = await fetchEventByPublicCode(route.params.code);
-    if (event.value?.events_members) {
-      members.value = event.value.events_members.map((m) => ({
-        user_id: m.user_id,
-        username: m.users?.username,
-        email: m.users?.email,
-      }));
-
-      owner.value =
-        members.value.find((it) => it.user_id == event.value?.owner_id) ?? null;
-    } else {
-      owner.value = null;
-      members.value = [];
-    }
-  } catch (e) {
-    event.value = null;
-    members.value = [];
-    owner.value = null;
-  }
-  loading.value = false;
-}
-
-async function handleJoin() {
-  if (!userStore.user) {
-    userStore.openAuthPopup();
-    return;
-  }
-  if (!event.value?.id) {
-    toast.error("活動資料錯誤");
-    return;
-  }
-  try {
-    await joinEvent(event.value.id, userStore.user.id);
-    await fetchEvent();
-    toast.success("成功加入活動!");
-  } catch (e) {
-    toast.error("加入失敗: " + (e.message || e));
-  }
-}
-
-const handleLeave = async () => {
-  if (!userStore.user) {
-    userStore.openAuthPopup();
-    return;
-  }
-  if (!event.value?.id) {
-    toast.error("活動資料錯誤");
-    return;
-  }
-  try {
-    await leaveEvent(event.value.id, userStore.user.id);
-    // 從成員列表移除
-    const idx = members.value.findIndex(m => m.user_id === userStore.user.id);
-    if (idx !== -1) {
-      members.value.splice(idx, 1);
-    }
-        await fetchEvent();
-
-    toast.success("已離開活動!");
-  } catch (e) {
-    toast.error("離開失敗: " + (e.message || e));
-  }
-};
-
-const debouncedFetchEvent = debounce(fetchEvent, 1000);
-
-watch(() => userStore.user, () => {
-  debouncedFetchEvent();
-},
-{ immediate: true }
-);
-
-
-function startEditTitle() {
-  editedTitle.value = event.value?.title || "";
-  editingTitle.value = true;
-}
-function cancelEditTitle() {
-  editingTitle.value = false;
-}
-
-async function saveTitle() {
-  if (!editedTitle.value.trim() || !event.value?.id) return;
-  try {
-    await updateEventTitle(event.value.id, editedTitle.value.trim());
-    event.value.title = editedTitle.value.trim();
-    toast.success("標題已更新");
-    editingTitle.value = false;
-  } catch (e) {
-    toast.error("標題更新失敗");
-  }
-}
-
-
-const confirmCloseEvent = async() => {
-  //關閉事件後導回首頁
- await closeEvent(event.value.id);
-  window.location.href = "/";
-};
-</script>
-
-<style scoped>
-.no-scrollbar {
-  overflow: hidden !important;
-}
-.custom-no-resize {
-  resize: none !important;
-}
-</style>
+  </script>

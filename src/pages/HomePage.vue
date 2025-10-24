@@ -1,68 +1,45 @@
 <template>
-  <div class="container mx-auto py-8 px-4">
-    <template v-if="userStore.user">
-      <div class="flex justify-center gap-4 mb-8">
-        <button class="btn" @click="onCreateEvent">Create Event</button>
-        <button class="btn" @click="onConnectEvent">Connect Event</button>
+  <div class="w-full mx-auto pt-10">
+    <div>
+      <h1
+        class="mb-4 lg:mb-6 text-center text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold"
+      >
+        輕鬆搞定下次聚會！
+      </h1>
+      <h2 class="mb-6 lg:mb-10 text-gray-500 text-center text-base lg:text-xl">
+        和朋友約時間﹐從未如此簡單。
+      </h2>
+
+      <div
+        class="mx-auto flex justify-center gap-4 mb-12 lg:mb-16 lg:h-12 lg:flex-row flex-col max-w-sm lg:max-w-screen-md"
+      >
+        <button class="btn enter_btn w-full h-full" @click="onCreateEvent">
+          創建新聚會
+        </button>
+        <button class="normal_btn  w-full h-full" @click="onConnectEvent">
+          輸入代碼加入
+        </button>
       </div>
-      <CreateEventPopup v-model="showCreateEventPopup" @created="fetchMyEvents" />
+      <CreateEventPopup
+        v-model="showCreateEventPopup"
+        @created="fetchMyEvents"
+      />
       <ConnectEventPopup v-model="showConnectEventPopup" />
-      <h2 class="text-xl font-bold mb-2">My Events</h2>
-      <ul>
-        <li v-for="event in myEvents" :key="event.id" class=" mb-2 p-4 flex items-center justify-between">
-          <div>
-            <div class="font-bold text-lg">{{ event.public_code }}</div>
-            <div class="flex items-center gap-2">
-              <div class="font-bold text-lg">{{ event.title }}</div>
-              <span v-if="event.status" class="px-2 py-1 rounded text-xs font-semibold"
-                :class="{
-                  'bg-blue-100 text-blue-700': event.status === 'voting',
-                  'bg-green-100 text-green-700': event.status === 'decided',
-                  'bg-gray-200 text-gray-600': event.status === 'closed'
-                }"
-              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
-            </div>
-            <div class="mb-1 text-sm text-gray-500">{{ event.description }}</div>
-            <div class="mb-1 text-xs">
-              Owner: <span class="font-semibold">{{ ownerNames && ownerNames[event.owner_id] ? ownerNames[event.owner_id] : event.owner_id }}</span>
-            </div>
-            <div v-if="event.max_members" class="mb-1 text-xs">
-              Members: <span class="font-semibold">{{ event.events_members.length || 1 }}</span> / <span class="font-semibold">{{ event.max_members }}</span>
-            </div>
-            <div v-else class="mb-1 text-xs">
-              Members: <span class="font-semibold">{{ event.events_members.length || 1 }}</span> (No limit)
-            </div>
-          </div>
-          <button @click="goToEvent(event.public_code)" class="ml-4 p-2 rounded-full hover:bg-gray-200 transition">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </li>
-        <li v-if="myEvents.length === 0" class="text-gray-400 text-center py-8">No events found.</li>
-      </ul>
-    </template>
-    <template v-else>
-      <div class="text-center text-gray-500 py-16">
-        Please login to create or view your events.
+      <div v-if="userStore.user" class="">
+        <MyEventListView :myEvents="myEvents" :ownerNames="ownerNames" />
       </div>
-    </template>
+    </div>
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, watchEffect, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user';
-import CreateEventPopup from '@/components/home/CreateEventPopup.vue';
-import ConnectEventPopup from '@/components/home/ConnectEventPopup.vue';
-import { fetchUserEventsByUserId } from '@/api/event';
-import { fetchUserName } from '@/api/user';
-const router = useRouter();
-function goToEvent(publicCode) {
-  router.push({ path: `/event/${publicCode}` });
-}
+import { ref, onMounted, watchEffect, watch } from "vue";
+import { useUserStore } from "@/stores/user";
+import CreateEventPopup from "@/components/home/CreateEventPopup.vue";
+import ConnectEventPopup from "@/components/home/ConnectEventPopup.vue";
+import { fetchUserEventsByUserId } from "@/api/event";
+import { fetchUserName } from "@/api/user";
+import MyEventListView from "../components/home/MyEventListView.vue";
 
 const userStore = useUserStore();
 const myEvents = ref([]);
@@ -79,12 +56,14 @@ async function fetchMyEvents() {
   }
   try {
     fetching.value = true;
-    myEvents.value = await fetchUserEventsByUserId(userStore.user.id) || [];
+    myEvents.value = (await fetchUserEventsByUserId(userStore.user.id)) || [];
     // Fetch owner names for each event
-      for (const event of myEvents.value) {
+    for (const event of myEvents.value) {
       if (event.owner_id && !ownerNames.value[event.owner_id]) {
         try {
-          ownerNames.value[event.owner_id] = await fetchUserName(event.owner_id);
+          ownerNames.value[event.owner_id] = await fetchUserName(
+            event.owner_id
+          );
         } catch (e) {
           ownerNames.value[event.owner_id] = event.owner_id;
         }
@@ -98,10 +77,18 @@ async function fetchMyEvents() {
 }
 
 function onCreateEvent() {
+  if (!userStore.user) {
+    userStore.openAuthPopup();
+    return;
+  }
   showCreateEventPopup.value = true;
 }
 
 function onConnectEvent() {
+  if (!userStore.user) {
+    userStore.openAuthPopup();
+    return;
+  }
   showConnectEventPopup.value = true;
 }
 
@@ -116,6 +103,4 @@ watch(
   },
   { immediate: true }
 );
-
-
 </script>

@@ -5,10 +5,10 @@
       <button :class="tabClass('register')" @click="activeTab = 'register'">註冊</button>
     </div>
     <div  v-if="activeTab === 'login'">
-      <Login />
+      <Login @auth-success="emit('auth-success')" />
     </div>
     <div v-else>
-      <Register/>
+      <Register @auth-success="emit('auth-success')" />
       </div>
   </div>
 </template>

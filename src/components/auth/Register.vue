@@ -9,28 +9,58 @@
         <label class="block mb-1  ">使用者名稱</label>
         <input v-model="register.username" placeholder="請輸入使用者名稱" class="input w-full " required autocomplete="username"/>
       </div>
-      <div class="mb-4">
+      <div class="mb-4 relative">
         <label class="block mb-1 ">密碼</label>
-  <input v-model="register.password" placeholder="請輸入密碼" type="password" class="input w-full " required autocomplete="new-password" />
+        <input
+          v-model="register.password"
+          :type="showPassword ? 'text' : 'password'"
+          placeholder="請輸入密碼"
+          class="input w-full pr-10"
+          required
+          autocomplete="new-password"
+        />
+        <span class="absolute right-3 top-9 cursor-pointer" @click="showPassword = !showPassword">
+          <font-awesome-icon :icon="showPassword ? ['far', 'eye-slash'] : ['far', 'eye']" />
+        </span>
       </div>
-  <button type="submit" class="enter_btn btn w-full">註冊</button>
-      <div v-if="registerError" class="mt-2 text-red-500 dark:text-pink-400 text-sm">{{ registerError }}</div>
-      <div v-if="registerSuccess" class="mt-2 text-green-600 dark:text-yellow-400 text-sm">{{ registerSuccess }}</div>
+      <div class="mb-4 relative">
+        <label class="block mb-1 ">再次輸入密碼</label>
+        <input
+          v-model="register.confirmPassword"
+          :type="showConfirmPassword ? 'text' : 'password'"
+          placeholder="請再次輸入密碼"
+          class="input w-full pr-10"
+          required
+          autocomplete="new-password"
+        />
+        <span class="absolute right-3 top-9 cursor-pointer" @click="showConfirmPassword = !showConfirmPassword">
+          <font-awesome-icon :icon="showConfirmPassword ? ['far', 'eye-slash'] : ['far', 'eye']" />
+        </span>
+      </div>
+  <button type="submit" :disabled="isLoading" class="enter_btn btn w-full">註冊</button>
+      <div v-if="registerError" class="mt-2 text-error-light dark:text-error-dark text-sm">{{ registerError }}</div>
     </form>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { signIn, signUp,  } from '@/api/user';
-import { ref,  } from 'vue';
+import { signIn, signUp } from '@/api/user';
+import { ref } from 'vue';
 import { toast } from 'vue3-toastify';
-const register = ref({ email: '', username: '', password: '' });
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+const register = ref({ email: '', username: '', password: '', confirmPassword: '' });
 const registerError = ref('');
-const registerSuccess = ref('');
+const isLoading = ref(false);
+const emit = defineEmits([ 'auth-success']);
 
 async function handleRegister() {
+  isLoading.value = true;
   registerError.value = '';
-  registerSuccess.value = '';
+  if (register.value.password !== register.value.confirmPassword) {
+    registerError.value = '密碼不一致，請確認兩次輸入的密碼相同';
+    return;
+  }
   try {
     // Supabase Auth 只支援 email/password 註冊
     let payload = {
@@ -38,13 +68,12 @@ async function handleRegister() {
       password: register.value.password,
       username: register.value.username
     }
-  const { error } = await signUp(payload);
+    const { error } = await signUp(payload);
     if (error) {
       registerError.value = error.message || 'Register failed';
     } else {
       registerError.value = '';
-      registerSuccess.value = 'Register successful!';
-      register.value = { email: '', username: '', password: '' };
+      register.value = { email: '', username: '', password: '', confirmPassword: '' };
       toast.success('Register successful!');
 
       emit('auth-success');
@@ -52,6 +81,8 @@ async function handleRegister() {
     // 如需儲存 username，註冊後可再寫入 profile table
   } catch (err) {
     registerError.value = 'Network error';
+  } finally {
+    isLoading.value = false;
   }
 }
 

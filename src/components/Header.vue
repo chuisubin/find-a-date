@@ -1,5 +1,5 @@
 <template>
-  <header class=" px-4  lg:px-10 shadow-sm shadow-primary-light dark:shadow-primary-dark ">
+  <header class=" px-4 sticky z-10 top-0 lg:px-10 bg-background-light dark:bg-background-dark shadow-sm shadow-primary-light dark:shadow-primary-dark ">
     <div class="container mx-auto flex justify-between items-center  h-20 ">
         <a href="/" class="flex flex-row items-center  text-3xl font-bold   ">
           <img :src="mandarinIcon" class="w-7 h-7 mr-4"/>
@@ -9,7 +9,7 @@
           <span class="ml-4 font-semibold">{{ user.user_metadata?.username || user.email }}</span>
           <button
             @click="handleLogout"
-            class="ml-4 normal-btn  "
+            class="ml-4 normal_btn  "
           >
             登出
           </button>
@@ -17,7 +17,7 @@
         <div v-else>
           <button
             @click="userStore.openAuthPopup()"
-            class="normal-btn ml-4 "
+            class="normal_btn ml-4 "
           >
             登入
           </button>
@@ -27,7 +27,7 @@
         </div>
         <button
           @click="toggleDarkMode"
-          class="ml-4 normal-btn "
+          class="ml-4 normal_btn "
           aria-label="Toggle dark mode"
         >
           <span v-if="isDark">🌙</span>
@@ -50,7 +50,6 @@ import { getCurrentUser, signOut } from '@/api/user';
 import { storeToRefs } from 'pinia';
 import { toast } from 'vue3-toastify';
 import mandarinIcon from '@/assets/images/mandarin.png';
-  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const userStore = useUserStore();
 const { user, showAuthPopup } = storeToRefs(userStore);

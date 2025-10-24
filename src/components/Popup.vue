@@ -1,8 +1,8 @@
 <template>
   <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-white/10 transition-all" @mousedown.self="handleClickOutside">
-    <div class="bg-background-light dark:bg-background-dark rounded   min-w-[300px] relative">
+    <div class="bg-background-light dark:bg-background-dark rounded  max-w-full min-w-[300px] relative lg:w-auto ">
       
-      <div class="flex flex-row justify-end pt-4 px-5" v-if="props.showClose">
+      <div class="flex flex-row justify-end pt-2 lg:pt-4 px-2 lg:px-5" v-if="props.showClose">
       <button
         
         @click="close"
@@ -11,7 +11,7 @@
       >
         &times;
       </button></div>
-      <div class="pb-10 px-10"  :class="props.showClose?'pt-2 ':'pt-10'" >
+      <div class="pb-4 px-4 lg:pb-10 lg:px-10 mx-auto"  :class="props.showClose?'lg:pt-2 ':'pt-4 lg:pt-10'" >
       <slot />
       </div>
     </div>

@@ -43,7 +43,7 @@
 import { ref, onMounted } from 'vue';
 import { useThemeStore } from '@/stores/theme';
 import { useUserStore } from '@/stores/user';
-import AuthPopup from './AuthPopup.vue';
+import AuthPopup from './auth/AuthPopup.vue';
 import Popup from './Popup.vue';
 import { supabase } from '@/api/supabase';
 import { getCurrentUser, signOut } from '@/api/user';

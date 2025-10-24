@@ -8,6 +8,13 @@ module.exports = {
           light: "#ff7a00",
           dark: "#ff9e4d",
         },
+        error: {
+          light: "#ff3b30", // iOS error red
+          dark: "#ff6f61", // softer error red for dark mode
+          bg: "#fff0f0", // error background
+          border: "#ffb3b3", // error border
+          text: "#b91c1c", // error text
+        },
         "background-light": "#fcfcfc",
         "background-dark": "#121212",
         "card-dark": "#1e1e1e",

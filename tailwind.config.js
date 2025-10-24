@@ -5,7 +5,8 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: "#ff7a00",
+          light: "#ff7a00", // 橙色主色
+          hover: "#e86c00", // 橙色 hover (更深)
           dark: "#ff9e4d",
         },
         error: {

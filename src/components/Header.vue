@@ -1,23 +1,25 @@
 <template>
-  <header class="bg-blue-600 text-white py-4 shadow dark:bg-gray-900 dark:text-gray-100">
-    <div class="container mx-auto flex justify-between items-center px-4">
-        <a href="/" class="  text-2xl font-bold">夾日期</a>
+  <header class=" px-4  lg:px-10 shadow-sm shadow-primary-light dark:shadow-primary-dark ">
+    <div class="container mx-auto flex justify-between items-center  h-20 ">
+        <a href="/" class="flex flex-row items-center  text-3xl font-bold   ">
+          <img :src="mandarinIcon" class="w-7 h-7 mr-4"/>
+          <span class="">擇個<span class="text-primary-light dark:text-primary-dark">吉</span>日</span></a>
       <nav class="flex items-center">
         <div v-if="user">
           <span class="ml-4 font-semibold">{{ user.user_metadata?.username || user.email }}</span>
           <button
             @click="handleLogout"
-            class="ml-4 px-4 py-1 rounded bg-white text-blue-600 dark:bg-gray-800 dark:text-blue-300 border border-blue-300 dark:border-blue-600 font-semibold shadow hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+            class="ml-4 normal-btn  "
           >
-            Logout
+            登出
           </button>
         </div>
         <div v-else>
           <button
             @click="userStore.openAuthPopup()"
-            class="ml-4 px-4 py-1 rounded bg-white text-blue-600 dark:bg-gray-800 dark:text-blue-300 border border-blue-300 dark:border-blue-600 font-semibold shadow hover:bg-blue-50 dark:hover:bg-gray-700 transition"
+            class="normal-btn ml-4 "
           >
-            Login / Register
+            登入
           </button>
           <Popup v-model="showAuthPopup" :enableClickOutside="true">
             <AuthPopup @close="userStore.closeAuthPopup()" @auth-success="onAuthSuccess" />
@@ -25,7 +27,7 @@
         </div>
         <button
           @click="toggleDarkMode"
-          class="ml-6 px-3 py-1 rounded bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-600 transition"
+          class="ml-4 normal-btn "
           aria-label="Toggle dark mode"
         >
           <span v-if="isDark">🌙</span>
@@ -47,7 +49,8 @@ import { supabase } from '@/api/supabase';
 import { getCurrentUser, signOut } from '@/api/user';
 import { storeToRefs } from 'pinia';
 import { toast } from 'vue3-toastify';
-
+import mandarinIcon from '@/assets/images/mandarin.png';
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const userStore = useUserStore();
 const { user, showAuthPopup } = storeToRefs(userStore);

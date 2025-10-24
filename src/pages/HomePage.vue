@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-xl mx-auto py-8 px-4">
+  <div class="container mx-auto py-8 px-4">
     <template v-if="userStore.user">
       <div class="flex justify-center gap-4 mb-8">
         <button class="btn" @click="onCreateEvent">Create Event</button>
@@ -9,7 +9,7 @@
       <ConnectEventPopup v-model="showConnectEventPopup" />
       <h2 class="text-xl font-bold mb-2">My Events</h2>
       <ul>
-        <li v-for="event in myEvents" :key="event.id" class="card mb-2 p-4 flex items-center justify-between">
+        <li v-for="event in myEvents" :key="event.id" class=" mb-2 p-4 flex items-center justify-between">
           <div>
             <div class="font-bold text-lg">{{ event.public_code }}</div>
             <div class="flex items-center gap-2">

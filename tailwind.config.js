@@ -5,31 +5,27 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: "#3b82f6", // blue-500
-          dark: "#60a5fa", // blue-400
+          light: "#ff7a00",
+          dark: "#ff9e4d",
         },
-        accent: {
-          light: "#f59e42", // orange-400
-          dark: "#fbbf24", // yellow-400
-        },
-        card: {
-          light: "#fff",
-          dark: "#1e293b", // slate-800
-        },
-        heading: {
-          light: "#ef4444", // red-500
-          dark: "#f472b6", // pink-400
-        },
-        input: {
-          light: "#f3f4f6", // gray-100
-          dark: "#334155", // slate-700
-        },
+        "background-light": "#fcfcfc",
+        "background-dark": "#121212",
+        "card-dark": "#1e1e1e",
+        "text-light": "#111418",
+        "text-dark": "#f6f7f8",
+        "text-secondary-light": "#617589",
+        "text-secondary-dark": "#a0b3c4",
+      },
+      fontFamily: {
+        display: ["Work Sans", "Noto Sans", "sans-serif"],
       },
       borderRadius: {
+        DEFAULT: "0.5rem",
+        lg: "0.75rem",
         xl: "1rem",
+        full: "9999px",
       },
-      fontFamily: {},
+      plugins: [],
     },
   },
-  plugins: [],
 };

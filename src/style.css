@@ -3,23 +3,33 @@
 @tailwind components;
 @tailwind utilities;
 
+ body{
+	@apply bg-background-light  dark:bg-background-dark  min-h-screen ;
+}
+ body {
+ 	font-family: 'Work Sans', sans-serif;
+ }
+
+.TODO{
+	border: 4px red dashed;
+}
 .card {
-	@apply rounded-xl bg-card-light shadow-xl p-6;
+	@apply rounded-xl bg-white shadow-xl p-6;
 }
 .dark .card {
 	@apply bg-card-dark;
 }
-.btn {
-	@apply px-4 py-2 rounded-xl font-bold  text-white transition bg-primary-light;
+.normal-btn {
+	@apply px-4 py-2 rounded font-semibold  transition active:scale-95 bg-gray-200 hover:bg-gray-300 ;
 }
-.dark .btn {
-	@apply bg-primary-dark text-white;
+.dark .normal-btn {
+	@apply  bg-card-dark  hover:bg-gray-700
 }
 .input {
-	@apply px-3 py-2 rounded-xl bg-input-light border-2 border-primary-light text-black;
+	@apply px-3 py-2 rounded-xl  border-2  text-black;
 }
  .dark .input {
-	@apply bg-input-dark border-primary-dark text-white placeholder:text-gray-300;
+	@apply  text-white placeholder:text-gray-300;
 }
 .btn{
 	@apply px-4 py-2 rounded-xl font-bold  text-white transition;
@@ -46,10 +56,10 @@
 	@apply bg-gray-600 hover:bg-gray-700 text-white;
 }
 .heading {
-	@apply  text-heading-light font-extrabold text-3xl;
+	@apply   font-extrabold text-3xl;
 }
 .dark .heading {
-	@apply text-heading-dark;
+	
 }
 .dark .mx-icon-calendar svg {
 	fill: #fff !important;

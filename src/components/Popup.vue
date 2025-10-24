@@ -1,15 +1,19 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" @mousedown.self="handleClickOutside">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-10 min-w-[300px] relative">
+  <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-white/10 transition-all" @mousedown.self="handleClickOutside">
+    <div class="bg-background-light dark:bg-background-dark rounded   min-w-[300px] relative">
+      
+      <div class="flex flex-row justify-end pt-4 px-5" v-if="props.showClose">
       <button
-        v-if="showClose"
+        
         @click="close"
-        class="absolute top-2 right-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 text-3xl w-10 h-10 flex items-center justify-center rounded-full focus:outline-none  focus:ring-blue-400"
+        class="  rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-100 text-3xl w-10 h-10 flex items-center justify-center  focus:outline-none "
         aria-label="Close popup"
       >
         &times;
-      </button>
+      </button></div>
+      <div class="pb-10 px-10"  :class="props.showClose?'pt-2 ':'pt-10'" >
       <slot />
+      </div>
     </div>
   </div>
 </template>

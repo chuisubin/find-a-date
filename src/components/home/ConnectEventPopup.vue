@@ -9,7 +9,7 @@
           </div>
            <div v-if="errorMsg" class="error_text mb-2">{{ errorMsg }}</div>
           <div class="flex justify-center gap-2">
-            <button type="submit" class="enter_btn btn">連接</button>
+            <button type="submit" class="enter_btn btn" :disabled="isLoading||errorMsg!==''">連接</button>
           </div>
         </form>
       </div>
@@ -27,14 +27,18 @@ const emit = defineEmits(['close', 'connected']);
 const eventCode = ref("");
 const errorMsg = ref("");
 const router = useRouter();
+const isLoading = ref(false);
 
-
+watch(eventCode, () => {
+  errorMsg.value = "";
+});
 
 
 async function handleConnectEvent() {
-  errorMsg.value = "";
-  if (!eventCode.value.trim()) return;
+  if (!eventCode.value.trim()||errorMsg.value!=='') return;
   try {
+      isLoading.value = true;
+
     const event = await fetchEventByPublicCode(eventCode.value.trim());
     if (!event || event.status === 'closed') {
       errorMsg.value = "該聚會已關閉或不存在";
@@ -46,6 +50,8 @@ async function handleConnectEvent() {
     eventCode.value = "";
   } catch (e) {
     errorMsg.value = "查詢聚會失敗，請確認代碼是否正確";
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>

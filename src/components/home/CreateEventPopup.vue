@@ -1,102 +1,159 @@
 <template>
-  <Popup v-model="show" @close="close">
-  
-      <div class=" text-black dark:text-white">
-        <h3 class="text-lg font-bold mb-2">Create Event</h3>
-        <form @submit.prevent="handleCreateEvent">
-         
-          <div class="mb-2">
-            <label class="block mb-1">Title</label>
-            <input v-model="newEventTitle" type="text" class="input w-full" required />
-          </div>
-          <div class="mb-2">
-            <label class="block mb-1">Description</label>
-            <textarea v-model="newEventDescription" class="input w-full" rows="3" placeholder="Enter event description..."></textarea>
-          </div>
-          <div class="mb-2">
-            <label class="block mb-1">Deadline (days)</label>
-            <input v-model.number="newEventDeadlineDays" type="number" min="1" class="input w-full" required />
-          </div>
-          <div class="mb-2">
-            <label class="block mb-1">Max Members</label>
-            <div class="flex items-center gap-2">
-              <input v-model.number="newEventMaxMembers" :disabled="unlimitedMembers" type="number" min="1" class="input w-full"  />
-              <label class="flex items-center gap-1">
-                <input type="checkbox" v-model="unlimitedMembers" />
-                Unlimited
-              </label>
-            </div>
-          </div>
-          <div class="mb-2">
-            <label class="block mb-1">Enable Date Range</label>
-            <DatePicker v-model:value="enableDateRange" type="date"  format="YYYY-MM-DD"  :disabled-date="disableBeforeToday"	 range value-type="date"  class="w-full text-white" input-class="input w-full" required />
-          </div>
-          <div class="flex justify-center gap-2 mt-4">
-            <button type="button" class="btn cancel_btn" @click="close">Cancel</button>
-            <button type="submit" class="enter_btn btn">Create</button>
-          </div>
-        </form>
-      </div>
+    <div class="w-full min-w-[18rem] md:min-w-[30rem] lg:min-w-[40rem]">
+      <h1 class="text-center text-2xl lg:text-4xl font-bold mb-4">創建聚會</h1>
+      <form @submit.prevent="handleCreateEvent">
+        <div class="mb-4">
+          <label class="block mb-1"
+            >聚會標題 <span class="primary_text">*</span></label
+          >
+          <input
+            placeholder="請輸入聚會標題"
+            v-model="newEventTitle"
+            maxlength="20"
+            type="text"
+            class="input w-full"
+            required
+          />
+        </div>
+        
+        <div class="mb-4">
+          <label class="block mb-1"
+            >截止日期 <span class="primary_text">*</span></label
+          >
+          <DatePicker
+            placeholder="請選擇截止日期"
+            v-model:value="newEventDeadlineDate"
+            type="date"
+            format="YYYY-MM-DD"
+            :disabled-date="disableBeforeToday"
+            value-type="date"
+            class="w-full"
+            input-class="input w-full"
+            required
+          />
+        </div>
 
-  </Popup>
+        <div class="mb-4">
+          <label class="block mb-1"
+            >活動日期 <span class="primary_text">*</span></label
+          >
+          <DatePicker
+            v-model:value="enableDateRange"
+            type="date"
+            format="YYYY-MM-DD"
+            :disabled-date="disableBeforeToday"
+            range
+            value-type="date"
+            class="w-full"
+            input-class="input w-full "
+            required
+            placeholder="請選擇活動日期範圍"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block mb-1"
+            >人數上限<span class="primary_text">*</span></label
+          >
+          <div class="flex items-center gap-4 justify-start">
+            <input
+              v-model.number="newEventMaxMembers"
+              :disabled="unlimitedMembers"
+              type="number"
+              min="1"
+              class="input w-28"
+              P
+            />
+            <label class="flex items-center gap-2 cursor-pointer select-none whitespace-nowrap">
+                            <span @click="unlimitedMembers = !unlimitedMembers">無上限</span>
+
+              <div @click="unlimitedMembers = !unlimitedMembers" class="rounded border  w-7 h-7 p-1 flex items-center justify-center ">
+                <font-awesome-icon v-show="unlimitedMembers" :icon="['fa', 'check']" class="text-primary-light dark:text-primary-dark" />
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block mb-1">描述</label>
+          <textarea
+            v-model="newEventDescription"
+            class="input w-full resize-none"
+            maxlength="200"
+            rows="3"
+            placeholder="請輸入聚會描述..."
+          ></textarea>
+        </div>
+        <div v-if="errorMsg" class="error_text mb-2">{{ errorMsg }}</div>
+        <div class=" gap-2 mt-4 w-full">
+          <button type="submit" :disabled="isLoading" class="w-full enter_btn btn">
+            創建
+          </button>
+        </div>
+      </form>
+    </div>
+
 </template>
 
 <script setup>
-import DatePicker from 'vue-datepicker-next';
-import 'vue-datepicker-next/index.css';
-import { formatDateLocal } from '@/utils/dateFormat.js';
-const enableDateRange = ref([]);
-import { ref, watch } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import DatePicker from "vue-datepicker-next";
+import "vue-datepicker-next/index.css";
+import { formatDateLocal } from "@/utils/dateFormat.js";
+import { ref, watch } from "vue";
 import Popup from "@/components/Popup.vue";
-import { createEvent } from '@/api/event';
-import { useUserStore } from '@/stores/user';
+import { createEvent } from "@/api/event";
+import { useUserStore } from "@/stores/user";
+import { toast } from 'vue3-toastify';
 
-const props = defineProps({
-  modelValue: Boolean
-});
-const emit = defineEmits(['update:modelValue', 'created']);
 
-const show = ref(props.modelValue);
+const emit = defineEmits([ "created", "close"]);
+
 const newEventTitle = ref("");
 const newEventDescription = ref("");
-const newEventDeadlineDays = ref(1);
+const newEventDeadlineDate = ref(null);
 const userStore = useUserStore();
-const newEventMaxMembers = ref();
+const newEventMaxMembers = ref(10);
 const unlimitedMembers = ref(false);
+const isLoading = ref(false);
+const enableDateRange = ref([]);
+const errorMsg = ref("");
 
 watch(unlimitedMembers, (val) => {
   if (val) {
     newEventMaxMembers.value = undefined;
-  }
+  } 
 });
 
-watch(() => props.modelValue, (val) => {
-  show.value = val;
-});
-watch(show, (val) => {
-  emit('update:modelValue', val);
-});
 
-function close() {
-  show.value = false;
-}
+
+
 
 async function handleCreateEvent() {
-  if (!newEventTitle.value.trim() || !newEventDeadlineDays.value || newEventDeadlineDays.value < 1) return;
-  if (!enableDateRange.value || enableDateRange.value.length !== 2) {
-    alert('Please select a valid date range.');
+  errorMsg.value = "";
+  if (!newEventTitle.value.trim()) {
+    errorMsg.value = "請輸入聚會標題";
     return;
   }
+  if (!newEventDeadlineDate.value) {
+    errorMsg.value = "請選擇截止日期";
+    return;
+  }
+  if (!enableDateRange.value || enableDateRange.value.length !== 2) {
+    errorMsg.value = "請選擇有效的日期範圍";
+    return;
+  }
+  if (!unlimitedMembers.value) {
+    if (!newEventMaxMembers.value || newEventMaxMembers.value < 2) {
+      errorMsg.value = "請輸入人數上限（至少2人）";
+      return;
+    }
+  }
+  isLoading.value = true;
   let [startDate, endDate] = enableDateRange.value;
   // 格式化為 YYYY-MM-DD
   const startDateFormatted = formatDateLocal(startDate);
-const endDateFormatted = formatDateLocal(endDate);
-  
-    console.log('startDate, endDate', startDateFormatted, endDateFormatted);
-
-  const now = new Date();
-  now.setDate(now.getDate() + newEventDeadlineDays.value);
-  const deadlineDate = now.toISOString().slice(0, 10);
+  const endDateFormatted = formatDateLocal(endDate);
+  const deadlineDate = formatDateLocal(newEventDeadlineDate.value);
+  console.log("startDate, endDate", startDateFormatted, endDateFormatted);
   try {
     await createEvent({
       title: newEventTitle.value,
@@ -105,18 +162,24 @@ const endDateFormatted = formatDateLocal(endDate);
       deadline_date: deadlineDate,
       enable_start_date: startDate,
       enable_end_date: endDate,
-      max_members: unlimitedMembers.value ? null : newEventMaxMembers.value || null,
+      max_members: unlimitedMembers.value
+        ? null
+        : newEventMaxMembers.value || null,
     });
-  show.value = false;
-  newEventTitle.value = "";
-  newEventDescription.value = "";
-  newEventDeadlineDays.value = 1;
-  enableDateRange.value = [];
-  newEventMaxMembers.value = undefined;
-  unlimitedMembers.value = false;
-  emit('created');
+    newEventTitle.value = "";
+    newEventDescription.value = "";
+    newEventDeadlineDate.value = null;
+    enableDateRange.value = [];
+    newEventMaxMembers.value = undefined;
+    unlimitedMembers.value = false;
+    emit("created");
+    emit("close");
+    toast.success("聚會創建成功");
+
   } catch (e) {
-    alert('Failed to create event');
+    errorMsg.value = "創建聚會失敗";
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -126,4 +189,13 @@ function disableBeforeToday(date) {
   return date < today;
 }
 
+function close() {
+  emit('close');
+}
+
 </script>
+<style scoped>
+.mx-datepicker {
+  width: 100%;
+}
+</style>

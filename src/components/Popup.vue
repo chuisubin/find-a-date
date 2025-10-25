@@ -11,7 +11,7 @@
       >
         &times;
       </button></div>
-      <div class="pb-4 px-4 lg:pb-10 lg:px-10 mx-auto"  :class="props.showClose?'lg:pt-2 ':'pt-4 lg:pt-10'" >
+      <div class="pb-4 px-4 md:pb-8 md:px-8 lg:pb-10  lg:px-10 mx-auto"  :class="props.showClose?'lg:pt-2 ':'pt-4 lg:pt-10'" >
       <slot />
       </div>
     </div>

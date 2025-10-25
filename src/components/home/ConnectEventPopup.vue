@@ -1,53 +1,51 @@
 <template>
-  <Popup v-model="show" @close="close">
-    <template #default>
-      <div class="p-4">
-        <h3 class="text-lg font-bold mb-2">Connect Event</h3>
+    <div class="w-full min-w-[18rem] md:min-w-[30rem] lg:min-w-[40rem]">
+      <h1 class="text-center text-2xl lg:text-4xl font-bold mb-4">連接到聚會</h1>
         <form @submit.prevent="handleConnectEvent">
-          <div class="mb-2">
-            <label class="block mb-1">Event Code / Link</label>
-            <input v-model="eventCode" type="text" class="input w-full" placeholder="Enter event code or link" required />
+          <div class="mb-4">
+            <label class="block mb-1">聚會代碼</label>
+            <input v-model="eventCode" type="text" class="input w-full"
+             placeholder="輸入聚會代碼" required />
           </div>
-          <div class="flex justify-center gap-2 mt-4">
-            <button type="button" class="btn cancel_btn" @click="close">Cancel</button>
-            <button type="submit" class="enter_btn btn">Connect</button>
+           <div v-if="errorMsg" class="error_text mb-2">{{ errorMsg }}</div>
+          <div class="flex justify-center gap-2">
+            <button type="submit" class="enter_btn btn">連接</button>
           </div>
         </form>
       </div>
-    </template>
-  </Popup>
+ 
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import Popup from '@/components/Popup.vue';
+import { fetchEventByPublicCode } from '@/api/event';
 
-const props = defineProps({
-  modelValue: Boolean
-});
-const emit = defineEmits(['update:modelValue', 'connected']);
 
-const show = ref(props.modelValue);
+const emit = defineEmits(['close', 'connected']);
+
 const eventCode = ref("");
+const errorMsg = ref("");
 const router = useRouter();
 
-watch(() => props.modelValue, (val) => {
-  show.value = val;
-});
-watch(show, (val) => {
-  emit('update:modelValue', val);
-});
 
-function close() {
-  show.value = false;
-}
+
 
 async function handleConnectEvent() {
+  errorMsg.value = "";
   if (!eventCode.value.trim()) return;
-  // 跳轉到 event page 並帶入 public code
-  router.push(`/event/${eventCode.value.trim()}`);
-  show.value = false;
-  eventCode.value = "";
+  try {
+    const event = await fetchEventByPublicCode(eventCode.value.trim());
+    if (!event || event.status === 'closed') {
+      errorMsg.value = "該聚會已關閉或不存在";
+      return;
+    }
+    // 跳轉到 event page 並帶入 public code
+    router.push(`/event/${eventCode.value.trim()}`);
+    emit('close');
+    eventCode.value = "";
+  } catch (e) {
+    errorMsg.value = "查詢聚會失敗，請確認代碼是否正確";
+  }
 }
 </script>

@@ -36,16 +36,18 @@ export async function updateEventTitle(eventId, newTitle) {
 }
 import { supabase } from "./supabase";
 
-export async function fetchEventById(eventId) {
-  const { data, error } = await supabase
-    .from("events")
-    .select("*")
-    .eq("id", eventId)
-    .neq("status", "closed")
-    .single();
-  if (error) throw error;
-  return data;
-}
+//停用
+// export async function fetchEventById(eventId) {
+//   const { data, error } = await supabase
+//     .from("events")
+//     .select("*")
+//     .eq("id", eventId)
+//     .neq("status", "closed")
+//     .order("id", { ascending: false })
+//     .single();
+//   if (error) throw error;
+//   return data;
+// }
 
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
@@ -95,11 +97,13 @@ export async function createEvent({
   return data;
 }
 
+//landing page 取得 user 參加的所有 events
 export async function fetchUserEventsByUserId(userId) {
   // 查詢 user 參加的所有 events
   const { data, error } = await supabase
     .from("events_members")
     .select("event_id, events(*, events_members(user_id, users(username)))")
+    .order("id", { ascending: false })
     .eq("user_id", userId);
   if (error) throw error;
   const events = data?.map((item) => item.events) || [];

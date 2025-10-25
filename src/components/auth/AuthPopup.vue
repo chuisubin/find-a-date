@@ -31,7 +31,7 @@ const activeTab = ref('login');
 function tabClass(tab) {
   return [
     'flex-1 py-2 text-center font-semibold ',
-    activeTab.value === tab ? 'border-b-4  border-primary-light dark:border-primary-dark  text-primary-light dark:text-primary-dark' : 'text-gray-400',
+    activeTab.value === tab ? 'border-b-4  border-primary-light dark:border-primary-dark  text-primary-light dark:text-primary-dark' : 'sub_title_color',
     'cursor-pointer',
   ].join(' ');
 }

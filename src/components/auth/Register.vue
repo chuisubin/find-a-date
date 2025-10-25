@@ -38,7 +38,7 @@
         </span>
       </div>
   <button type="submit" :disabled="isLoading" class="enter_btn btn w-full">註冊</button>
-      <div v-if="registerError" class="mt-2 text-error-light dark:text-error-dark text-sm">{{ registerError }}</div>
+      <div v-if="registerError" class="mt-2 error_text">{{ registerError }}</div>
     </form>
   </div>
 </template>

@@ -6,13 +6,13 @@
         <li v-for="event in myEvents" :key="event.id"
          :title="event.title"
         class=" relative mb-3 lg:mb-5 event_card   ">
-          <div  class="absolute top-0 bottom-0 left-0 w-1 h-full bg-primary-light dark:bg-primary-dark  "></div>
+          <div  class="absolute top-0 bottom-0 left-0 w-1.5 h-full bg-primary-light dark:bg-primary-dark  "></div>
           <div class="flex flex-row items-center "
           >
             <div class="w-full ">
             <div class=" flex flex-col  justify-center items-start gap-1 lg:gap-2">
               <div class="font-bold  text-lg lg:text-2xl truncate ">{{ event.title }}</div>
-              <div v-if="event.status" class=" text-sm lg:text-base  ">
+              <div v-if="event.status" class=" text-sm lg:text-base sub_title_color ">
               <span v-if="event.status === 'voting'">投票中 - {{  event.events_members.length }} 人參與</span>
               <span v-else-if="event.status === 'decided'">日期已定 : {{ event.decided_date}} - {{  event.events_members.length }} 人參與 </span>
               <span v-else-if="event.status === 'closed'">已結束</span>

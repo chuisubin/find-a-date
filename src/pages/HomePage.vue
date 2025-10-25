@@ -6,7 +6,7 @@
       >
         輕鬆搞定下次聚會！
       </h1>
-      <h2 class="mb-6 lg:mb-10 text-gray-500 text-center text-base lg:text-xl">
+      <h2 class="mb-6 lg:mb-10 sub_title_color text-center text-base lg:text-xl">
         和朋友約時間﹐從未如此簡單。
       </h2>
 
@@ -20,11 +20,13 @@
           輸入代碼加入
         </button>
       </div>
+      <Popup v-model="showCreateEventPopup" @close="() => (showCreateEventPopup.value = false)">
       <CreateEventPopup
-        v-model="showCreateEventPopup"
-        @created="fetchMyEvents"
-      />
-      <ConnectEventPopup v-model="showConnectEventPopup" />
+        @created="fetchMyEvents"  @close="() => (showCreateEventPopup.value = false)"
+      /></Popup>
+       <Popup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup.value = false)">
+      <ConnectEventPopup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup.value = false)" />
+      </Popup>
       <div v-if="userStore.user" class="">
         <MyEventListView :myEvents="myEvents" :ownerNames="ownerNames" />
       </div>
@@ -40,7 +42,7 @@ import ConnectEventPopup from "@/components/home/ConnectEventPopup.vue";
 import { fetchUserEventsByUserId } from "@/api/event";
 import { fetchUserName } from "@/api/user";
 import MyEventListView from "../components/home/MyEventListView.vue";
-
+import Popup from "@/components/Popup.vue";
 const userStore = useUserStore();
 const myEvents = ref([]);
 const ownerNames = ref({});

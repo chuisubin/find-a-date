@@ -14,7 +14,7 @@
 	border: 4px red dashed;
 }
 .event_card {
-	@apply shadow-sm shadow-gray-300   rounded-lg  bg-white py-6 pr-4 pl-8 overflow-hidden;
+	@apply shadow-sm shadow-gray-300   rounded-lg   bg-white py-6 pr-4 pl-8 overflow-hidden;
 }
 .dark .event_card {
 	@apply bg-card-dark shadow-gray-700;
@@ -53,6 +53,25 @@
 .dark .heading {
 	
 }
+.sub_title_color{
+	@apply text-gray-500;
+}
+.dark .sub_title_color{
+	@apply text-gray-400;
+}
 .dark .mx-icon-calendar svg {
 	fill: #fff !important;
+}
+
+.primary_text{
+	@apply text-primary-light;
+}
+.dark .primary_text{
+	@apply text-primary-dark;
+}
+.error_text {
+	@apply text-error-light text-sm;
+}
+.dark .error_text {
+	@apply text-error-dark;
 }

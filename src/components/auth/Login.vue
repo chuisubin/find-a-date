@@ -30,7 +30,7 @@
     >登入</button>
     <div
       v-if="loginError"
-      class="mt-2 text-error-light dark:text-error-dark text-sm"
+      class="mt-2 error_text "
     >
       {{ loginError }}
     </div>

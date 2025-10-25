@@ -1,95 +1,14 @@
 <template>
-  <div class="max-w-7xl mx-auto  ">
+  <div class="w-full mx-auto pt-10">
     <div v-if="loading" class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center">
       <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
       </div>
     <div v-if="event">
       <div class="mb-4">
-        <div class="   w-full">
-          <div class="items-start justify-between flex flex-row">
-          <div class="flex items-center gap-2 mb-2">
-            <div class="flex items-center gap-3">
-              <h1 v-if="!editingTitle" class="font-semibold text-5xl">
-                {{ event.title }}
-              </h1>
-              <input
-                v-else
-                v-model="editedTitle"
-                class="font-semibold text-5xl border-b border-gray-400 bg-transparent outline-none"
-              />
-             
-            </div>
-            <button
-              v-if="isOwner && !editingTitle && event.status === 'voting'"
-              @click="startEditTitle"
-              class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
-            >
-              Edit
-            </button>
-            <button
-              v-if="editingTitle"
-              @click="saveTitle"
-              class="ml-2 px-2 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
-            >
-              Save
-            </button>
-            <button
-              v-if="editingTitle"
-              @click="cancelEditTitle"
-              class="ml-1 px-2 py-1 text-sm rounded bg-gray-400 hover:bg-gray-500 text-white"
-            >
-              Cancel
-            </button>
-             <span v-if="event.status" class="px-3 py-1 rounded text-base font-semibold"
-                :class="{
-                  'bg-blue-100 text-blue-700': event.status === 'voting',
-                  'bg-green-100 text-green-700': event.status === 'decided',
-                  'bg-gray-200 text-gray-600': event.status === 'closed'
-                }"
-              >{{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}</span>
-          </div>
-          <div
-            class="bg-red-500 text-white text-center p-2 rounded-md "
-          >
-            {{ deadlineViewText }}
-          </div>
-          </div>
-          <div class="flex items-center gap-2 mb-2">
-            <p v-if="!editingDesc" class="mb-2 text-sm">
-              {{ event.description }}
-            </p>
-            <textarea
-              v-else
-              v-model="editedDesc"
-              class="mb-2 text-sm border-b border-gray-400 bg-transparent outline-none w-full no-scrollbar custom-no-resize"
-              rows="1"
-              ref="descTextarea"
-              @input="autoResizeDesc"
-            ></textarea>
-            <button
-              v-if="isOwner && !editingDesc && event.status === 'voting'"
-              @click="startEditDesc"
-              class="ml-2 px-2 py-1 text-sm rounded bg-yellow-400 hover:bg-yellow-500 text-white"
-            >
-              Edit
-            </button>
-            <button
-              v-if="editingDesc"
-              @click="saveDesc"
-              class="ml-2 px-2 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
-            >
-              Save
-            </button>
-            <button
-              v-if="editingDesc"
-              @click="cancelEditDesc"
-              class="ml-1 px-2 py-1 text-sm rounded bg-gray-400 hover:bg-gray-500 text-white"
-            >
-              Cancel
-            </button>
-          </div>
-          <div class="text-xs mb-2">Code: {{ event.public_code }}</div>
-        </div>
+        <EventDetail
+          :event="event"
+          :isOwner="isOwner"
+          />
         <EventCalendar
           :event="event"
           :fetchEvent="fetchEvent"
@@ -161,7 +80,6 @@
 <script setup>
 import Popup from '@/components/Popup.vue';
 // 你需要在 src/api/event.js 新增 updateEventFinalDate API
-
 import { ref, onMounted, watch, computed } from "vue";
 // v-calendar 必須已安裝: npm install v-calendar
 // 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
@@ -169,25 +87,20 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import {
   fetchEventByPublicCode, joinEvent, leaveEvent,
-  updateEventTitle, updateEventDescription, updateEventFinalDate,
+  updateEventFinalDate,
   closeEvent
  } from "@/api/event";
 import EventRoleBar from "@/components/event/EventRoleBar.vue";
-import { storeToRefs } from "pinia";
-import { useThemeStore } from "@/stores/theme";
-import { toast } from "vue3-toastify";
-import { supabase } from "@/api/supabase";
+
 // textarea 自動拉高高度
 import EventCalendar from "@/components/event/EventCalendar.vue";
 import { useEvent } from '@/hooks/useEvent';
+import EventDetail from '../components/event/EventDetail.vue';
 
 const {
   showConfirmDatePopup,
   confirmDate,
   confirming,
-  descTextarea,
-  editingDesc,
-  editedDesc,
   themeStore,
   isDark,
   route,
@@ -196,23 +109,14 @@ const {
   members,
   owner,
   userStore,
-  editingTitle,
-  editedTitle,
   topDates,
   isOwner,
   deadlineViewText,
   openConfirmDate,
   confirmFinalDate,
-  autoResizeDesc,
-  startEditDesc,
-  cancelEditDesc,
-  saveDesc,
   fetchEvent,
   handleJoin,
   handleLeave,
-  startEditTitle,
-  cancelEditTitle,
-  saveTitle,
   confirmCloseEvent
 } = useEvent();
 

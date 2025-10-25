@@ -18,22 +18,7 @@ export async function leaveEvent(eventId, userId) {
     .eq("user_id", userId);
   if (error) throw error;
 }
-// 更新 event description
-export async function updateEventDescription(eventId, newDescription) {
-  const { error } = await supabase
-    .from("events")
-    .update({ description: newDescription })
-    .eq("id", eventId);
-  if (error) throw error;
-}
-// 更新 event title
-export async function updateEventTitle(eventId, newTitle) {
-  const { error } = await supabase
-    .from("events")
-    .update({ title: newTitle })
-    .eq("id", eventId);
-  if (error) throw error;
-}
+
 import { supabase } from "./supabase";
 
 //停用
@@ -147,4 +132,13 @@ export async function closeEvent(eventId) {
     .update({ status: "closed" })
     .eq("id", eventId);
   if (insError) throw insError;
+}
+
+// 整合更新 event 欄位 API
+export async function updateEventFields(eventId, fields) {
+  const { error } = await supabase
+    .from("events")
+    .update(fields)
+    .eq("id", eventId);
+  if (error) throw error;
 }

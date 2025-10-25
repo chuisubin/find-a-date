@@ -5,9 +5,7 @@ import {
   fetchEventByPublicCode,
   joinEvent,
   leaveEvent,
-  updateEventTitle,
-  updateEventDescription,
-  updateEventFinalDate,
+  updateEventFields,
   closeEvent,
 } from "@/api/event";
 import { storeToRefs } from "pinia";
@@ -20,9 +18,6 @@ export function useEvent() {
   const showConfirmDatePopup = ref(false);
   const confirmDate = ref("");
   const confirming = ref(false);
-  const descTextarea = ref(null);
-  const editingDesc = ref(false);
-  const editedDesc = ref("");
   const themeStore = useThemeStore();
   const { isDark } = storeToRefs(themeStore);
   const route = useRoute();
@@ -31,8 +26,6 @@ export function useEvent() {
   const members = ref([]);
   const owner = ref(null);
   const userStore = useUserStore();
-  const editingTitle = ref(false);
-  const editedTitle = ref("");
 
   const topDates = computed(() => {
     if (!event.value || !event.value.availabilities) return [];
@@ -81,7 +74,11 @@ export function useEvent() {
     if (!event.value?.id || !confirmDate.value) return;
     confirming.value = true;
     try {
-      await updateEventFinalDate(event.value.id, confirmDate.value);
+      await updateEventFields(event.value.id, {
+        status: "decided",
+        confirm_start_date: confirmDate.value,
+        confirm_end_date: confirmDate.value,
+      });
       event.value.status = "decided";
       event.value.confirm_date_start = confirmDate.value;
       event.value.confirm_date_end = confirmDate.value;
@@ -91,37 +88,6 @@ export function useEvent() {
       toast.error("設定失敗");
     } finally {
       confirming.value = false;
-    }
-  }
-
-  function autoResizeDesc() {
-    nextTick(() => {
-      const el = descTextarea.value;
-      if (el) {
-        el.style.height = "auto";
-        el.style.height = el.scrollHeight + "px";
-      }
-    });
-  }
-
-  function startEditDesc() {
-    editedDesc.value = event.value?.description || "";
-    editingDesc.value = true;
-  }
-
-  function cancelEditDesc() {
-    editingDesc.value = false;
-  }
-
-  async function saveDesc() {
-    if (!event.value?.id) return;
-    try {
-      await updateEventDescription(event.value.id, editedDesc.value);
-      event.value.description = editedDesc.value;
-      toast.success("描述已更新");
-      editingDesc.value = false;
-    } catch (e) {
-      toast.error("描述更新失敗");
     }
   }
 
@@ -202,26 +168,6 @@ export function useEvent() {
     { immediate: true }
   );
 
-  function startEditTitle() {
-    editedTitle.value = event.value?.title || "";
-    editingTitle.value = true;
-  }
-  function cancelEditTitle() {
-    editingTitle.value = false;
-  }
-
-  async function saveTitle() {
-    if (!editedTitle.value.trim() || !event.value?.id) return;
-    try {
-      await updateEventTitle(event.value.id, editedTitle.value.trim());
-      event.value.title = editedTitle.value.trim();
-      toast.success("標題已更新");
-      editingTitle.value = false;
-    } catch (e) {
-      toast.error("標題更新失敗");
-    }
-  }
-
   const confirmCloseEvent = async () => {
     await closeEvent(event.value.id);
     window.location.href = "/";
@@ -231,9 +177,6 @@ export function useEvent() {
     showConfirmDatePopup,
     confirmDate,
     confirming,
-    descTextarea,
-    editingDesc,
-    editedDesc,
     themeStore,
     isDark,
     route,
@@ -242,23 +185,14 @@ export function useEvent() {
     members,
     owner,
     userStore,
-    editingTitle,
-    editedTitle,
     topDates,
     isOwner,
     deadlineViewText,
     openConfirmDate,
     confirmFinalDate,
-    autoResizeDesc,
-    startEditDesc,
-    cancelEditDesc,
-    saveDesc,
     fetchEvent,
     handleJoin,
     handleLeave,
-    startEditTitle,
-    cancelEditTitle,
-    saveTitle,
     confirmCloseEvent,
   };
 }

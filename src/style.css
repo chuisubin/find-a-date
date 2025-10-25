@@ -42,10 +42,10 @@
 }
 
 .cancel_btn {
-	@apply bg-gray-400 hover:bg-gray-500 text-white ;
+	@apply bg-gray-400 hover:bg-gray-500 text-text-dark ;
 }
 .dark .cancel_btn {
-	@apply bg-gray-600 hover:bg-gray-700 text-white;
+	@apply bg-gray-600 hover:bg-gray-700 ;
 }
 .heading {
 	@apply   font-extrabold text-3xl;

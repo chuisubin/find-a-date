@@ -75,3 +75,10 @@
 .dark .error_text {
 	@apply text-error-dark;
 }
+
+.red_btn{
+	@apply bg-error-light  text-text-dark ;
+}
+.dark .red_btn{
+	@apply bg-error-dark text-text-light;
+}

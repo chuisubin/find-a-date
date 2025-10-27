@@ -77,8 +77,8 @@
 }
 
 .red_btn{
-	@apply bg-error-light  text-text-dark ;
+	@apply bg-error-light  text-text-dark hover:bg-error-dark;
 }
 .dark .red_btn{
-	@apply bg-error-dark text-text-light;
+	@apply bg-error-dark text-text-light hover:bg-error-light;
 }

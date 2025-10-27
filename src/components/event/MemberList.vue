@@ -27,10 +27,10 @@
           關閉活動
         </button>
         <Popup v-model="showClosePopup" :showClose="true">
-          <div class="p-4">
-            <h3 class="text-lg font-bold mb-2 text-red-600">警告</h3>
-            <div class="mb-4">
-              你確定要關閉此活動嗎？此操作不可復原，所有人將無法再編輯或投票。
+          <div class="">
+            <h2 class="text-center text-xl lg:text-3xl font-bold mb-2 text-red-600">警告</h2>
+            <div class="mb-4 text-center ">
+              你確定要關閉此活動嗎？<br/>此操作不可復原，所有人將無法再編輯或投票。
             </div>
             <div class="flex gap-2 justify-end">
               <button class="btn cancel_btn" @click="showClosePopup = false">

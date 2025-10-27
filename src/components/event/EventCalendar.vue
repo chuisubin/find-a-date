@@ -1,7 +1,6 @@
 <template>
-<div class="my-2 border p-1 border-gray-300 rounded">
+<div class=" border p-4 rounded-lg ">
   <!-- 持續展開的多選日曆 -->
-
   <v-calendar
     is-expanded
      :attributes="calendarAttributes"

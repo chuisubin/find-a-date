@@ -1,5 +1,5 @@
 <template>
-  <div class="m-2 border rounded-lg p-4 min-w-80">
+  <div class=" border rounded-lg p-4 md:min-w-80 w-full">
     <div>
         <h2 class="text-lg lgtext-2xl font-bold mb-4">成員列表</h2>
     </div>
@@ -10,7 +10,6 @@
       >
         {{ member.username }} <span v-if="member.user_id === owner.user_id">(搞手)</span>
       </div>
-
         </div>
     </div>
   </div>

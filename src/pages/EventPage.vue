@@ -9,13 +9,13 @@
           :event="event"
           :isOwner="isOwner"
           />
-          <div class="flex flex-row ">
+          <div class="flex flex-col gap-4 md:flex-row ">
             <div class="w-full">
         <EventCalendar
           :event="event"
           :fetchEvent="fetchEvent"
         /></div>
-        <div class="w-fit">
+        <div class="w-full md:w-fit">
           <MemberList
             :members="members"
             :owner="owner"

@@ -54,17 +54,6 @@ export function useEvent() {
     );
   });
 
-  const deadlineViewText = computed(() => {
-    if (!event.value?.deadline_date) return "";
-    const today = new Date();
-    const deadline = new Date(event.value.deadline_date);
-    const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays > 0) return `剩餘 ${diffDays} 天`;
-    if (diffDays === 0) return "今天截止";
-    return "已截止";
-  });
-
   function openConfirmDate(date) {
     confirmDate.value = date;
     showConfirmDatePopup.value = true;
@@ -187,7 +176,6 @@ export function useEvent() {
     userStore,
     topDates,
     isOwner,
-    deadlineViewText,
     openConfirmDate,
     confirmFinalDate,
     fetchEvent,

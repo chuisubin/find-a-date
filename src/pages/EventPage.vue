@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto pt-10">
+  <div class="w-full mx-auto pt-10 lg:max-w-screen-lg">
     <div v-if="loading" class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center">
       <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
       </div>
@@ -9,31 +9,21 @@
           :event="event"
           :isOwner="isOwner"
           />
+          <div class="flex flex-row ">
+            <div class="w-full">
         <EventCalendar
           :event="event"
           :fetchEvent="fetchEvent"
-        />
+        /></div>
+        <div class="w-fit">
+          <MemberList
+            :members="members"
+            :owner="owner"
+            />
+        </div>
+
+        </div>
         <div class="mt-2 flex flex-row justify-between items-start">
-          <div>
-          參與者:
-          <div class="flex flex-row gap-1 flex-wrap">
-            <p
-              v-for="member of members"
-              :key="member.user_id"
-              class="w-fit py-1 px-4"
-              :class="
-                member.user_id == owner.user_id
-                  ? 'bg-green-600 text-white '
-                  : ''
-              "
-            >
-              <span v-if="member.user_id == owner.user_id" class="font-bold"
-                >搞手:</span
-              >
-              {{ member.username }}
-            </p>
-            </div>
-          </div>
           <EventRoleBar
               :userId="userStore.user?.id"
               :ownerId="event?.owner_id"
@@ -91,7 +81,7 @@ import {
   closeEvent
  } from "@/api/event";
 import EventRoleBar from "@/components/event/EventRoleBar.vue";
-
+import MemberList from "@/components/event/MemberList.vue";
 // textarea 自動拉高高度
 import EventCalendar from "@/components/event/EventCalendar.vue";
 import { useEvent } from '@/hooks/useEvent';
@@ -111,7 +101,6 @@ const {
   userStore,
   topDates,
   isOwner,
-  deadlineViewText,
   openConfirmDate,
   confirmFinalDate,
   fetchEvent,

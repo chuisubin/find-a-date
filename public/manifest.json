@@ -1,0 +1,16 @@
+{
+  "name": "擇個吉日",
+  "short_name": "擇個吉日",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "description": "多人協作選日期工具",
+  "icons": [
+    {
+      "src": "mandarin.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

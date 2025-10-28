@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto pt-10">
+  <div class="w-full mx-auto lg:pt-10">
     <div>
       <h1
         class="mb-4 lg:mb-6 text-center text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold"

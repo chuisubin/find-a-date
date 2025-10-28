@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mx-auto pt-10 lg:max-w-screen-lg">
+  <div class="w-full mx-auto lg:pt-10 lg:max-w-screen-lg">
     <div
       v-if="loading"
       class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center"

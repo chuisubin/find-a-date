@@ -25,11 +25,16 @@
           @mouseenter="day.day !== '' ? (hoveredDate = day.date) : null"
           @mouseleave="day.day !== '' ? (hoveredDate = null) : null"
         >
+        <span class="absolute -top-2 border border-primary-hover -right-2 text-xs text-amber-500 font-bold bg-white rounded-full px-1"
+         v-if="dotsMap[day.date] > 1">
+                {{ dotsMap[day.date] }}
+        </span>
         <div
           class=""
         >
           {{ day.day }}
         </div>
+        
         <FontAwesomeIcon v-if="modelValue.includes(day.date)"
           :icon="['fa', 'check']"
           class="w-4 h-4 lg:w-6 lg:h-6 primary_text calendar-selected-tick " />
@@ -190,6 +195,7 @@ function highlightBorderClass(count) {
   width: 100%;
   border-radius: 8px;
  padding: 16px;
+ @apply text-sm lg:text-base
 
 }
 .calendar-header {
@@ -298,9 +304,9 @@ function highlightBorderClass(count) {
 
 .calendar-selected-tick {
   position: absolute;
-  top: 0px;
-  left: 50%;
+
   transform: translateX(-50%);
   z-index: 2;
+  @apply  top-1 left-1/2 -translate-x-1/2 lg:-translate-x-1/2  lg:top-0 lg:left-1/2;
 }
 </style>

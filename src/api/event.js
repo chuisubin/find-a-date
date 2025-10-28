@@ -4,8 +4,7 @@ export async function updateEventFinalDate(eventId, date) {
     .from("events")
     .update({
       status: "decided",
-      confirm_start_date: date,
-      confirm_end_date: date,
+      decided_date: date,
     })
     .eq("id", eventId);
   if (error) throw error;

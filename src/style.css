@@ -9,30 +9,33 @@
  body {
  	font-family: 'Work Sans', sans-serif;
  }
+ span{
+	@apply text-sm lg:text-base
+ }
 
 .TODO{
 	border: 4px red dashed;
 }
 .event_card {
-	@apply shadow-sm shadow-gray-300   rounded-lg   bg-white py-6 pr-4 pl-8 overflow-hidden;
+	@apply shadow-sm shadow-gray-300   rounded-lg   bg-white py-3 lg:py-6 pr-2 lg:pr-4 pl-4 lg:pl-8 overflow-hidden;
 }
 .dark .event_card {
 	@apply bg-card-dark shadow-gray-700;
 }
 .normal_btn {
-	@apply px-5 py-2 rounded-lg font-semibold  transition active:scale-95 bg-gray-200 hover:bg-gray-300 ;
+	@apply px-3 lg:px-5 py-1 lg:py-2 text-sm lg:text-base rounded-lg font-semibold  transition active:scale-95 bg-gray-200 hover:bg-gray-300 ;
 }
 .dark .normal_btn {
 	@apply  bg-card-dark  hover:bg-gray-700
 }
 .input {
-	@apply px-3 py-2 rounded-lg  border   text-text-light ring-0 outline-none focus:border-primary-light ;
+	@apply px-2 lg:px-3 py-1 lg:py-2 rounded-lg  border text-sm lg:text-base text-text-light ring-0 outline-none focus:border-primary-light ;
 }
  .dark .input {
-	@apply  text-text-dark border-gray-400 placeholder:text-gray-300 bg-card-dark  focus:border-primary-dark;
+	@apply  text-text-dark border-gray-400  placeholder:text-gray-300 bg-card-dark  focus:border-primary-dark;
 }
 .btn{
-	@apply px-5  py-2  rounded-lg font-semibold  transition active:scale-95 ;
+	@apply px-3 lg:px-5 py-1 lg:py-2  text-sm lg:text-base rounded-lg font-semibold  transition active:scale-95 ;
 }
 .enter_btn {
 	@apply bg-primary-light text-text-dark hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed;

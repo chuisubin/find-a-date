@@ -2,7 +2,7 @@
 <template>
   <div class="mt-8">
     <div v-if="event && event.availabilities && event.availabilities.length" class="mb-8">
-      <h2 class="text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
+      <h2 class="text-lg lg:text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
         <font-awesome-icon :icon="['fa', 'crown']" class="text-yellow-500 w-6 h-6" />
         最多人共同選擇的日期
       </h2>
@@ -10,11 +10,11 @@
         <li
           v-for="(item, idx) in topDates"
           :key="item.date"
-          class="rounded-lg shadow event_card flex items-center gap-4 px-4 py-3   transition"
+          class="rounded-lg shadow event_card flex items-center gap-4  transition"
         >
-          <span class="font-bold text-xl text-blue-600">{{ idx + 1 }}</span>
+          <span class="font-bold  lg:text-xl text-blue-600">{{ idx + 1 }}</span>
           <span
-            class="px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono text-lg tracking-wide"
+            class="px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
             :class="{
               'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
             }"
@@ -120,12 +120,10 @@ const confirming = ref(false);
     try {
       await updateEventFields(event.value.id, {
         status: "decided",
-        confirm_start_date: confirmDate.value,
-        confirm_end_date: confirmDate.value,
+        decided_date: confirmDate.value,
       });
       event.value.status = "decided";
-      event.value.confirm_date_start = confirmDate.value;
-      event.value.confirm_date_end = confirmDate.value;
+      event.value.decided_date = confirmDate.value;
       toast.success("已設定最終日期");
       showConfirmDatePopup.value = false;
     } catch (e) {

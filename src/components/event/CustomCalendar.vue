@@ -265,8 +265,7 @@ function highlightBorderClass(count) {
 
 
 .calendar-day.enabled {
-  background: #fff;
-  color: #222;
+
   cursor: pointer;
   opacity: 1;
   pointer-events: auto;

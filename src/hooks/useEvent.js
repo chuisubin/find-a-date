@@ -15,9 +15,6 @@ import { debounce } from "lodash";
 import { nextTick } from "vue";
 
 export function useEvent() {
-  const showConfirmDatePopup = ref(false);
-  const confirmDate = ref("");
-  const confirming = ref(false);
   const themeStore = useThemeStore();
   const { isDark } = storeToRefs(themeStore);
   const route = useRoute();
@@ -27,25 +24,6 @@ export function useEvent() {
   const owner = ref(null);
   const userStore = useUserStore();
 
-  const topDates = computed(() => {
-    if (!event.value || !event.value.availabilities) return [];
-    const dateCount = {};
-    event.value.availabilities.forEach((a) => {
-      (a.available_dates || []).forEach((date) => {
-        dateCount[date] = (dateCount[date] || 0) + 1;
-      });
-    });
-    const arr = Object.entries(dateCount).map(([date, count]) => ({
-      date,
-      count,
-    }));
-    if (!arr.length) return [];
-    const maxCount = Math.max(...arr.map((item) => item.count));
-    return arr
-      .filter((item) => item.count === maxCount)
-      .sort((a, b) => a.date.localeCompare(b.date));
-  });
-
   const isOwner = computed(() => {
     return (
       userStore.user &&
@@ -53,32 +31,6 @@ export function useEvent() {
       userStore.user.id === event.value.owner_id
     );
   });
-
-  function openConfirmDate(date) {
-    confirmDate.value = date;
-    showConfirmDatePopup.value = true;
-  }
-
-  async function confirmFinalDate() {
-    if (!event.value?.id || !confirmDate.value) return;
-    confirming.value = true;
-    try {
-      await updateEventFields(event.value.id, {
-        status: "decided",
-        confirm_start_date: confirmDate.value,
-        confirm_end_date: confirmDate.value,
-      });
-      event.value.status = "decided";
-      event.value.confirm_date_start = confirmDate.value;
-      event.value.confirm_date_end = confirmDate.value;
-      toast.success("已設定最終日期");
-      showConfirmDatePopup.value = false;
-    } catch (e) {
-      toast.error("設定失敗");
-    } finally {
-      confirming.value = false;
-    }
-  }
 
   async function fetchEvent() {
     loading.value = true;
@@ -163,9 +115,6 @@ export function useEvent() {
   };
 
   return {
-    showConfirmDatePopup,
-    confirmDate,
-    confirming,
     themeStore,
     isDark,
     route,
@@ -174,10 +123,7 @@ export function useEvent() {
     members,
     owner,
     userStore,
-    topDates,
     isOwner,
-    openConfirmDate,
-    confirmFinalDate,
     fetchEvent,
     handleJoin,
     handleLeave,

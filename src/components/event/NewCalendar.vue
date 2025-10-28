@@ -147,7 +147,6 @@ function cancelSelection() {
 }
 
 async function saveAvailabilitiesHandle() {
-    console.log('userStore.user:', userStore.user);
   if (!userStore.user || !props.event?.id) return;
   try {
     // 這裡請根據你的API實際情況修改

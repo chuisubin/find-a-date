@@ -9,9 +9,14 @@
     <div v-if="event">
       <div class="mb-4">
         <EventDetail :event="event" :isOwner="isOwner" />
-        <div class="flex flex-col gap-4 md:flex-row">
+        <div class="flex flex-col gap-4 lg:flex-row">
           <div class="w-full">
-            <EventCalendar :event="event" :fetchEvent="fetchEvent" />
+            <!-- <EventCalendar :event="event" :fetchEvent="fetchEvent" /> -->
+            <NewCalendar
+              v-if="event"
+              :event="event"
+              :fetchEvent="fetchEvent" 
+            />
           </div>
           <div class="w-full md:w-fit">
               <MemberList
@@ -103,9 +108,14 @@ import {
 } from "@/api/event";
 import MemberList from "@/components/event/MemberList.vue";
 // textarea 自動拉高高度
-import EventCalendar from "@/components/event/EventCalendar.vue";
 import { useEvent } from "@/hooks/useEvent";
 import EventDetail from "../components/event/EventDetail.vue";
+import NewCalendar from "../components/event/NewCalendar.vue";
+
+
+
+
+
 
 const {
   showConfirmDatePopup,
@@ -115,7 +125,6 @@ const {
   loading,
   members,
   owner,
-  userStore,
   topDates,
   isOwner,
   openConfirmDate,

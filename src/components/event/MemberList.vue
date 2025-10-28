@@ -1,20 +1,23 @@
 <template>
-  <div class="border rounded-lg p-4 md:min-w-80 w-full">
+  <div class="border rounded-lg p-4 md:min-w-64 w-full">
     <div>
       <h2 class="text-lg lgtext-2xl font-bold mb-4">成員列表</h2>
     </div>
     <div class="flex flex-col gap-2">
       <div v-for="(member, index) of members" :key="index">
         <div
-          class="overflow-hidden text-ellipsis whitespace-nowrap max-w-full"
+          class="overflow-hidden text-ellipsis whitespace-nowrap max-w-full "
           :class="
             member.user_id === owner.user_id
-              ? 'text-primary-light dark:text-primary-dark'
+              ? 'text-primary-light dark:text-primary-dark font-semibold'
               : ''
           "
         >
+            <font-awesome-icon 
+             v-if="member.user_id === owner.user_id"
+            :icon="['fas', 'crown']" class="text-yellow-500 w-5 h-5" /> 
           {{ member.username }}
-          <span v-if="member.user_id === owner.user_id">(搞手)</span>
+        
         </div>
       </div>
     </div>
@@ -65,6 +68,7 @@
 import { computed,ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import Popup from "@/components/Popup.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const props = defineProps<{
   members: Array<any>;

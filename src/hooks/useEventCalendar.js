@@ -57,8 +57,8 @@ export function useEventCalendar(props) {
       attrs.push({
         key: "selected",
         dates: selectedDates.value,
-        highlight: { color: "green", fillMode: "light" },
-        content: { color: "green" },
+        highlight: { color: "orange", fillMode: "light" },
+        content: { color: "orange" },
       });
     }
     const dateCountMap = {};
@@ -154,10 +154,10 @@ export function useEventCalendar(props) {
         available_dates: selectedDates.value,
       });
       props.fetchEvent();
-      toast.success("已儲存可用日期");
+      toast.success("已保存可用日期");
       isDatesModified.value = false;
     } catch (e) {
-      toast.error("儲存失敗");
+      toast.error("保存失敗");
     }
   }
   const isJoinedMember = computed(() => {

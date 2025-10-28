@@ -65,7 +65,7 @@
                 :icon="['fa', 'check']"
                 class="w-4 lg:w-5 lg:h-5"
               />
-              <span class="hidden lg:block">儲存</span>
+              <span class="hidden lg:block">保存</span>
             </button>
             <button
               @click="cancelEdit"

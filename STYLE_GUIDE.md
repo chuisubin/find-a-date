@@ -17,7 +17,7 @@
 ## 按鈕統一風格
 
 - 按鈕圓角（rounded），字體中等（text-base），padding 統一（px-3 py-1）。
-- 主要操作（確認、儲存）：綠色（bg-green-500 text-white）。
+- 主要操作（確認、保存）：綠色（bg-green-500 text-white）。
 - 取消、關閉：灰色（bg-gray-400 text-white）。
 - 危險操作（刪除、關閉活動）：紅色（bg-red-500 text-white）。
 - 編輯類按鈕可用筆 icon（Font Awesome），不需文字。
@@ -27,7 +27,7 @@
 - 全站統一使用 Font Awesome。
 - 引入方式：`@fortawesome/fontawesome-free`。
 - 按鈕、Popup、Header、重要操作皆可用 icon 輔助。
-- 例如：編輯（fa-pen）、儲存（fa-check）、取消（fa-xmark）、關閉（fa-times）、日曆（fa-calendar-days）。
+- 例如：編輯（fa-pen）、侏存（fa-check）、取消（fa-xmark）、關閉（fa-times）、日曆（fa-calendar-days）。
 
 ## 色彩建議
 

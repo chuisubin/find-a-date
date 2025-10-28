@@ -10,7 +10,7 @@
         <li
           v-for="(item, idx) in topDates"
           :key="item.date"
-          class="rounded-lg shadow bg-white flex items-center gap-4 px-4 py-3 border border-blue-100 hover:shadow-lg transition"
+          class="rounded-lg shadow event_card flex items-center gap-4 px-4 py-3   transition"
         >
           <span class="font-bold text-xl text-blue-600">{{ idx + 1 }}</span>
           <span

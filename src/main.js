@@ -13,6 +13,7 @@ import {
   faCrown,
   faChevronLeft,
   faChevronRight,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createPinia } from "pinia";
@@ -33,7 +34,8 @@ library.add(
   faXmark,
   faCrown,
   faChevronLeft,
-  faChevronRight
+  faChevronRight,
+  faBars
 );
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(createPinia());

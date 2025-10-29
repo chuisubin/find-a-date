@@ -8,7 +8,7 @@
       </h2>
       <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <li
-          v-for="(item, idx) in topDates"
+          v-for="(item, idx) in showAll ? allDates : topDates"
           :key="item.date"
           class="rounded-lg shadow event_card flex items-center gap-4  transition"
         >
@@ -28,6 +28,9 @@
           </span>
         </li>
       </ul>
+      <div class="mx-auto mt-4 cursor-pointer text-blue-600 underline w-fit " @click="setShowAll">
+        {{ showAll ? '只顯示最多人選擇' : '顯示全部' }}
+      </div>
       <Popup v-model="showConfirmDatePopup" :showClose="true">
         <div class="">
           <h3 class="text-xl font-bold mb-3 text-blue-700 flex items-center gap-2">
@@ -91,24 +94,44 @@ const showConfirmDatePopup = ref(false);
 const confirming = ref(false);
 
 
-  const topDates = computed(() => {
-    if (!event.value || !event.value.availabilities) return [];
-    const dateCount = {};
-    event.value.availabilities.forEach((a) => {
-      (a.available_dates || []).forEach((date) => {
-        dateCount[date] = (dateCount[date] || 0) + 1;
-      });
+
+const showAll = ref(false);
+
+const allDates = computed(() => {
+  if (!event.value || !event.value.availabilities) return [];
+  const dateCount = {};
+  event.value.availabilities.forEach((a) => {
+    (a.available_dates || []).forEach((date) => {
+      dateCount[date] = (dateCount[date] || 0) + 1;
     });
-    const arr = Object.entries(dateCount).map(([date, count]) => ({
-      date,
-      count,
-    }));
-    if (!arr.length) return [];
-    const maxCount = Math.max(...arr.map((item) => item.count));
-    return arr
-      .filter((item) => item.count === maxCount)
-      .sort((a, b) => a.date.localeCompare(b.date));
   });
+  return Object.entries(dateCount)
+    .map(([date, count]) => ({ date, count }))
+    .sort((a, b) => b.count - a.count || a.date.localeCompare(b.date));
+});
+
+const topDates = computed(() => {
+  if (!event.value || !event.value.availabilities) return [];
+  const dateCount = {};
+  event.value.availabilities.forEach((a) => {
+    (a.available_dates || []).forEach((date) => {
+      dateCount[date] = (dateCount[date] || 0) + 1;
+    });
+  });
+  const arr = Object.entries(dateCount).map(([date, count]) => ({
+    date,
+    count,
+  }));
+  if (!arr.length) return [];
+  const maxCount = Math.max(...arr.map((item) => item.count));
+  return arr
+    .filter((item) => item.count === maxCount)
+    .sort((a, b) => a.date.localeCompare(b.date));
+});
+
+function setShowAll() {
+  showAll.value = !showAll.value;
+}
 
   function openConfirmDate(date) {
     confirmDate.value = date;

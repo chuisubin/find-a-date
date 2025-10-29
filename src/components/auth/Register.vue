@@ -3,7 +3,7 @@
     <form  @submit.prevent="handleRegister">
       <div class="mb-4">
         <label class="block mb-1  ">電子郵件</label>
-  <input v-model="register.email" placeholder="請輸入電子郵件" class="input w-full " required type="email" autocomplete="email" />
+  <input v-model="register.email" placeholder="請輸入電子郵件(唔洗驗證)" class="input w-full " required type="email" autocomplete="email" />
       </div>
       <div class="mb-4">
         <label class="block mb-1  ">使用者名稱</label>

@@ -49,18 +49,17 @@ export async function fetchEventByPublicCode(public_code) {
 export async function createEvent({
   title,
   description,
-  owner_id,
   deadline_date,
   enable_start_date,
   enable_end_date,
   max_members = null,
 }) {
+  //  建立 event
   const { data, error } = await supabase
     .from("events")
     .insert([
       {
         title,
-        owner_id,
         deadline_date,
         enable_start_date,
         enable_end_date,
@@ -69,30 +68,10 @@ export async function createEvent({
         status: "voting",
       },
     ])
-    .select();
+    .select()
+    .single();
   if (error) throw error;
-  // 新增 owner 為 events_members 成員
-  const eventId = data?.[0]?.id;
-  if (eventId && owner_id) {
-    await supabase
-      .from("events_members")
-      .insert([{ event_id: eventId, user_id: owner_id }]);
-  }
   return data;
-}
-
-//landing page 取得 user 參加的所有 events
-export async function fetchUserEventsByUserId(userId) {
-  // 查詢 user 參加的所有 events
-  const { data, error } = await supabase
-    .from("events_members")
-    .select("event_id, events(*, events_members(user_id, users(username)))")
-    .order("id", { ascending: false })
-    .eq("user_id", userId);
-  if (error) throw error;
-  const events = data?.map((item) => item.events) || [];
-
-  return events;
 }
 
 export async function joinEvent(eventId, userId) {

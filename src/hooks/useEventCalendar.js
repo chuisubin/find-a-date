@@ -125,7 +125,6 @@ export function useEventCalendar(props) {
 
   function handleSelect(day) {
     if (!userStore.user) {
-      userStore.openAuthPopup();
       return;
     }
     const dateObj = day.date;

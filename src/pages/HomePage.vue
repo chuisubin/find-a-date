@@ -20,15 +20,15 @@
           輸入代碼加入
         </button>
       </div>
-      <Popup v-model="showCreateEventPopup" @close="() => (showCreateEventPopup.value = false)">
+      <Popup v-model="showCreateEventPopup" @close="() => (showCreateEventPopup = false)">
       <CreateEventPopup
-        @created="fetchMyEvents"  @close="() => (showCreateEventPopup.value = false)"
+          @close="() => (showCreateEventPopup = false)"
       /></Popup>
-       <Popup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup.value = false)">
-      <ConnectEventPopup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup.value = false)" />
+       <Popup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup = false)">
+      <ConnectEventPopup v-model="showConnectEventPopup" @close="() => (showConnectEventPopup = false)" />
       </Popup>
-      <div v-if="userStore.user" class="">
-        <MyEventListView :myEvents="myEvents" :ownerNames="ownerNames" />
+      <div class="" v-if="eventList.length>0">
+        <MyEventListView :myEvents="eventList"  />
       </div>
     </div>
   </div>
@@ -39,70 +39,40 @@ import { ref, onMounted, watchEffect, watch } from "vue";
 import { useUserStore } from "@/stores/user";
 import CreateEventPopup from "@/components/home/CreateEventPopup.vue";
 import ConnectEventPopup from "@/components/home/ConnectEventPopup.vue";
-import { fetchUserEventsByUserId } from "@/api/event";
 import { fetchUserName } from "@/api/user";
 import MyEventListView from "../components/home/MyEventListView.vue";
 import Popup from "@/components/Popup.vue";
+import { supabase } from "@/api/supabase"
+
 const userStore = useUserStore();
-const myEvents = ref([]);
-const ownerNames = ref({});
 const showCreateEventPopup = ref(false);
 const showConnectEventPopup = ref(false);
 const fetching = ref(false);
+const eventList = ref([])
 
-async function fetchMyEvents() {
-  if (fetching.value) return;
-  if (!userStore.user) {
-    myEvents.value = [];
-    return;
-  }
-  try {
-    fetching.value = true;
-    myEvents.value = (await fetchUserEventsByUserId(userStore.user.id)) || [];
-    // Fetch owner names for each event
-    for (const event of myEvents.value) {
-      if (event.owner_id && !ownerNames.value[event.owner_id]) {
-        try {
-          ownerNames.value[event.owner_id] = await fetchUserName(
-            event.owner_id
-          );
-        } catch (e) {
-          ownerNames.value[event.owner_id] = event.owner_id;
-        }
-      }
-    }
-  } catch (e) {
-    myEvents.value = [];
-  } finally {
-    fetching.value = false;
-  }
-}
 
 function onCreateEvent() {
-  if (!userStore.user) {
-    userStore.openAuthPopup();
-    return;
-  }
   showCreateEventPopup.value = true;
 }
 
 function onConnectEvent() {
-  if (!userStore.user) {
-    userStore.openAuthPopup();
-    return;
-  }
   showConnectEventPopup.value = true;
 }
 
-watch(
-  () => userStore.user,
-  (user) => {
-    if (user) {
-      fetchMyEvents();
-    } else {
-      myEvents.value = [];
+onMounted(async () => {
+  const idList = JSON.parse(localStorage.getItem('event_id_list') || '[]')
+  let events = []
+  if (idList.length > 0) {
+    const { data, error } = await supabase
+      .from('events')
+      .select('id, public_code, title, description, status, decided_date, events_members (id)')
+      .in('id', idList)
+    if (!error && data) {
+      events = data
     }
-  },
-  { immediate: true }
-);
+  }
+  eventList.value = events
+  console.log("onMounted", eventList.value)
+})
+
 </script>

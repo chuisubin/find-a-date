@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen  relative bg-background-light  dark:bg-background-dark text-text-light  dark:text-text-dark">
     <Header />
-    <main class=" px-4  lg:px-10 ">
-    <div class="flex-1 container mx-auto py-8">
+    <main class=" px-4  lg:px-10  ">
+    <div class="container mx-auto py-8  relative min-h-[calc(100vh-5rem)] ">
       <slot />
     </div>
     </main>

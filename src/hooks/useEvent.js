@@ -26,9 +26,10 @@ export function useEvent() {
 
   const isOwner = computed(() => {
     return (
-      userStore.user &&
-      event.value &&
-      userStore.user.id === event.value.owner_id
+      (userStore.user &&
+        event.value &&
+        userStore.user.id === event.value.owner_id) ??
+      false
     );
   });
 
@@ -59,7 +60,6 @@ export function useEvent() {
 
   async function handleJoin() {
     if (!userStore.user) {
-      userStore.openAuthPopup();
       return;
     }
     if (!event.value?.id) {
@@ -77,7 +77,6 @@ export function useEvent() {
 
   const handleLeave = async () => {
     if (!userStore.user) {
-      userStore.openAuthPopup();
       return;
     }
     if (!event.value?.id) {

@@ -36,7 +36,6 @@
 import { useRouter } from 'vue-router';
 const props = defineProps<{
   myEvents: Array<any>;
-  ownerNames: Record<string, string>;
 }>();
 const router = useRouter();
 

@@ -39,19 +39,13 @@
 </template>
 
 <script setup>
-import Popup from "@/components/Popup.vue";
-// 你需要在 src/api/event.js 新增 updateEventFinalDate API
-import { ref, onMounted, watch, computed } from "vue";
-// v-calendar 必須已安裝: npm install v-calendar
-// 若尚未在 main.js 註冊，請在 main.js 加入: import vcalendar from './plugins/vcalendar'; app.use(vcalendar);
-
 import MemberList from "@/components/event/MemberList.vue";
-// textarea 自動拉高高度
 import { useEvent } from "@/hooks/useEvent";
 import EventDetail from "../components/event/EventDetail.vue";
 import NewCalendar from "../components/event/NewCalendar.vue";
 import DateRank from "@/components/event/DateRank.vue";
 
+import{ ref, watch, onMounted } from "vue";
 
 
 
@@ -67,4 +61,17 @@ const {
   handleLeave,
   confirmCloseEvent,
 } = useEvent();
+
+
+watch(event, (val) => {
+  if (val && val.id) {
+    // 取得現有 id list
+    let idList = JSON.parse(localStorage.getItem('event_id_list') || '[]')
+    if (!idList.includes(val.id)) {
+      idList.push(val.id)
+      localStorage.setItem('event_id_list', JSON.stringify(idList))
+    }
+  }
+})
+
 </script>

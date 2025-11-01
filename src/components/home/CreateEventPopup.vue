@@ -15,6 +15,7 @@
             required
           />
         </div>
+       
         
         <div class="mb-4">
           <label class="block mb-1"
@@ -103,13 +104,16 @@ import Popup from "@/components/Popup.vue";
 import { createEvent } from "@/api/event";
 import { useUserStore } from "@/stores/user";
 import { toast } from 'vue3-toastify';
+import {useRouter} from 'vue-router';
 
+const emit = defineEmits(["close"]);
 
-const emit = defineEmits([ "created", "close"]);
+const router = useRouter();
 
 const newEventTitle = ref("");
 const newEventDescription = ref("");
 const newEventDeadlineDate = ref(null);
+
 const userStore = useUserStore();
 const newEventMaxMembers = ref(10);
 const unlimitedMembers = ref(false);
@@ -120,6 +124,8 @@ const errorMsg = ref("");
 watch(unlimitedMembers, (val) => {
   if (val) {
     newEventMaxMembers.value = undefined;
+  } else {
+    newEventMaxMembers.value = 10;
   } 
 });
 
@@ -150,15 +156,11 @@ async function handleCreateEvent() {
   isLoading.value = true;
   let [startDate, endDate] = enableDateRange.value;
   // 格式化為 YYYY-MM-DD
-  const startDateFormatted = formatDateLocal(startDate);
-  const endDateFormatted = formatDateLocal(endDate);
   const deadlineDate = formatDateLocal(newEventDeadlineDate.value);
-  console.log("startDate, endDate", startDateFormatted, endDateFormatted);
   try {
-    await createEvent({
+  const data=  await createEvent({
       title: newEventTitle.value,
       description: newEventDescription.value,
-      owner_id: userStore.user.id,
       deadline_date: deadlineDate,
       enable_start_date: startDate,
       enable_end_date: endDate,
@@ -172,10 +174,10 @@ async function handleCreateEvent() {
     enableDateRange.value = [];
     newEventMaxMembers.value = undefined;
     unlimitedMembers.value = false;
-    emit("created");
     emit("close");
     toast.success("聚會創建成功");
-
+    //route to event page with public code
+    router.push(`/event/${data.public_code}`)
   } catch (e) {
     errorMsg.value = "創建聚會失敗";
   } finally {
@@ -189,9 +191,6 @@ function disableBeforeToday(date) {
   return date < today;
 }
 
-function close() {
-  emit('close');
-}
 
 </script>
 <style scoped>

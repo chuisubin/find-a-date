@@ -23,6 +23,7 @@ export function useEvent() {
   const members = ref([]);
   const owner = ref(null);
   const userStore = useUserStore();
+  const showChooseUserPopup = ref(false);
 
   const isOwner = computed(() => {
     return (
@@ -102,8 +103,9 @@ export function useEvent() {
 
   watch(
     () => userStore.user,
-    () => {
+    (newUser) => {
       debouncedFetchEvent();
+      showChooseUserPopup.value = !newUser;
     },
     { immediate: true }
   );
@@ -127,5 +129,6 @@ export function useEvent() {
     handleJoin,
     handleLeave,
     confirmCloseEvent,
+    showChooseUserPopup,
   };
 }

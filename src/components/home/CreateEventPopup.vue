@@ -52,28 +52,6 @@
           />
         </div>
         <div class="mb-4">
-          <label class="block mb-1"
-            >人數上限<span class="primary_text">*</span></label
-          >
-          <div class="flex items-center gap-4 justify-start">
-            <input
-              v-model.number="newEventMaxMembers"
-              :disabled="unlimitedMembers"
-              type="number"
-              min="1"
-              class="input w-28"
-              P
-            />
-            <label class="flex items-center gap-2 cursor-pointer select-none whitespace-nowrap">
-                            <span @click="unlimitedMembers = !unlimitedMembers">無上限</span>
-
-              <div @click="unlimitedMembers = !unlimitedMembers" class="rounded border  w-7 h-7 p-1 flex items-center justify-center ">
-                <font-awesome-icon v-show="unlimitedMembers" :icon="['fa', 'check']" class="text-primary-light dark:text-primary-dark" />
-              </div>
-            </label>
-          </div>
-        </div>
-        <div class="mb-4">
           <label class="block mb-1">描述</label>
           <textarea
             v-model="newEventDescription"
@@ -115,25 +93,18 @@ const newEventDescription = ref("");
 const newEventDeadlineDate = ref(null);
 
 const userStore = useUserStore();
-const newEventMaxMembers = ref(10);
-const unlimitedMembers = ref(false);
 const isLoading = ref(false);
 const enableDateRange = ref([]);
 const errorMsg = ref("");
 
-watch(unlimitedMembers, (val) => {
-  if (val) {
-    newEventMaxMembers.value = undefined;
-  } else {
-    newEventMaxMembers.value = 10;
-  } 
-});
+
 
 
 
 
 
 async function handleCreateEvent() {
+  console.log("create");
   errorMsg.value = "";
   if (!newEventTitle.value.trim()) {
     errorMsg.value = "請輸入聚會標題";
@@ -147,12 +118,7 @@ async function handleCreateEvent() {
     errorMsg.value = "請選擇有效的日期範圍";
     return;
   }
-  if (!unlimitedMembers.value) {
-    if (!newEventMaxMembers.value || newEventMaxMembers.value < 2) {
-      errorMsg.value = "請輸入人數上限（至少2人）";
-      return;
-    }
-  }
+
   isLoading.value = true;
   let [startDate, endDate] = enableDateRange.value;
   // 格式化為 YYYY-MM-DD
@@ -164,16 +130,11 @@ async function handleCreateEvent() {
       deadline_date: deadlineDate,
       enable_start_date: startDate,
       enable_end_date: endDate,
-      max_members: unlimitedMembers.value
-        ? null
-        : newEventMaxMembers.value || null,
     });
     newEventTitle.value = "";
     newEventDescription.value = "";
     newEventDeadlineDate.value = null;
     enableDateRange.value = [];
-    newEventMaxMembers.value = undefined;
-    unlimitedMembers.value = false;
     emit("close");
     toast.success("聚會創建成功");
     //route to event page with public code

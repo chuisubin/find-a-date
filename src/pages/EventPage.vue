@@ -34,7 +34,13 @@
         :event="event"
         :isOwner="isOwner"
       />
+
+      <Popup v-model="showChooseUserPopup" :enableClickOutside="false"  :showClose="false">
+        <EventChooseUser :event="event"  />
+      </Popup>
     </div>
+
+    
   </div>
 </template>
 
@@ -44,7 +50,8 @@ import { useEvent } from "@/hooks/useEvent";
 import EventDetail from "../components/event/EventDetail.vue";
 import NewCalendar from "../components/event/NewCalendar.vue";
 import DateRank from "@/components/event/DateRank.vue";
-
+import Popup from "@/components/Popup.vue";
+import EventChooseUser from "@/components/auth/EventChooseUser.vue";
 import{ ref, watch, onMounted } from "vue";
 
 
@@ -60,6 +67,7 @@ const {
   handleJoin,
   handleLeave,
   confirmCloseEvent,
+  showChooseUserPopup
 } = useEvent();
 
 

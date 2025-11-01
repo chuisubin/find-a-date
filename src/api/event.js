@@ -36,9 +36,7 @@ import { supabase } from "./supabase";
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
-    .select(
-      "*, users:owner_id(username), events_members(user_id, users(username)), availabilities(*)"
-    )
+    .select("*,  events_members(id,username,role), availabilities(*)")
     .eq("public_code", public_code)
     .limit(1)
     .single();
@@ -52,9 +50,9 @@ export async function createEvent({
   deadline_date,
   enable_start_date,
   enable_end_date,
-  max_members = null,
 }) {
   //  建立 event
+  console.log("Creating event:");
   const { data, error } = await supabase
     .from("events")
     .insert([
@@ -64,7 +62,6 @@ export async function createEvent({
         enable_start_date,
         enable_end_date,
         description,
-        max_members,
         status: "voting",
       },
     ])
@@ -119,4 +116,29 @@ export async function updateEventFields(eventId, fields) {
     .update(fields)
     .eq("id", eventId);
   if (error) throw error;
+}
+
+export async function createEventMember(payload) {
+  //join event member
+  const { event_id, username, pin, role } = payload;
+  const { data, error } = await supabase
+    .from("events_members")
+    .insert([{ event_id, username, pin, role }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function verifyEventMemberPin(eventId, user_id, pin) {
+  const { data, error } = await supabase
+    .from("events_members")
+    .select("*")
+    .eq("event_id", eventId)
+    .eq("user_id", user_id)
+    .eq("pin", pin)
+    .limit(1)
+    .single();
+  if (error) throw error;
+  return data;
 }

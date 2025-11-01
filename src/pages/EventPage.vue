@@ -7,6 +7,7 @@
       <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
     </div>
     <div v-if="event">
+      <div>user: {{ currentUser?.username }}</div>
       <div class="mb-4">
         <EventDetail :event="event" :isOwner="isOwner" />
         <div class="flex flex-col gap-4 lg:flex-row">
@@ -23,9 +24,8 @@
                :members="members" 
                :owner="owner"
                :disabled="event.status !== 'voting'"
-                @join="handleJoin"
-                @leave="handleLeave"
                 @closeEvent="confirmCloseEvent"
+                :currentUser="currentUser"
               />
           </div>
         </div>
@@ -35,8 +35,10 @@
         :isOwner="isOwner"
       />
 
-      <Popup v-model="showChooseUserPopup" :enableClickOutside="false"  :showClose="false">
-        <EventChooseUser :event="event"  />
+      <Popup v-model="showChooseUser" :enableClickOutside="false"  :showClose="false">
+        <EventChooseUser v-if="showChooseUser" :event="event" 
+        :verifyPin="verifyPin"
+        :createMember="createMember" />
       </Popup>
     </div>
 
@@ -52,9 +54,7 @@ import NewCalendar from "../components/event/NewCalendar.vue";
 import DateRank from "@/components/event/DateRank.vue";
 import Popup from "@/components/Popup.vue";
 import EventChooseUser from "@/components/auth/EventChooseUser.vue";
-import{ ref, watch, onMounted } from "vue";
-
-
+import{ ref, watch, onMounted, computed } from "vue";
 
 
 const {
@@ -64,11 +64,17 @@ const {
   owner,
   isOwner,
   fetchEvent,
-  handleJoin,
-  handleLeave,
+  currentUser,
   confirmCloseEvent,
-  showChooseUserPopup
+  createMember,verifyPin
 } = useEvent();
+
+const showChooseUser = computed(() =>
+{
+  console.log("showChooseUser",currentUser);
+  return !currentUser.value
+}
+  );
 
 
 watch(event, (val) => {

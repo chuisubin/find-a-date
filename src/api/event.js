@@ -9,14 +9,6 @@ export async function updateEventFinalDate(eventId, date) {
     .eq("id", eventId);
   if (error) throw error;
 }
-export async function leaveEvent(eventId, userId) {
-  const { error } = await supabase
-    .from("events_members")
-    .delete()
-    .eq("event_id", eventId)
-    .eq("user_id", userId);
-  if (error) throw error;
-}
 
 import { supabase } from "./supabase";
 
@@ -71,15 +63,6 @@ export async function createEvent({
   return data;
 }
 
-export async function joinEvent(eventId, userId) {
-  const { data, error } = await supabase
-    .from("events_members")
-    .insert([{ event_id: eventId, user_id: userId }]);
-  console.log("joinEvent response data", data);
-  if (error) throw error;
-  return data;
-}
-
 export async function saveAvailabilities({
   user_id,
   event_id,
@@ -130,12 +113,13 @@ export async function createEventMember(payload) {
   return data;
 }
 
-export async function verifyEventMemberPin(eventId, user_id, pin) {
+export async function verifyEventMemberPin(payload) {
+  const { event_id, id, pin } = payload;
   const { data, error } = await supabase
     .from("events_members")
     .select("*")
-    .eq("event_id", eventId)
-    .eq("user_id", user_id)
+    .eq("event_id", event_id)
+    .eq("id", id)
     .eq("pin", pin)
     .limit(1)
     .single();

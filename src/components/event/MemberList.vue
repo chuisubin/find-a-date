@@ -4,18 +4,18 @@
       <h2 class="text-lg lgtext-2xl font-bold mb-4">成員列表</h2>
     </div>
     <div class="flex flex-col gap-2">
-      <div v-for="(member, index) of members" :key="index">
+      <div v-for="(member, index) of props.members" :key="index">
         <div
           class="overflow-hidden text-ellipsis whitespace-nowrap max-w-full "
           :class="
-            member.user_id === owner.user_id
+            member.role === 'admin'
               ? 'text-primary-light dark:text-primary-dark font-semibold'
               : ''
           "
         >
-            <font-awesome-icon 
-             v-if="member.user_id === owner.user_id"
-            :icon="['fas', 'crown']" class="text-yellow-500 w-5 h-5" /> 
+            <font-awesome-icon
+             v-if="member.role === 'admin'"
+            :icon="['fas', 'crown']" class="text-yellow-500 w-5 h-5" />
           {{ member.username }}
         
         </div>
@@ -46,27 +46,12 @@
           </div>
         </Popup>
       </div>
-      <button
-        v-else-if="isMember && !disabled"
-        class="font-bold w-full cancel_btn btn"
-        @click="onLeave"
-      >
-        退出
-      </button>
-      <button
-        v-else-if="!isMember && !disabled"
-        class="w-full enter_btn btn font-bold"
-        @click="onJoin"
-      >
-        加入
-      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed,ref } from "vue";
-import { useUserStore } from "@/stores/user";
 import Popup from "@/components/Popup.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -74,30 +59,19 @@ const props = defineProps<{
   members: Array<any>;
   owner: any;
   disabled: boolean;
+  currentUser: any;
 }>();
-const emit = defineEmits(["join", "leave", "closeEvent"]);
+const emit = defineEmits([ "closeEvent"]);
 
-const userStore = useUserStore();
 const disabled = props.disabled;
 const isOwner = computed(() => {
-  // Assuming you have access to userStore
-  return props.owner && userStore.user && props.owner.user_id === userStore.user.id;
+  return props.owner && props.currentUser && props.owner.id === props.currentUser.id;
 });
 
-const isMember = computed(
-  () =>
-    userStore.user &&
-    props.members &&
-    props.members.some((m) => m.user_id === userStore.user.id)
-);
+
 const showClosePopup = ref(false);
 
-function onJoin() {
-  emit("join");
-}
-function onLeave() {
-  emit("leave");
-}
+
 function confirmClose() {
   showClosePopup.value = false;
   emit("closeEvent");

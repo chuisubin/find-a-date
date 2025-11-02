@@ -16,7 +16,9 @@ export async function updateEventFinalDate(eventId, date) {
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
-    .select("*,  events_members(id,username,role), availabilities(*)")
+    .select(
+      "*,  events_members(id,username,role,avatar_name), availabilities(*)"
+    )
     .eq("public_code", public_code)
     .limit(1)
     .single();
@@ -93,18 +95,17 @@ export async function updateEventFields(eventId, fields) {
 export async function createEventMember(payload) {
   //join event member
   const { event_id, username, pin, avatar_name } = payload;
-  const { data, error } = await supabase
+  const res = await supabase
     .from("events_members")
     .insert([{ event_id, username, pin, avatar_name }])
     .select()
     .single();
-  if (error) throw error;
-  return data;
+  return res;
 }
 
 export async function verifyEventMemberPin(payload) {
   const { event_id, id, pin } = payload;
-  const { data, error } = await supabase
+  const res = await supabase
     .from("events_members")
     .select("*")
     .eq("event_id", event_id)
@@ -112,8 +113,7 @@ export async function verifyEventMemberPin(payload) {
     .eq("pin", pin)
     .limit(1)
     .single();
-  if (error) throw error;
-  return data;
+  return res;
 }
 
 //根據local storage的id取得member資料

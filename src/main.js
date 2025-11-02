@@ -19,6 +19,7 @@ import {
   faPlus,
   faChevronDown,
   faChevronUp,
+  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createPinia } from "pinia";
@@ -45,7 +46,8 @@ library.add(
   faCopy,
   faPlus,
   faChevronDown,
-  faChevronUp
+  faChevronUp,
+  faShare
 );
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(createPinia());

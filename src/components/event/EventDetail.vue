@@ -1,9 +1,8 @@
 <template>
   <div class="mb-10">
     <div class="w-full">
-    
       <div
-        class="flex lg:flex-row justify-between items-start gap-4 w-full  border-b  mb-4"
+        class="flex lg:flex-row justify-between items-start gap-4 w-full border-b mb-4"
         :class="!editing ? 'flex-row ' : 'flex-col lg:flex-row'"
       >
         <div class=" ">
@@ -23,7 +22,7 @@
           />
           <p
             v-if="!editing"
-            class="mb-6  sub_title_color text-base lg:text-xl whitespace-pre-wrap"
+            class="mb-6 sub_title_color text-base lg:text-xl whitespace-pre-wrap"
           >
             {{ event.description }}
           </p>
@@ -41,7 +40,6 @@
           ></textarea>
         </div>
         <div class="w-full flex-1 relative">
-          
           <div v-if="!editing" class="flex justify-end">
             <button
               v-if="isOwner && !editing && event.status === 'voting'"
@@ -83,42 +81,65 @@
         </div>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
-        
         <span class="">當前狀態:</span>
         <span
-              v-if="event.status"
-              class="  px-3 py-1 rounded text-base font-semibold"
-              :class="{
-                'bg-blue-100 text-blue-700': event.status === 'voting',
-                'bg-green-100 text-green-700': event.status === 'decided',
-                'bg-gray-200 text-gray-600': event.status === 'closed'
-              }"
-            >
-              {{ event.status === 'voting' ? '投票中' : event.status === 'decided' ? '已決定' : event.status === 'closed' ? '已結束' : event.status }}
-              {{ event.status === 'decided'&& event?.decided_date?event.decided_date:'' }}
-            </span>
-  
-    </div>
-    <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
+          v-if="event.status"
+          class="px-3 py-1 rounded text-base font-semibold"
+          :class="{
+            'bg-blue-100 text-blue-700': event.status === 'voting',
+            'bg-green-100 text-green-700': event.status === 'decided',
+            'bg-gray-200 text-gray-600': event.status === 'closed',
+          }"
+        >
+          {{
+            event.status === "voting"
+              ? "投票中"
+              : event.status === "decided"
+              ? "已決定"
+              : event.status === "closed"
+              ? "已結束"
+              : event.status
+          }}
+          {{
+            event.status === "decided" && event?.decided_date
+              ? event.decided_date
+              : ""
+          }}
+        </span>
+      </div>
+      <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
         <span class="">報名截止日期:</span>
-          <span class="text-error-light dark:text-error-dark  ">
-            {{ deadlineViewText }}
-    </span>
-    </div>
-      <div class="border-b pb-2 lg:pb-4 mb-4  flex flex-row items-center gap-2">
+        <span class="text-error-light dark:text-error-dark">
+          {{ deadlineViewText }}
+        </span>
+      </div>
+      <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
         <span class="">公開代碼:</span>
         <span>{{ event.public_code }}</span>
-        <button @click="copyPublicCode" class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1" style="cursor:pointer;">
+        <button
+          @click="copyPublicCode"
+          class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1"
+          style="cursor: pointer"
+        >
           <font-awesome-icon :icon="['fa', 'copy']" class="w-3 h-3" />
           複製
         </button>
+        <button
+          @click="shareLinkHandle"
+          class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1"
+          style="cursor: pointer"
+        >
+          <font-awesome-icon
+            :icon="['fas', 'share']"
+            class="w-5 h-5 text-primary-light"
+          />
+          分享連結
+        </button>
       </div>
-
     </div>
   </div>
 
   <!-- <div class="text-xs mb-2">Code: {{ event.public_code }}</div> -->
-  
 </template>
 
 <script lang="ts" setup>
@@ -134,7 +155,8 @@ const event = ref(props.event);
 
 function copyPublicCode() {
   if (!event.value?.public_code) return;
-  navigator.clipboard.writeText(event.value.public_code)
+  navigator.clipboard
+    .writeText(event.value.public_code)
     .then(() => {
       // 可加 toast 或提示
     })
@@ -183,17 +205,43 @@ async function save() {
   }
 }
 
- const deadlineViewText = computed(() => {
-    if (!event.value?.deadline_date) return "";
-    const today = new Date();
-    const deadline = new Date(event.value.deadline_date);
-    const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays > 0) return `剩餘 ${diffDays} 天`;
-    if (diffDays === 0) return "今天截止";
-    return "已截止";
- });
-  
+const deadlineViewText = computed(() => {
+  if (!event.value?.deadline_date) return "";
+  const today = new Date();
+  const deadline = new Date(event.value.deadline_date);
+  const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  if (diffDays > 0) return `剩餘 ${diffDays} 天`;
+  if (diffDays === 0) return "今天截止";
+  return "已截止";
+});
+
+const shareLinkHandle = () => {
+  const url = `${window.location.origin}/event/${event.value.public_code}`;
+  navigator.clipboard.writeText(url);
+  if (navigator.share) {
+    navigator
+      .share({
+        title: "分享活動",
+        url,
+      })
+      .catch(() => {});
+  } else {
+    // fallback: 複製連結
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url);
+      alert("連結已複製，可分享給朋友！");
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      alert("連結已複製，可分享給朋友！");
+    }
+  }
+};
 </script>
 
 <style></style>

@@ -89,9 +89,9 @@ export function useEvent() {
   };
 
   const createMember = async (payload) => {
-    const data = await createEventMember(payload);
-    if (data) {
-      currentUser.value = data;
+    const res = await createEventMember(payload);
+    if (res.data) {
+      currentUser.value = res.data;
       // 只存 user.id
       let userMap = {};
       try {
@@ -101,17 +101,19 @@ export function useEvent() {
       } catch (e) {
         userMap = {};
       }
-      userMap[eventCode] = data.id;
+      userMap[eventCode] = res.data.id;
       localStorage.setItem("eventUserMap", JSON.stringify(userMap));
       //fetch event to update members list
       await fetchEvent();
     }
-    return data;
+    return res;
   };
 
   const verifyPin = async (payload) => {
-    const data = await verifyEventMemberPin(payload);
-    if (data) {
+    const res = await verifyEventMemberPin(payload);
+    console.log("data", res);
+
+    if (res.data) {
       currentUser.value = data;
       // 只存 user.id
       let userMap = {};
@@ -122,10 +124,10 @@ export function useEvent() {
       } catch (e) {
         userMap = {};
       }
-      userMap[eventCode] = data.id;
+      userMap[eventCode] = res.data.id;
       localStorage.setItem("eventUserMap", JSON.stringify(userMap));
     }
-    return data;
+    return res;
   };
   const cleanUser = async () => {
     let userMap = {};

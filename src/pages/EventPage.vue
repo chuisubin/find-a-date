@@ -8,10 +8,6 @@
       <div class="bg-black/50 text-white p-10 rounded-md">Loading...</div>
     </div>
     <div v-if="event">
-      <div class="w-full">
-        {{ currentUser?.username }}
-        <button v-if="currentUser" @click="cleanUser">切換</button>
-      </div>
       <div class="mb-4">
         <EventDetail :event="event" :isOwner="isOwner" />
         <div class="flex flex-col gap-4 lg:flex-row">

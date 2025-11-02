@@ -2,7 +2,7 @@
   <div
     class="px-5 w-full inset-0 fixed z-10 bg-background-light flex flex-col items-center justify-start overflow-auto py-10 lg:py-20"
   >
-    <div class="mx-auto w-fit flex flex-row items-center mb-4 lg:mb-6">
+    <div class="mx-auto w-fit flex flex-row items-center mb-10 lg:mb-14">
       <img
         :src="mandarinIcon"
         class="w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 mr-3 lg:mr-4"
@@ -13,24 +13,28 @@
       >
     </div>
     <div v-if="!(selectedMember || showCreateForm)">
-      <h2 class="text-2xl lg:text-4xl mb-4">選擇用戶</h2>
-      <div class="flex flex-row flex-wrap mb-4 gap-4 items-center">
+      <h2 class="text-2xl lg:text-4xl mb-10 text-center">選擇用戶</h2>
+      <div class="flex flex-row gap-4 mb-4 items-center justify-center flex-wrap">
         <div
           v-for="member in event?.events_members"
           :key="member?.id"
-          :class="
-            selectedMember && selectedMember.id == member.id
-              ? 'border border-red-500'
-              : ''
-          "
-          class="rounded-full border flex-1"
+          class="w-fit flex flex-col items-center gap-2 cursor-pointer"
           @click="() => selectMemberHandle(member)"
         >
-          <div class="mb-4"><img :src="''" /></div>
-
-          <span>{{ member?.username }}</span>
+          <div class="">
+            <img
+              class="w-14 h-14 lg:w-18 lg:h-18 rounded-full "
+              :src="
+                avatarIconList.find((icon) => icon.name === member?.avatar_name)
+                  ?.src ?? ''
+              "
+            />
+          </div>
+          <span class="text-xl lg:text-2xl">{{ member?.username }}</span>
         </div>
-        <button
+        
+      </div>
+       <button
           v-if="!(selectedMember || showCreateForm)"
           @click="createMemberHandle"
           class="flex flex-col items-center justify-center gap-2 mx-auto"
@@ -41,13 +45,12 @@
           />
           <span class="text-lg lg:text-2xl text-primary-light">建立</span>
         </button>
-      </div>
     </div>
 
     <div v-if="selectedMember"></div>
 
     <div v-if="showCreateForm" class="mb-4 w-full">
-      <h2 class="text-2xl lg:text-4xl mb-4 text-center">建立用戶</h2>
+      <h2 class="text-2xl lg:text-4xl mb-10 text-center">建立用戶</h2>
       <form
         @submit.prevent="createMemberSubmit"
         class="mx-auto flex flex-col gap-4 w-full sm:w-fit sm:min-w-80"
@@ -92,16 +95,16 @@
           />
         </div>
         <div class="flex flex-col items-start">
-          <label>PIN</label>
+          <label>PIN:</label>
           <input
             v-model="newPin"
             type="password"
             class="input w-full"
             autocomplete="new-password"
             required
-            maxlength="6"
+            maxlength="4"
             inputmode="numeric"
-            placeholder="請輸入6位數字"
+            placeholder="請輸入4位數字"
           />
         </div>
         <div class="flex flex-col items-start">
@@ -112,9 +115,9 @@
             class="input w-full"
             autocomplete="new-password"
             required
-            maxlength="6"
+            maxlength="4"
             inputmode="numeric"
-            placeholder="請再輸入6位數字"
+            placeholder="請再輸入4位數字"
           />
         </div>
         <div class="flex flex-row items-center gap-4">
@@ -133,26 +136,28 @@
       </form>
     </div>
     <div v-if="selectedMember" class="mb-4">
+
+        <div class="flex flex-col items-center justify-center mx-auto">
+            <img 
+            class="w-24 h-24 lg:w-32 lg:h-32 rounded-full mb-4"
+            :src="avatarIconList.find(i=>i.name===selectedMember.avatar_name)?.src??''" />
+        </div>
+        <div class="text-center text-xl lg:text-2xl mb-10">{{ selectedMember.username }}</div>
       <form @submit.prevent="verifyPinSubmit" class="flex flex-col gap-4">
-        <label>輸入 PIN：</label>
-        <!-- 隱藏 username 欄位供密碼表單用 -->
-        <input
-          type="text"
-          name="username"
-          :value="selectedMember ? selectedMember.username : ''"
-          autocomplete="username"
-          style="display: none"
-        />
+        <label>PIN：</label>
         <input
           v-model="pin"
           type="password"
-          class="input"
+          placeholder="輸入4位數字"
+          class="input w-full"
           autocomplete="new-password"
+          required
         />
-        <button type="submit" class="btn">確認</button>
-        <button type="button" @click="cancelHandle" class="btn ml-2">
+        <div class="w-full flex flex-row items-center gap-4">
+        <button type="submit" class="btn enter_btn w-full">確認</button>
+        <button type="button" @click="cancelHandle" class="btn cancel_btn w-full">
           取消
-        </button>
+        </button></div>
         <div v-if="pinError" class="text-error-light mt-2">
           {{ pinError }}
         </div>
@@ -205,19 +210,18 @@ async function createMemberSubmit() {
     createError.value = "PIN 不一致";
     return;
   }
-  if (!/^\d{6}$/.test(newPin.value)) {
-    createError.value = "PIN 必須為 6 位數字";
+  if (!/^\d{4}$/.test(newPin.value)) {
+    createError.value = "PIN 必須為 4 位數字";
     return;
-    }
-  console.log('createMemberSubmit....',event );
+  }
   // API 建立新 member
-  const data = await props.createMember({
+  const res = await props.createMember({
     event_id: props.event.id,
     username: newUsername.value,
     pin: newPin.value,
     avatar_name: selectedAvatar.value.name, // 保存選擇的頭像 style
   });
-  if (data) {
+  if (res.data) {
     showCreateForm.value = false;
     // 清空表單
     newUsername.value = "";
@@ -234,23 +238,22 @@ async function verifyPinSubmit() {
   // API 驗證 PIN
   const payload = {
     id: selectedMember.value.id,
-    event_id: event.id,
+    event_id: props.event.id,
     pin: pin.value,
   };
-  const data = await props.verifyPin(payload);
-  if (data) {
+  const res = await props.verifyPin(payload);
+  if (res.data) {
     selectedMember.value = null;
   } else {
-    pinError.value = "PIN 錯誤";
+    pinError.value =  "PIN 錯誤";
   }
 }
 
 function cancelHandle() {
-  console.log("cancelHandle");
   selectedAvatar.value = avatarIconList[0];
   showAvatarList.value = false;
   selectedMember.value = null;
-
+  showCreateForm.value = false;
   pinError.value = "";
   resetForm();
 }

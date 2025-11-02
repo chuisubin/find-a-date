@@ -2,7 +2,7 @@
   <div class="w-full mx-auto lg:pt-10">
     <div class="  ">
       <div class="mx-auto w-fit flex flex-row items-center mb-4 lg:mb-6  ">
-      <img :src="mandarinIcon" class="w-10 h-10  lg:w-12 lg:h-12 mr-3 lg:mr-4" />
+      <img :src="mandarinIcon" class="w-10 h-10 md:w-14 md:h-14 lg:w-16 lg:h-16 mr-3 lg:mr-4" />
       <span class="text-3xl md:text-5xl lg:text-6xl font-bold"
         >擇個<span class=" text-primary-light dark:text-primary-dark"
           >吉</span

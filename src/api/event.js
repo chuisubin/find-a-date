@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 // 設定最終日期並決定活動
 export async function updateEventFinalDate(eventId, date) {
   const { error } = await supabase
@@ -10,8 +12,7 @@ export async function updateEventFinalDate(eventId, date) {
   if (error) throw error;
 }
 
-import { supabase } from "./supabase";
-
+//event page主要CALL此API
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
@@ -23,6 +24,7 @@ export async function fetchEventByPublicCode(public_code) {
   return data;
 }
 
+//event page create event API
 export async function createEvent({
   title,
   description,
@@ -31,7 +33,6 @@ export async function createEvent({
   enable_end_date,
 }) {
   //  建立 event
-  console.log("Creating event:");
   const { data, error } = await supabase
     .from("events")
     .insert([
@@ -88,12 +89,13 @@ export async function updateEventFields(eventId, fields) {
   if (error) throw error;
 }
 
+//event page create event member API
 export async function createEventMember(payload) {
   //join event member
-  const { event_id, username, pin } = payload;
+  const { event_id, username, pin, avatar_name } = payload;
   const { data, error } = await supabase
     .from("events_members")
-    .insert([{ event_id, username, pin }])
+    .insert([{ event_id, username, pin, avatar_name }])
     .select()
     .single();
   if (error) throw error;
@@ -114,10 +116,11 @@ export async function verifyEventMemberPin(payload) {
   return data;
 }
 
+//根據local storage的id取得member資料
 export async function fetchEventMemberById(id) {
   const { data, error } = await supabase
     .from("events_members")
-    .select("*")
+    .select("id,username,avatar_name,role")
     .eq("id", id)
     .limit(1)
     .single();

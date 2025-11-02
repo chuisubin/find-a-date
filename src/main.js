@@ -16,6 +16,9 @@ import {
   faBars,
   faCalendar,
   faCopy,
+  faPlus,
+  faChevronDown,
+  faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createPinia } from "pinia";
@@ -39,7 +42,10 @@ library.add(
   faChevronRight,
   faBars,
   faCalendar,
-  faCopy
+  faCopy,
+  faPlus,
+  faChevronDown,
+  faChevronUp
 );
 app.component("FontAwesomeIcon", FontAwesomeIcon);
 app.use(createPinia());

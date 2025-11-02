@@ -8,8 +8,8 @@
              placeholder="輸入聚會代碼" required />
           </div>
            <div v-if="errorMsg" class="error_text mb-2">{{ errorMsg }}</div>
-          <div class="flex justify-center gap-2">
-            <button type="submit" class="enter_btn btn" :disabled="isLoading||errorMsg!==''">連接</button>
+          <div class="flex justify-center gap-2 w-full">
+            <button type="submit" class="enter_btn btn w-full" :disabled="isLoading||errorMsg!==''">連接</button>
           </div>
         </form>
       </div>

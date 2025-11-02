@@ -36,7 +36,6 @@
 
 
 import { ref, computed, watch } from 'vue';
-import { useUserStore } from "@/stores/user";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import CustomCalendar from "@/components/event/CustomCalendar.vue";
 import { saveAvailabilities } from "@/api/event";

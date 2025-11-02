@@ -1,6 +1,5 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
-import { useUserStore } from "@/stores/user";
 import {
   fetchEventByPublicCode,
   updateEventFields,

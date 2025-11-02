@@ -13,6 +13,11 @@ yarn-error.log*
 # Build output
 dist/
 
+# Nuxt build output and cache
+.nuxt/
+.output/
+.nitro/
+
 # VSCode settings
 .vscode/
 

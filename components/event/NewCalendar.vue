@@ -37,8 +37,8 @@
 
 import { ref, computed, watch } from 'vue';
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import CustomCalendar from "@/components/event/CustomCalendar.vue";
-import { saveAvailabilities } from "@/api/event";
+import CustomCalendar from "~/components/event/CustomCalendar.vue";
+import { saveAvailabilities } from "~/api/event";
 import { toast } from "vue3-toastify";
 
 const props = defineProps({

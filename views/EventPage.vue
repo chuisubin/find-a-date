@@ -46,15 +46,14 @@
 </template>
 
 <script setup>
-import MemberList from "@/components/event/MemberList.vue";
-import { useEvent } from "@/hooks/useEvent";
-import EventDetail from "../components/event/EventDetail.vue";
-import NewCalendar from "../components/event/NewCalendar.vue";
-import DateRank from "@/components/event/DateRank.vue";
-import Popup from "@/components/Popup.vue";
-import EventChooseUser from "@/components/auth/EventChooseUser.vue";
+import MemberList from "~/components/event/MemberList.vue";
+import { useEvent } from "~/composables/useEvent";
+import EventDetail from "~/components/event/EventDetail.vue";
+import NewCalendar from "~/components/event/NewCalendar.vue";
+import DateRank from "~/components/event/DateRank.vue";
+import EventChooseUser from "~/components/auth/EventChooseUser.vue";
 import { ref, watch, onMounted, computed } from "vue";
-import Header from "@/components/Header.vue";
+import Header from "~/components/event/Header.vue";
 
 const props = defineProps({
   code: String
@@ -78,7 +77,7 @@ const showChooseUser = computed(() => {
 });
 
 watch(event, (val) => {
-  if (val && val.id) {
+  if (val && val.id && typeof localStorage !== 'undefined') {
     // 取得現有 id list
     let idList = JSON.parse(localStorage.getItem("event_id_list") || "[]");
     if (!idList.includes(val.id)) {
@@ -91,10 +90,12 @@ watch(event, (val) => {
 watch(
   currentUser,
   (val) => {
-    if (val) {
-      document.body.style.overflow = "";
-    } else {
-      document.body.style.overflow = "hidden";
+    if (typeof document !== 'undefined') {
+      if (val) {
+        document.body.style.overflow = "";
+      } else {
+        document.body.style.overflow = "hidden";
+      }
     }
   },
   { immediate: true }

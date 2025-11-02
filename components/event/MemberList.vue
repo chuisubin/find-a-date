@@ -50,9 +50,9 @@
 
 <script lang="ts" setup>
 import { computed,ref } from "vue";
-import Popup from "@/components/Popup.vue";
+import Popup from "~/components/Popup.vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { avatarIconList } from "@/assets/images/avatar/index.js";
+import { avatarIconList } from "~/assets/images/avatar/index.js";
 
 const props = defineProps<{
   members: Array<any>;

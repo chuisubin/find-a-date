@@ -54,13 +54,12 @@
 
 <script setup>
 import { ref, onMounted, watchEffect, watch } from "vue";
-import CreateEventPopup from "@/components/home/CreateEventPopup.vue";
-import ConnectEventPopup from "@/components/home/ConnectEventPopup.vue";
-import { fetchUserName } from "@/api/user";
+import CreateEventPopup from "../components/home/CreateEventPopup.vue";
+import ConnectEventPopup from "../components/home/ConnectEventPopup.vue";
 import MyEventListView from "../components/home/MyEventListView.vue";
-import Popup from "@/components/Popup.vue";
-import { supabase } from "@/api/supabase";
-import mandarinIcon from "@/assets/images/mandarin.png";
+import Popup from "../components/Popup.vue";
+import { supabase } from "../api/supabase";
+import mandarinIcon from "../assets/images/mandarin.png";
 
 const showCreateEventPopup = ref(false);
 const showConnectEventPopup = ref(false);
@@ -76,7 +75,9 @@ function onConnectEvent() {
 }
 
 onMounted(async () => {
-  const idList = JSON.parse(localStorage.getItem("event_id_list") || "[]");
+  const idList = typeof localStorage !== 'undefined' 
+    ? JSON.parse(localStorage.getItem("event_id_list") || "[]") 
+    : [];
   let events = [];
   if (idList.length > 0) {
     const { data, error } = await supabase

@@ -64,16 +64,12 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 import { ref,computed  } from "vue";  
-import Popup from "@/components/Popup.vue";
-import { useEvent } from "@/hooks/useEvent";
+import Popup from "~/components/Popup.vue";
 import {
-  fetchEventByPublicCode,
-  joinEvent,
-  leaveEvent,
   updateEventFields,
-} from "@/api/event";
+} from "~/api/event";
 import { toast } from "vue3-toastify";
 
 const props = defineProps({

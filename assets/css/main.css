@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background-light dark:bg-background-dark min-h-screen;
+  font-family: 'Work Sans', sans-serif;
+}
+
+:root {
+  @apply text-base lg:text-lg;
+}
+
+.TODO {
+  border: 4px red dashed;
+}
+
+.event_card {
+  @apply shadow-sm shadow-gray-300 rounded-lg bg-white py-3 lg:py-6 pr-2 lg:pr-4 pl-4 lg:pl-8 overflow-hidden;
+}
+.dark .event_card {
+  @apply bg-card-dark shadow-gray-700;
+}
+
+.normal_btn {
+  @apply px-3 lg:px-5 py-2 rounded-lg font-semibold transition active:scale-95 bg-gray-200 hover:bg-gray-300;
+}
+.dark .normal_btn {
+  @apply bg-card-dark hover:bg-gray-700;
+}
+
+.input {
+  @apply px-2 lg:px-3 py-2 rounded-lg border text-text-light ring-0 outline-none focus:border-primary-light;
+}
+.dark .input {
+  @apply text-text-dark border-gray-400 placeholder:text-gray-300 bg-card-dark focus:border-primary-dark;
+}
+
+.btn {
+  @apply px-3 lg:px-5 py-2 rounded-lg font-semibold transition active:scale-95;
+}
+
+.enter_btn {
+  @apply bg-primary-light text-text-dark hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.dark .enter_btn {
+  @apply bg-primary-dark hover:bg-primary-hover text-text-light;
+}
+
+.cancel_btn {
+  @apply bg-gray-400 hover:bg-gray-500 text-text-dark;
+}
+.dark .cancel_btn {
+  @apply bg-gray-600 hover:bg-gray-700;
+}
+
+.heading {
+  @apply font-extrabold text-3xl;
+}
+
+.sub_title_color {
+  @apply text-gray-500;
+}
+.dark .sub_title_color {
+  @apply text-gray-400;
+}
+
+.dark .mx-icon-calendar svg {
+  fill: #fff !important;
+}
+
+.primary_text {
+  @apply text-primary-light;
+}
+.dark .primary_text {
+  @apply text-primary-dark;
+}
+
+.error_text {
+  @apply text-error-light text-sm;
+}
+.dark .error_text {
+  @apply text-error-dark;
+}
+
+.red_btn {
+  @apply bg-error-light text-text-dark hover:bg-error-dark;
+}
+.dark .red_btn {
+  @apply bg-error-dark text-text-light hover:bg-error-light;
+}

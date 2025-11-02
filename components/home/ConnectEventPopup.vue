@@ -19,7 +19,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { fetchEventByPublicCode } from '@/api/event';
+import { fetchEventByPublicCode } from '~/api/event';
 
 
 const emit = defineEmits(['close', 'connected']);

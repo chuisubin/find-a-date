@@ -21,17 +21,19 @@
           <label class="block mb-1"
             >截止日期 <span class="primary_text">*</span></label
           >
-          <DatePicker
-            placeholder="請選擇截止日期"
-            v-model:value="newEventDeadlineDate"
-            type="date"
-            format="YYYY-MM-DD"
-            :disabled-date="disableBeforeToday"
-            value-type="date"
-            class="w-full"
-            input-class="input w-full"
-            required
-          />
+          <ClientOnly>
+            <DatePicker
+              placeholder="請選擇截止日期"
+              v-model:value="newEventDeadlineDate"
+              type="date"
+              format="YYYY-MM-DD"
+              :disabled-date="disableBeforeToday"
+              value-type="date"
+              class="w-full"
+              input-class="input w-full"
+              required
+            />
+          </ClientOnly>
         </div>
 
         <div class="mb-4">
@@ -39,44 +41,50 @@
             >活動日期 <span class="primary_text">*</span></label
           >
           <div class="hidden lg:block">
-          <DatePicker
-            v-model:value="enableDateRange"
-            type="date"
-            format="YYYY-MM-DD"
-            :disabled-date="disableBeforeToday"
-            range
-            value-type="date"
-            class="w-full"
-            input-class="input w-full "
-            required
-            placeholder="請選擇活動日期範圍"
-          :multi-calendars="false"
-          :partial-update="true"
-          />
+            <ClientOnly>
+              <DatePicker
+                v-model:value="enableDateRange"
+                type="date"
+                format="YYYY-MM-DD"
+                :disabled-date="disableBeforeToday"
+                range
+                value-type="date"
+                class="w-full"
+                input-class="input w-full "
+                required
+                placeholder="請選擇活動日期範圍"
+                :multi-calendars="false"
+                :partial-update="true"
+              />
+            </ClientOnly>
           </div>
           <div class="lg:hidden flex flex-col gap-2">
-            <DatePicker
-              v-model:value="mobileStartDate"
-              type="date"
-              format="YYYY-MM-DD"
-              :disabled-date="date => disableBeforeToday(date) || (mobileEndDate ? date > mobileEndDate : false)"
-              value-type="date"
-              class="w-full"
-              input-class="input w-full "
-              required
-              placeholder="開始日期"
-            />
-            <DatePicker
-              v-model:value="mobileEndDate"
-              type="date"
-              format="YYYY-MM-DD"
-              :disabled-date="date => disableBeforeToday(date) || (mobileStartDate ? date < mobileStartDate : false)"
-              value-type="date"
-              class="w-full"
-              input-class="input w-full "
-              required
-              placeholder="結束日期"
-            />
+            <ClientOnly>
+              <DatePicker
+                v-model:value="mobileStartDate"
+                type="date"
+                format="YYYY-MM-DD"
+                :disabled-date="date => disableBeforeToday(date) || (mobileEndDate ? date > mobileEndDate : false)"
+                value-type="date"
+                class="w-full"
+                input-class="input w-full "
+                required
+                placeholder="開始日期"
+              />
+            </ClientOnly>
+            <ClientOnly>
+              <DatePicker
+                v-model:value="mobileEndDate"
+                type="date"
+                format="YYYY-MM-DD"
+                :disabled-date="date => disableBeforeToday(date) || (mobileStartDate ? date < mobileStartDate : false)"
+                value-type="date"
+                class="w-full"
+                input-class="input w-full "
+                required
+                placeholder="結束日期"
+              />
+            </ClientOnly>
           </div>
         </div>
         <div class="mb-4">
@@ -101,12 +109,11 @@
 </template>
 
 <script setup>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import DatePicker from "vue-datepicker-next";
 import "vue-datepicker-next/index.css";
-import { formatDateLocal } from "@/utils/dateFormat.js";
+import { formatDateLocal } from "~/utils/dateFormat.js";
 import { ref, watch } from "vue";
-import { createEvent } from "@/api/event";
+import { createEvent } from "~/api/event";
 import { toast } from 'vue3-toastify';
 import {useRouter} from 'vue-router';
 

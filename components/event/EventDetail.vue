@@ -144,7 +144,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
-import { updateEventFields } from "@/api/event";
+import { updateEventFields } from "~/api/event";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 const props = defineProps<{
@@ -217,6 +217,8 @@ const deadlineViewText = computed(() => {
 });
 
 const shareLinkHandle = () => {
+  if (typeof window === 'undefined') return;
+  
   const url = `${window.location.origin}/event/${event.value.public_code}`;
   navigator.clipboard.writeText(url);
   if (navigator.share) {
@@ -231,7 +233,7 @@ const shareLinkHandle = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(url);
       alert("連結已複製，可分享給朋友！");
-    } else {
+    } else if (typeof document !== 'undefined') {
       const textarea = document.createElement("textarea");
       textarea.value = url;
       document.body.appendChild(textarea);

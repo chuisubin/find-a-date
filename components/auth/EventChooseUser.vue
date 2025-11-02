@@ -168,8 +168,8 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import mandarinIcon from "@/assets/images/mandarin.png";
-import { avatarIconList } from "@/assets/images/avatar/index.js";
+import mandarinIcon from "assets/images/mandarin.png";
+import { avatarIconList } from "assets/images/avatar/index.js";
 import { Collapse } from "vue-collapsed";
 
 const props = defineProps({

@@ -7,12 +7,8 @@ import {
   createEventMember,
   verifyEventMemberPin,
   fetchEventMemberById,
-} from "@/api/event";
-import { storeToRefs } from "pinia";
-import { useThemeStore } from "@/stores/theme";
-import { toast } from "vue3-toastify";
+} from "~/api/event";
 import { debounce } from "lodash";
-import { nextTick } from "vue";
 
 export function useEvent() {
   const route = useRoute();
@@ -114,7 +110,7 @@ export function useEvent() {
     console.log("data", res);
 
     if (res.data) {
-      currentUser.value = data;
+      currentUser.value = res.data;
       // 只存 user.id
       let userMap = {};
       try {

@@ -54,10 +54,14 @@ function onKeydown(e) {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', onKeydown);
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', onKeydown);
+  }
 });
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', onKeydown);
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', onKeydown);
+  }
 });
 </script>

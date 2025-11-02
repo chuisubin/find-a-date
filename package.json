@@ -23,6 +23,7 @@
     "@vueuse/head": "^2.0.0",
     "find-a-date-monorepo": "file:..",
     "floating-vue": "^5.2.2",
+    "html2canvas": "^1.4.1",
     "lodash-es": "^4.17.21",
     "nuxt": "^4.2.0",
     "pinia": "^3.0.3",

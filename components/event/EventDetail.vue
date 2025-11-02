@@ -117,14 +117,6 @@
         <span class="">公開代碼:</span>
         <span>{{ event.public_code }}</span>
         <button
-          @click="copyPublicCode"
-          class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1"
-          style="cursor: pointer"
-        >
-          <font-awesome-icon :icon="['fa', 'copy']" class="w-3 h-3" />
-          複製
-        </button>
-        <button
           @click="shareLinkHandle"
           class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1"
           style="cursor: pointer"
@@ -136,34 +128,78 @@
           分享連結
         </button>
       </div>
+      <div class="flex justify-end" v-if="event.status==='decided'">
+        <button
+          @click="openInvitePopup"
+          class="download_btn normal_btn flex flex-row items-center gap-2"
+        >
+          <span class="">生成邀請函</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- <div class="text-xs mb-2">Code: {{ event.public_code }}</div> -->
+  <!-- Popup for Invitation -->
+  <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true">
+    <div>
+      <div class="event-details relative min-w-72 lg:min-w-96  px-10 lg:px-12  py-12  w-fit h-auto  ">
+        <img :draggable="false" :src="cardImg" alt="Invitation Card" class="absolute inset-0 w-full h-full object-fill z-0" />
+        <div class=" relative z-10">
+        <h1 class="text-xl lg:text-3xl font-extrabold text-center text-primary-dark mb-4">
+          邀請函
+        </h1>
+        <h2 class="text-xl lg:text-2xl font-semibold  mb-2 lg:mb-4">
+          <span class="text-primary"
+            >{{ event.title || '' }}</span
+          >
+        </h2>
+        <p class="text-base lg:text-lg text-gray-700 mb-2 lg:mb-4" v-if="event.description">
+          {{ event?.description  }}
+          
+        </p>
+        <p class=" text-gray-700">
+          日期:
+          <span class=""
+            >{{ event.decided_date || '' }}</span
+          >
+        </p>
+        </div>
+      </div>
+      <div class="popup-actions mt-6 flex justify-end gap-4">
+        <button
+          @click="downloadInvite"
+          class="btn enter_btn "
+        >
+          下載
+        </button>
+        <button
+          @click="shareInvite"
+          class="btn enter_btn  items-center flex flex-row gap-2"
+        >
+        <font-awesome-icon
+            :icon="['fas', 'share']"
+            class="w-5 h-5"
+          />
+          分享
+        </button>
+      </div>
+    </div>
+  </Popup>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { updateEventFields } from "~/api/event";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
+import html2canvas from "html2canvas";
+import Popup from "~/components/Popup.vue";
+import cardImg from "~/assets/images/card.jpg";
 const props = defineProps<{
   event: any;
   isOwner: boolean;
 }>();
 const event = computed(() => props.event);
 
-function copyPublicCode() {
-  if (!event.value?.public_code) return;
-  navigator.clipboard
-    .writeText(event.value.public_code)
-    .then(() => {
-      // 可加 toast 或提示
-    })
-    .catch(() => {
-      // 可加錯誤提示
-    });
-}
 
 const editing = ref(false);
 const editedTitle = ref(event.value?.title || "");
@@ -244,6 +280,75 @@ const shareLinkHandle = () => {
     }
   }
 };
+
+const showInvitePopup = ref(false);
+
+function openInvitePopup() {
+  showInvitePopup.value = true;
+}
+
+function closeInvitePopup() {
+  showInvitePopup.value = false;
+}
+
+async function downloadInvite() {
+  const eventDetails = document.querySelector(".event-details");
+  if (!eventDetails) {
+    alert("未找到邀請函內容，無法生成圖片。");
+    return;
+  }
+
+  try {
+    const canvas = await html2canvas(eventDetails, {
+      backgroundColor: "#fff",
+    });
+    const image = canvas.toDataURL("image/png");
+
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `event-${event.value?.title || "details"}.png`;
+    link.click();
+  } catch (error) {
+    console.error("生成圖片失敗：", error);
+    alert("生成圖片失敗，請稍後重試。");
+  }
+}
+
+async function shareInvite() {
+  const eventDetails = document.querySelector(".event-details");
+  if (!eventDetails) {
+    alert("未找到邀請函內容，無法分享。");
+    return;
+  }
+
+  try {
+    const canvas = await html2canvas(eventDetails, {
+      backgroundColor: "#fff",
+    });
+    const image = canvas.toDataURL("image/png");
+
+    if (navigator.share) {
+      navigator.share({
+        title: "分享邀請函",
+        text: `查看聚會邀請函：${event.value?.title}`,
+        files: [
+          new File([await (await fetch(image)).blob()], "event-details.png", {
+            type: "image/png",
+          }),
+        ],
+      });
+    } else {
+      alert("您的瀏覽器不支持分享功能，請手動下載圖片。");
+    }
+  } catch (error) {
+    console.error("分享失敗：", error);
+    alert("分享失敗，請稍後重試。");
+  }
+}
 </script>
 
-<style></style>
+<style>
+.event-details {
+  font-family: 'Arial', sans-serif;
+}
+</style>

@@ -30,10 +30,8 @@ import "vue3-toastify/dist/index.css";
 import Vue3Toasity, { toast } from "vue3-toastify";
 import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
-import { createHead } from "@vueuse/head";
 
 const app = createApp(App);
-const head = createHead();
 library.add(
   faEye,
   faEyeSlash,
@@ -61,5 +59,4 @@ app.use(Vue3Toasity, {
   position: toast.POSITION.BOTTOM_RIGHT, //提示窗位置
   theme: "colored",
 });
-app.use(head);
 app.mount("#app");

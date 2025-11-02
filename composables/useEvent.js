@@ -8,7 +8,7 @@ import {
   verifyEventMemberPin,
   fetchEventMemberById,
 } from "~/api/event";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 
 export function useEvent() {
   const route = useRoute();

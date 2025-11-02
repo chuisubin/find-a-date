@@ -1,5 +1,5 @@
 <template>
-  <Header />
+  <Header  :currentUser="currentUser" :cleanUser="cleanUser" />
   <div class="w-full mx-auto pt-20 lg:max-w-screen-lg">
     <div
       v-if="loading"

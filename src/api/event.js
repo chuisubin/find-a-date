@@ -51,7 +51,7 @@ export async function createEvent({
 }
 
 export async function saveAvailabilities({
-  user_id,
+  events_member_id,
   event_id,
   available_dates,
 }) {
@@ -59,12 +59,12 @@ export async function saveAvailabilities({
   const { error: delError } = await supabase
     .from("availabilities")
     .delete()
-    .eq("user_id", user_id)
+    .eq("events_member_id", events_member_id)
     .eq("event_id", event_id);
   if (delError) throw delError;
   // 再插入新資料
   const { error: insError } = await supabase.from("availabilities").insert({
-    user_id,
+    events_member_id,
     event_id,
     available_dates,
   });

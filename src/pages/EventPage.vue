@@ -17,6 +17,7 @@
               v-if="event"
               :event="event"
               :fetchEvent="fetchEvent" 
+              :currentUser="currentUser"
             />
           </div>
           <div class="w-full md:w-fit">

@@ -10,10 +10,11 @@
       :dots-map="dotsMap"
       :highlight-users="highlightUsersMap"
       @select-date="onSelectDate"
+      :currentUser="currentUser"
     />
     
   </div>
-  <div class="flex gap-2  p-4" v-if="isJoinedMember && isDatesModified">
+  <div class="flex gap-2  p-4" v-if=" isDatesModified">
       <button
         @click="saveAvailabilitiesHandle"
         class="enter_btn btn flex flex-row items-center gap-2 whitespace-nowrap"
@@ -50,6 +51,10 @@ const props = defineProps({
     type: Function,
     default: null,
   },
+  currentUser: {
+    type: Object,
+    default: null,
+  },
 });
 
 const calendarCols = computed(() => {
@@ -71,7 +76,6 @@ const initMonth = computed(() => {
 });
 
 
-const userStore = useUserStore();
 const today = new Date();
 const year = ref(initYear ?? today.getFullYear());
 const month = ref(initMonth !== null ? initMonth : today.getMonth());
@@ -84,16 +88,11 @@ const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
 
 
 
-  const isJoinedMember = computed(() => {
-    if (!userStore.user || !props.event) return false;
-    return props.event.events_members.some(
-      (m) => m.user_id === userStore.user?.id
-    );
-  });
+
 
 const mySavedDates = computed(() => {
   const my = props.event?.availabilities?.find(
-    (a) => a.user_id === userStore.user?.id
+    (a) => a.events_member_id === props.currentUser?.id
   );
   return my ? my.available_dates : [];
 });
@@ -147,11 +146,11 @@ function cancelSelection() {
 }
 
 async function saveAvailabilitiesHandle() {
-  if (!userStore.user || !props.event?.id) return;
+  if (!props.currentUser || !props.event?.id) return;
   try {
     // 這裡請根據你的API實際情況修改
     await saveAvailabilities({
-      user_id: userStore.user.id,
+      events_member_id: props.currentUser.id,
       event_id: props.event.id,
       available_dates: selectedDates.value,
     });
@@ -165,7 +164,7 @@ async function saveAvailabilitiesHandle() {
 }
 
 const otherAvailabilities = computed(() => {
-  return props.event?.availabilities?.filter(a => a.user_id !== userStore.user?.id) || [];
+  return props.event?.availabilities?.filter(a => a.events_member_id !== props.currentUser?.id) || [];
 });
 
 // 建立每個日期的選擇者 username 陣列
@@ -174,7 +173,7 @@ const highlightUsersMap = computed(() => {
   otherAvailabilities.value.forEach(a => {
     a.available_dates.forEach(date => {
       if (!map[date]) map[date] = [];
-      map[date].push(a.username || a.name || a.user_name || a.user_id);
+      map[date].push(a.username);
     });
   });
   return map;
@@ -190,7 +189,7 @@ const highlightDates = computed(() => {
 });
 // dotsMap: 每個日期被選擇的人數
 const dotsMap = computed(() => {
-  const others = props.event?.availabilities?.filter(a => a.user_id !== userStore.user?.id) || [];
+  const others = props.event?.availabilities?.filter(a => a.events_member_id !== props.currentUser?.id) || [];
   const map = {};
   others.forEach(a => {
     a.available_dates.forEach(date => {

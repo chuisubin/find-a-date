@@ -53,6 +53,17 @@ export default defineNuxtConfig({
           content: "summary_large_image",
         },
       ],
+      link: [
+        {
+          rel: "icon",
+          type: "image/png",
+          href: "/mandarin.png",
+        },
+        {
+          rel: "apple-touch-icon",
+          href: "/mandarin.png",
+        },
+      ],
     },
   },
 });

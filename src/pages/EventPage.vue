@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full mx-auto lg:pt-10 lg:max-w-screen-lg">
+   <Header  
+    />
+  <div class="w-full mx-auto pt-20 lg:max-w-screen-lg">
+   
     <div
       v-if="loading"
       class="z-50 text-gray-400 fixed inset-0 bg-black/30 flex items-center justify-center"
@@ -56,7 +59,7 @@ import DateRank from "@/components/event/DateRank.vue";
 import Popup from "@/components/Popup.vue";
 import EventChooseUser from "@/components/auth/EventChooseUser.vue";
 import{ ref, watch, onMounted, computed } from "vue";
-
+import Header from "@/components/Header.vue";
 
 const {
   event,

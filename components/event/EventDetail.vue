@@ -151,7 +151,7 @@ const props = defineProps<{
   event: any;
   isOwner: boolean;
 }>();
-const event = ref(props.event);
+const event = computed(() => props.event);
 
 function copyPublicCode() {
   if (!event.value?.public_code) return;

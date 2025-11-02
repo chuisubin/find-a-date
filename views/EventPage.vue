@@ -30,7 +30,10 @@
           </div>
         </div>
       </div>
-      <DateRank :event="event" :isOwner="isOwner" />
+      <DateRank :event="event" :isOwner="isOwner"
+      :confirmFinalDate="confirmFinalDate"
+      
+      />
 
       <!-- <Popup v-model="showChooseUser" :enableClickOutside="false"  :showClose="false"> -->
       <div v-if="showChooseUser && event">
@@ -69,7 +72,7 @@ const {
   confirmCloseEvent,
   createMember,
   verifyPin,
-  cleanUser,
+  cleanUser,confirmFinalDate
 } = useEvent();
 
 const showChooseUser = computed(() => {

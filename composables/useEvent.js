@@ -140,6 +140,16 @@ export function useEvent() {
     }
     currentUser.value = null;
   };
+
+  const confirmFinalDate = async (payload) => {
+    const { eventId, fields } = payload;
+    const res = await updateEventFields(eventId, fields);
+    if (res.data) {
+      await fetchEvent();
+    }
+    return res;
+  };
+
   return {
     event,
     loading,
@@ -152,5 +162,6 @@ export function useEvent() {
     createMember,
     verifyPin,
     cleanUser,
+    confirmFinalDate,
   };
 }

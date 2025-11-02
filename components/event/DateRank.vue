@@ -29,7 +29,7 @@
         </li>
       </ul>
       <div class="mx-auto mt-4 cursor-pointer text-blue-600 underline w-fit " @click="setShowAll">
-        {{ showAll ? '只顯示最多人選擇' : '顯示全部' }}
+        {{ showAll ? '收起' : '顯示全部' }}
       </div>
       <Popup v-model="showConfirmDatePopup" :showClose="true">
         <div class="">
@@ -52,7 +52,7 @@
             </button>
             <button
               class="btn enter_btn   transition"
-              @click="confirmFinalDate"
+              @click="confirmFinalDateHandle"
               :disabled="confirming"
             >
               確定
@@ -80,6 +80,10 @@ const props = defineProps({
   isOwner: {
     type: Boolean,
     default: false,
+  },
+  confirmFinalDate: {
+    type: Function,
+    required: true,
   },
 });
 
@@ -133,18 +137,22 @@ function setShowAll() {
     confirmDate.value = date;
     showConfirmDatePopup.value = true;
 }
-   async function confirmFinalDate() {
+   async function confirmFinalDateHandle() {
     if (!event.value?.id || !confirmDate.value) return;
     confirming.value = true;
-    try {
-      await updateEventFields(event.value.id, {
-        status: "decided",
-        decided_date: confirmDate.value,
+     try {
+      const res = await props.confirmFinalDate({
+        eventId: event.value.id,
+        fields: {
+          status: "decided",
+          decided_date: confirmDate.value,
+        }
       });
-      event.value.status = "decided";
-      event.value.decided_date = confirmDate.value;
-      toast.success("已設定最終日期");
-      showConfirmDatePopup.value = false;
+
+      if (res.data) {
+        toast.success("已設定最終日期");
+        showConfirmDatePopup.value = false;
+      }
     } catch (e) {
       toast.error("設定失敗");
     } finally {

@@ -84,11 +84,12 @@ export async function closeEvent(eventId) {
 
 // 整合更新 event 欄位 API
 export async function updateEventFields(eventId, fields) {
-  const { error } = await supabase
+  const res = await supabase
     .from("events")
     .update(fields)
-    .eq("id", eventId);
-  if (error) throw error;
+    .eq("id", eventId)
+    .select(); // 确保返回更新后的数据
+  return res;
 }
 
 //event page create event member API

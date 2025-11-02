@@ -88,6 +88,15 @@ onMounted(async () => {
       .in("id", idList);
     if (!error && data) {
       events = data;
+
+      // 比对 idList 和返回的 events 数据
+      const validIds = events.map(event => event.id);
+      const updatedIdList = idList.filter(id => validIds.includes(id));
+
+      // 如果 idList 有变化，更新 localStorage
+      if (updatedIdList.length !== idList.length) {
+        localStorage.setItem("event_id_list", JSON.stringify(updatedIdList));
+      }
     }
   }
   eventList.value = events;

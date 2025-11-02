@@ -12,19 +12,6 @@ export async function updateEventFinalDate(eventId, date) {
 
 import { supabase } from "./supabase";
 
-//停用
-// export async function fetchEventById(eventId) {
-//   const { data, error } = await supabase
-//     .from("events")
-//     .select("*")
-//     .eq("id", eventId)
-//     .neq("status", "closed")
-//     .order("id", { ascending: false })
-//     .single();
-//   if (error) throw error;
-//   return data;
-// }
-
 export async function fetchEventByPublicCode(public_code) {
   const { data, error } = await supabase
     .from("events")
@@ -103,10 +90,10 @@ export async function updateEventFields(eventId, fields) {
 
 export async function createEventMember(payload) {
   //join event member
-  const { event_id, username, pin, role } = payload;
+  const { event_id, username, pin } = payload;
   const { data, error } = await supabase
     .from("events_members")
-    .insert([{ event_id, username, pin, role }])
+    .insert([{ event_id, username, pin }])
     .select()
     .single();
   if (error) throw error;
@@ -121,6 +108,17 @@ export async function verifyEventMemberPin(payload) {
     .eq("event_id", event_id)
     .eq("id", id)
     .eq("pin", pin)
+    .limit(1)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function fetchEventMemberById(id) {
+  const { data, error } = await supabase
+    .from("events_members")
+    .select("*")
+    .eq("id", id)
     .limit(1)
     .single();
   if (error) throw error;

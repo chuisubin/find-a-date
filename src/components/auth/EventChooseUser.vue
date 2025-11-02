@@ -29,6 +29,8 @@
         <!-- <input type="file" @change="onAvatarChange" /> -->
         <label>用戶名稱：</label>
         <input v-model="newUsername" required class="input" />
+        <!-- 隱藏 username 欄位供密碼表單用 -->
+        <input type="text" name="username" v-model="newUsername" autocomplete="username" style="display:none;" />
         <label>PIN（可選）：</label>
         <input
           v-model="newPin"
@@ -55,6 +57,8 @@
     <div v-if="showPinInput" class="mb-4">
       <form @submit.prevent="verifyPinSubmit" class="flex flex-col gap-4">
         <label>輸入 PIN：</label>
+        <!-- 隱藏 username 欄位供密碼表單用 -->
+  <input type="text" name="username" :value="selectedMember ? selectedMember.username : ''" autocomplete="username" style="display:none;" />
         <input
           v-model="pin"
           type="password"
@@ -114,9 +118,7 @@ async function createMemberSubmit() {
   const data = await props.createMember({
     event_id: props.event.id,
     username: newUsername.value,
-    pin: newPin.value,
-    role: props.event.events_members.length === 0 ? "admin" : "member",
-  });
+    pin: newPin.value  });
   if (data) {
     showCreateForm.value = false;
     // 清空表單

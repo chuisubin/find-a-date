@@ -7,6 +7,7 @@ import {
   closeEvent,
   createEventMember,
   verifyEventMemberPin,
+  fetchEventMemberById,
 } from "@/api/event";
 import { storeToRefs } from "pinia";
 import { useThemeStore } from "@/stores/theme";
@@ -19,7 +20,7 @@ export function useEvent() {
   const event = ref(null);
   const loading = ref(true);
   const members = ref([]);
-  const eventId = route.params.code;
+  const eventCode = route.params.code;
   const currentUser = ref(null);
 
   const owner = computed(() => {
@@ -27,7 +28,7 @@ export function useEvent() {
   });
   const isOwner = computed(() => {
     return (
-      (currentUser.value && owner.value.id === currentUser.value.id) ?? false
+      (currentUser.value && owner.value?.id === currentUser.value.id) ?? false
     );
   });
 
@@ -49,21 +50,39 @@ export function useEvent() {
 
   const debouncedFetchEvent = debounce(fetchEvent, 1000);
 
-  onMounted(() => {
+  onMounted(async () => {
     debouncedFetchEvent();
+    getCurrentUserLocal();
+  });
 
-    if (eventId) {
+  const getCurrentUserLocal = async () => {
+    if (eventCode) {
       let userMap = {};
       try {
-        userMap = localStorage.getItem("eventUserMap")
-          ? JSON.parse(localStorage.getItem("eventUserMap"))
-          : {};
+        let userMapString = await localStorage.getItem("eventUserMap");
+        userMap = userMapString ? JSON.parse(userMapString) : {};
       } catch (e) {
         userMap = {};
       }
-      currentUser.value = userMap[eventId] || null;
+      const userId = userMap[eventCode];
+      if (userId) {
+        try {
+          const user = await fetchEventMemberById(userId);
+          if (user) {
+            currentUser.value = user;
+          } else {
+            delete userMap[eventCode];
+            localStorage.setItem("eventUserMap", JSON.stringify(userMap));
+            currentUser.value = null;
+          }
+        } catch (e) {
+          delete userMap[eventCode];
+          localStorage.setItem("eventUserMap", JSON.stringify(userMap));
+          currentUser.value = null;
+        }
+      }
     }
-  });
+  };
 
   const confirmCloseEvent = async () => {
     await closeEvent(event.value.id);
@@ -74,9 +93,19 @@ export function useEvent() {
     const data = await createEventMember(payload);
     if (data) {
       currentUser.value = data;
-      // 存到 localStorage
-      userMap[eventId] = data;
+      // 只存 user.id
+      let userMap = {};
+      try {
+        userMap = localStorage.getItem("eventUserMap")
+          ? JSON.parse(localStorage.getItem("eventUserMap"))
+          : {};
+      } catch (e) {
+        userMap = {};
+      }
+      userMap[eventCode] = data.id;
       localStorage.setItem("eventUserMap", JSON.stringify(userMap));
+      //fetch event to update members list
+      await fetchEvent();
     }
     return data;
   };
@@ -85,13 +114,35 @@ export function useEvent() {
     const data = await verifyEventMemberPin(payload);
     if (data) {
       currentUser.value = data;
-      // 存到 localStorage
-      userMap[eventId] = data;
+      // 只存 user.id
+      let userMap = {};
+      try {
+        userMap = localStorage.getItem("eventUserMap")
+          ? JSON.parse(localStorage.getItem("eventUserMap"))
+          : {};
+      } catch (e) {
+        userMap = {};
+      }
+      userMap[eventCode] = data.id;
       localStorage.setItem("eventUserMap", JSON.stringify(userMap));
     }
     return data;
   };
-
+  const cleanUser = async () => {
+    let userMap = {};
+    try {
+      userMap = localStorage.getItem("eventUserMap")
+        ? JSON.parse(localStorage.getItem("eventUserMap"))
+        : {};
+    } catch (e) {
+      userMap = {};
+    }
+    if (userMap[eventCode]) {
+      delete userMap[eventCode];
+      localStorage.setItem("eventUserMap", JSON.stringify(userMap));
+    }
+    currentUser.value = null;
+  };
   return {
     event,
     loading,
@@ -103,5 +154,6 @@ export function useEvent() {
     confirmCloseEvent,
     createMember,
     verifyPin,
+    cleanUser,
   };
 }

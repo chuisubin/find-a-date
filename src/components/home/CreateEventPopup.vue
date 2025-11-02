@@ -38,6 +38,7 @@
           <label class="block mb-1"
             >活動日期 <span class="primary_text">*</span></label
           >
+          <div class="hidden lg:block">
           <DatePicker
             v-model:value="enableDateRange"
             type="date"
@@ -49,7 +50,34 @@
             input-class="input w-full "
             required
             placeholder="請選擇活動日期範圍"
+          :multi-calendars="false"
+          :partial-update="true"
           />
+          </div>
+          <div class="lg:hidden flex flex-col gap-2">
+            <DatePicker
+              v-model:value="mobileStartDate"
+              type="date"
+              format="YYYY-MM-DD"
+              :disabled-date="date => disableBeforeToday(date) || (mobileEndDate ? date > mobileEndDate : false)"
+              value-type="date"
+              class="w-full"
+              input-class="input w-full "
+              required
+              placeholder="開始日期"
+            />
+            <DatePicker
+              v-model:value="mobileEndDate"
+              type="date"
+              format="YYYY-MM-DD"
+              :disabled-date="date => disableBeforeToday(date) || (mobileStartDate ? date < mobileStartDate : false)"
+              value-type="date"
+              class="w-full"
+              input-class="input w-full "
+              required
+              placeholder="結束日期"
+            />
+          </div>
         </div>
         <div class="mb-4">
           <label class="block mb-1">描述</label>
@@ -78,9 +106,7 @@ import DatePicker from "vue-datepicker-next";
 import "vue-datepicker-next/index.css";
 import { formatDateLocal } from "@/utils/dateFormat.js";
 import { ref, watch } from "vue";
-import Popup from "@/components/Popup.vue";
 import { createEvent } from "@/api/event";
-import { useUserStore } from "@/stores/user";
 import { toast } from 'vue3-toastify';
 import {useRouter} from 'vue-router';
 
@@ -92,16 +118,20 @@ const newEventTitle = ref("");
 const newEventDescription = ref("");
 const newEventDeadlineDate = ref(null);
 
-const userStore = useUserStore();
 const isLoading = ref(false);
 const enableDateRange = ref([]);
+const mobileStartDate = ref(null);
+const mobileEndDate = ref(null);
 const errorMsg = ref("");
 
 
-
-
-
-
+watch([mobileStartDate, mobileEndDate], ([start, end]) => {
+  if (start && end) {
+    enableDateRange.value = [start, end];
+  } else {
+    enableDateRange.value = [];
+  }
+});
 
 async function handleCreateEvent() {
   console.log("create");

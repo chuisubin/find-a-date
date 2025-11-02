@@ -12,6 +12,14 @@
         <EventDetail :event="event" :isOwner="isOwner" />
         <div class="flex flex-col gap-4 lg:flex-row">
           <div class="w-full">
+            <Head>
+              <title>{{ event?.name ? `${event.name} | 擇個吉日` : '擇個吉日' }}</title>
+                <meta property="og:title" :content="event?.name ? `${event.name} | 擇個吉日` : '擇個吉日'" />
+              <meta property="og:description" :content="event?.description ?? '多人協作選日子，最方便的活動日期投票工具。'" />
+              <meta property="og:url" :content="`${eventUrl}`" />
+              <meta property="og:type" content="website" />
+              <meta property="og:image" content="/mandarin.png" />
+            </Head>
             <!-- <EventCalendar :event="event" :fetchEvent="fetchEvent" /> -->
             <NewCalendar
               v-if="event"
@@ -56,6 +64,7 @@ import Popup from "@/components/Popup.vue";
 import EventChooseUser from "@/components/auth/EventChooseUser.vue";
 import { ref, watch, onMounted, computed } from "vue";
 import Header from "@/components/Header.vue";
+import { Head } from '@vueuse/head';
 
 const props = defineProps({
   code: String
@@ -100,4 +109,11 @@ watch(
   },
   { immediate: true }
 );
+
+const eventUrl = computed(() => {
+  if (typeof window !== 'undefined' && event?.value?.id) {
+    return `${window.location.origin}/event/${event.value.id}`;
+  }
+  return '';
+});
 </script>

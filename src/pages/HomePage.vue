@@ -90,6 +90,5 @@ onMounted(async () => {
     }
   }
   eventList.value = events;
-  console.log("onMounted", eventList.value);
 });
 </script>

@@ -12,7 +12,7 @@
           class="rounded-lg shadow px-4 py-2 border flex flex-col gap-2 lg:gap-4 transition"
           :class="{ 'highlighted-item': item.count === maxCount }"
         >
-          <div class="flex items-center gap-1 lg:gap-4">
+          <div class="flex items-center gap-1.5 lg:gap-4">
             <div v-if="item.count === maxCount">
               <img 
                 :src="mandarinImg" 
@@ -228,6 +228,6 @@ async function confirmFinalDateHandle() {
   text-decoration: underline;
 
   background-color: #fffbeb; /* Very light yellow background */
-  @apply ring-amber-400
+  @apply ring-amber-400 hover:bg-yellow-200;
 }
 </style>

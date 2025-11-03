@@ -228,5 +228,6 @@ async function confirmFinalDateHandle() {
   text-decoration: underline;
 
   background-color: #fffbeb; /* Very light yellow background */
+  @apply ring-amber-400
 }
 </style>

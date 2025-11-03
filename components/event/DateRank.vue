@@ -9,11 +9,11 @@
         <li
           v-for="(item, idx) in (showAll ? allDates : topDates)"
           :key="item.date"
-          class="rounded-lg shadow px-4 py-2 border flex flex-col gap-2 lg:gap-4 transition"
-          :class="{ 'highlighted-item': item.count === maxCount }"
+          class="rounded-lg shadow px-2 lg:px-4 py-4 border flex flex-col gap-2 lg:gap-4 transition"
+          :class="{ 'highlighted-item': item.count === memberCount }"
         >
           <div class="flex items-center gap-1.5 lg:gap-4">
-            <div v-if="item.count === maxCount">
+            <div v-if="item.count === memberCount">
               <img 
                 :src="mandarinImg" 
                 alt="Mandarin" 
@@ -27,7 +27,7 @@
               class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
               :class="{
                 'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
-                'highlighted-date': item.count === maxCount
+                'highlighted-date': item.count === memberCount
               }"
               @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
             >
@@ -39,9 +39,9 @@
               @click="toggleExpand(idx)"
             >
             <span class="ml-auto flex items-center gap-1 text-sm lg:text-base ">
-              <font-awesome-icon v-if="item.count === maxCount" :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
-              <span class="font-semibold whitespace-nowrap" v-if="item.count === maxCount">齊人!</span>
-              <span class="whitespace-nowrap" v-else>{{ item.count }} 人可行</span>
+              <font-awesome-icon v-if="item.count === memberCount" :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
+              <span class="font-semibold whitespace-nowrap" v-if="item.count === memberCount">齊人!</span>
+              <span class="whitespace-nowrap" v-else>人數: {{ item.count }}/{{ memberCount }}</span>
             </span>
               <font-awesome-icon :icon="expandedItems[idx] ? ['fa', 'chevron-up'] : ['fa', 'chevron-down']" />
             </button>
@@ -137,14 +137,16 @@ const allDates = computed(() => {
       dateCount[date] = (dateCount[date] || 0) + 1;
     });
   });
-  return Object.entries(dateCount)
+
+  const sortedDates = Object.entries(dateCount)
     .map(([date, count]) => ({ date, count }))
     .sort((a, b) => b.count - a.count || a.date.localeCompare(b.date));
+  return sortedDates;
 });
 
 const topDates = computed(() => allDates.value.slice(0, 6));
 const maxCount = computed(() => (allDates.value.length > 0 ? allDates.value[0].count : 0));
-
+const memberCount = computed(() => props.event?.events_members?.length || 0);
 function setShowAll() {
   showAll.value = !showAll.value;
 }

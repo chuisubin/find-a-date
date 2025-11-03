@@ -9,34 +9,58 @@
         <li
           v-for="(item, idx) in (showAll ? allDates : topDates)"
           :key="item.date"
-          class="rounded-lg shadow px-4 py-2 border flex items-center gap-1 lg:gap-4 transition"
+          class="rounded-lg shadow px-4 py-2 border flex flex-col gap-2 lg:gap-4 transition"
           :class="{ 'highlighted-item': item.count === maxCount }"
         >
-          <div v-if="item.count === maxCount">
-            <img 
-              :src="mandarinImg" 
-              alt="Mandarin" 
-              class="w-6 h-6" 
-            />
+          <div class="flex items-center gap-1 lg:gap-4">
+            <div v-if="item.count === maxCount">
+              <img 
+                :src="mandarinImg" 
+                alt="Mandarin" 
+                class="w-6 h-6" 
+              />
+            </div>
+            <div v-else class="flex flex-row justify-center w-6 lg:w-7">
+              <span class="font-semibold lg:text-xl text-blue-600 ">{{ idx + 1 }}</span>
+            </div>
+            <span
+              class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
+              :class="{
+                'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
+                'highlighted-date': item.count === maxCount
+              }"
+              @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
+            >
+              {{ item.date }} {{ getDayOfWeek(item.date) }}
+            </span>
+
+            <button
+              class="ml-auto text-gray-500 hover:text-gray-600 flex flex-row items-center gap-1 "
+              @click="toggleExpand(idx)"
+            >
+            <span class="ml-auto flex items-center gap-1 text-sm lg:text-base ">
+              <font-awesome-icon v-if="item.count === maxCount" :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
+              <span class="font-semibold whitespace-nowrap" v-if="item.count === maxCount">齊人!</span>
+              <span class="whitespace-nowrap" v-else>{{ item.count }} 人可行</span>
+            </span>
+              <font-awesome-icon :icon="expandedItems[idx] ? ['fa', 'chevron-up'] : ['fa', 'chevron-down']" />
+            </button>
           </div>
-          <div v-else class="flex flex-row justify-center w-6 lg:w-7">
-            <span class="font-semibold lg:text-xl text-blue-600 ">{{ idx + 1 }}</span>
-          </div>
-          <span
-            class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
-            :class="{
-              'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
-              'highlighted-date': item.count === maxCount
-            }"
-            @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
-          >
-            {{ item.date }} ({{ getDayOfWeek(item.date) }})
-          </span>
-          <span class="ml-auto flex items-center gap-1 text-xs lg:text-sm ">
-            <font-awesome-icon :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
-            <template v-if="item.count === maxCount">齊人!</template>
-            <template v-else>{{ item.count }} 人可行</template>
-          </span>
+          <Collapse :when="expandedItems[idx]" class=" text-sm text-gray-600">
+            <div>
+            <p class=" lg:text-lg  mb-2">選擇此日期的成員:</p>
+            <div class="flex flex-row gap-4 flex-wrap ">
+              <li v-for="member in getMembersForDate(item.date)" :key="member.username" class="flex items-center gap-2">
+                <img
+                  :src="getAvatarSrc(member.avatar_name)"
+                  alt="Avatar"
+                  class="w-6 h-6 rounded-full"
+                />
+                {{ member.username }}
+              </li>
+            </div>
+            </div>
+          </Collapse>
         </li>
       </ul>
       <div v-if="allDates.length > 6" class="mx-auto mt-4 cursor-pointer text-blue-600 underline w-fit" @click="setShowAll">
@@ -80,6 +104,8 @@ import { ref, computed } from "vue";
 import Popup from "~/components/Popup.vue";
 import { toast } from "vue3-toastify";
 import mandarinImg from '~/assets/images/mandarin.png';
+import { avatarIconList } from "~/assets/images/avatar/index.js";
+import { Collapse } from "vue-collapsed";
 
 const props = defineProps({
   event: {
@@ -101,6 +127,7 @@ const showConfirmDatePopup = ref(false);
 const confirmDate = ref("");
 const confirming = ref(false);
 const showAll = ref(false);
+const expandedItems = ref({});
 
 const allDates = computed(() => {
   if (!props.event || !props.event.availabilities) return [];
@@ -131,6 +158,33 @@ function getDayOfWeek(dateString) {
   const days = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
   const date = new Date(dateString);
   return days[date.getDay()];
+}
+
+function toggleExpand(idx) {
+  expandedItems.value[idx] = !expandedItems.value[idx];
+}
+
+function getAvatarSrc(avatarName) {
+  const avatar = avatarIconList.find((icon) => icon.name === avatarName);
+  return avatar ? avatar.src : "未知頭像";
+}
+
+function getMembersForDate(date) {
+  if (!props.event || !props.event.availabilities || !props.event.events_members) return [];
+
+  // Create a map of events_member_id to member details for quick lookup
+  const membersMap = props.event.events_members.reduce((map, member) => {
+    map[member.id] = {
+      username: member.username || "未知成員",
+      avatar_name: member.avatar_name || "未知頭像",
+    };
+    return map;
+  }, {});
+
+  // Filter availabilities for the given date and map to member details using the membersMap
+  return props.event.availabilities
+    .filter((a) => a.available_dates.includes(date))
+    .map((a) => membersMap[a.events_member_id] || { username: "未知成員", avatar_name: "未知頭像" });
 }
 
 async function confirmFinalDateHandle() {

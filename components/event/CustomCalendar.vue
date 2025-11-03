@@ -25,7 +25,7 @@
           @mouseenter="day.day !== '' ? (hoveredDate = day.date) : null"
           @mouseleave="day.day !== '' ? (hoveredDate = null) : null"
         >
-        <span class="absolute -top-2 border border-primary-hover -right-2 text-xs text-amber-500 font-bold bg-white rounded-full px-1"
+        <span :title="dotsMap[day.date]??''" class="absolute -top-2  bg-primary-light -right-2 text-xs text-white   rounded-full px-1.5"
          v-if="dotsMap[day.date] > 1">
                 {{ dotsMap[day.date] }}
         </span>
@@ -37,7 +37,7 @@
         
         <FontAwesomeIcon v-if="modelValue.includes(day.date)"
           :icon="['fa', 'check']"
-          class="w-4 h-4 lg:w-6 lg:h-6 primary_text calendar-selected-tick " />
+          class="w-4 h-4 lg:w-6 lg:h-6 text-red-500 calendar-selected-tick " />
        
         </div>
       </div>
@@ -81,6 +81,10 @@ const props = defineProps({
   highlightUsers: {
     type: Object,
     default: () => ({}),
+  },
+  totalMembers: {
+    type: Number,
+    default: 0,
   },
 });
 const emit = defineEmits(['select-date']);
@@ -175,12 +179,13 @@ const dotsMap = computed(() => {
   return props.dotsMap || {};
 });
 
-// 根據人數決定 highlight border class
+// 根據人數比例決定 highlight border class
 function highlightBorderClass(count) {
-  if (!count || count < 1) return '';
-  if (count < 3) return 'highlight-border-1';
-  if (count < 6) return 'highlight-border-2';
-  if (count < 10) return 'highlight-border-3';
+  if (!count || count < 1 || props.totalMembers <= 1) return '';
+  const ratio = count / (props.totalMembers - 1);// 除去自己
+  if (ratio < 0.25) return 'highlight-border-1';
+  if (ratio < 0.5) return 'highlight-border-2';
+  if (ratio < 0.75) return 'highlight-border-3';
   return 'highlight-border-4';
 }
 </script>
@@ -241,32 +246,19 @@ function highlightBorderClass(count) {
 /* Highlight border classes for enabled/highlighted dates */
 .highlight-border-1 {
   font-weight: bold;
-  border: 2px solid #ff9800; /* 橙黃 */
+  border: 2px solid #ffe0b2; /* 淺橙色 */
 }
 .highlight-border-2 {
   font-weight: bold;
-  border: 2px solid #1976d2; /* 深藍 */
+  border: 2px solid #ffcc80; /* 中橙色 */
 }
 .highlight-border-3 {
   font-weight: bold;
-  border: 2px solid #43a047; /* 綠色 */
+  border: 2px solid #ff8a65; /* 淺紅橙色 */
 }
 .highlight-border-4 {
   font-weight: bold;
-  border: 2px solid #d32f2f; /* 紅色 */
-}
-
-.dark .highlight-border-1 {
-  border-color: #ffb74d; /* 深橙黃 */
-}
-.dark .highlight-border-2 {
-  border-color: #90caf9; /* 淺藍 */
-}
-.dark .highlight-border-3 {
-  border-color: #66bb6a; /* 淺綠 */
-}
-.dark .highlight-border-4 {
-  border-color: #ef5350; /* 淺紅 */
+  border: 2px solid #d84315; /* 深紅色 */
 }
 
 

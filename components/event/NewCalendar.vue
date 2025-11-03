@@ -11,6 +11,7 @@
       :highlight-users="highlightUsersMap"
       @select-date="onSelectDate"
       :currentUser="currentUser"
+      :totalMembers="props.event?.events_members.length || 0"
     />
     
   </div>

@@ -3,7 +3,7 @@
     <div>
       <h2 class="text-lg lgtext-2xl font-bold mb-4">成員列表</h2>
     </div>
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-row flex-wrap lg:flex-col gap-4">
       <div v-for="(member, index) of props.members" :key="index">
         <div
           class="overflow-hidden text-ellipsis whitespace-nowrap max-w-full flex flex-row items-center gap-2"
@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="relative mt-4">
-      <div  v-if="isOwner" class="w-full">
+      <div  v-if="isOwner&& !disabled" class="w-full">
         <button
           class="w-full btn red_btn font-bold"
           @click="showClosePopup = true"
@@ -62,7 +62,7 @@ const props = defineProps<{
 }>();
 const emit = defineEmits([ "closeEvent"]);
 
-const disabled = props.disabled;
+const disabled = computed(() => props.disabled);
 const isOwner = computed(() => {
   return props.owner && props.currentUser && props.owner.id === props.currentUser.id;
 });

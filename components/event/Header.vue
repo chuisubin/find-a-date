@@ -38,7 +38,7 @@
               class="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
               @click="handleMenuItemClick(props.cleanUser)"
             >
-              切換用戶
+              登出及切換用戶
             </button>
           </div>
         </div>

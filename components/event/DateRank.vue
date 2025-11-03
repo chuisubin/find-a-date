@@ -1,11 +1,11 @@
 <template>
   <div class="mt-8">
     <div v-if="event && event.availabilities && event.availabilities.length" class="mb-8">
-      <h2 class="text-lg lg:text-2xl font-bold mb-4  flex items-center gap-2">
+      <h2 class="text-lg lg:text-xl  font-bold   flex items-center gap-2">
         最多人共同選擇的日期
       </h2>
-      <p v-if="isOwner" class="text-gray-500 text-sm mb-4">點擊日期確認最終選擇</p>
-      <ul class="grid grid-cols-1  gap-4">
+      <p v-if="isOwner" class="text-gray-500 text-sm mt-2">點擊日期確認最終選擇</p>
+      <ul class="grid grid-cols-1  gap-4 mt-4">
         <li
           v-for="(item, idx) in (showAll ? allDates : topDates)"
           :key="item.date"
@@ -21,10 +21,10 @@
               />
             </div>
             <div v-else class="flex flex-row justify-center w-6 lg:w-7">
-              <span class="font-semibold lg:text-xl text-blue-600 ">{{ idx + 1 }}</span>
+              <span class="font-semibold  text-blue-600 ">{{ idx + 1 }}</span>
             </div>
             <span
-              class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
+              class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800  tracking-wide"
               :class="{
                 'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
                 'highlighted-date': item.count === memberCount
@@ -40,7 +40,7 @@
             >
             <span class="ml-auto flex items-center gap-1 text-sm lg:text-base ">
               <font-awesome-icon v-if="item.count === memberCount" :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
-              <span class="font-semibold whitespace-nowrap" v-if="item.count === memberCount">齊人!</span>
+              <span class="font-semibold whitespace-nowrap" v-if="item.count === memberCount">齊人</span>
               <span class="whitespace-nowrap" v-else>人數: {{ item.count }}/{{ memberCount }}</span>
             </span>
               <font-awesome-icon :icon="expandedItems[idx] ? ['fa', 'chevron-up'] : ['fa', 'chevron-down']" />

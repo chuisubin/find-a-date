@@ -91,7 +91,7 @@
             type="text"
             required
             class="input w-full"
-            autocomplete="username"
+            
           />
         </div>
         <div class="flex flex-col items-start">
@@ -100,7 +100,7 @@
             v-model="newPin"
             type="password"
             class="input w-full"
-            autocomplete="new-password"
+          
             required
             maxlength="4"
             inputmode="numeric"
@@ -113,7 +113,7 @@
             v-model="repeatPin"
             type="password"
             class="input w-full"
-            autocomplete="new-password"
+          
             required
             maxlength="4"
             inputmode="numeric"
@@ -150,7 +150,8 @@
           type="password"
           placeholder="輸入4位數字"
           class="input w-full"
-          autocomplete="new-password"
+          maxlength="4"
+          inputmode="numeric"
           required
         />
         <div class="w-full flex flex-row items-center gap-4">

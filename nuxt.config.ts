@@ -78,8 +78,8 @@ export default defineNuxtConfig({
       description: "方便朋友協作夾日期的工具",
       lang: "zh-HK",
       display: "standalone",
-      background_color: "#ffffff",
-      theme_color: "#4CAF50",
+      background_color: "#fcfcfc",
+      theme_color: "#fcfcfc",
       icons: [
         {
           src: "/mandarin.png",

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://find-a-date.vercel.app/sitemap.xml

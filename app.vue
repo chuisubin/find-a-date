@@ -10,9 +10,20 @@ import { useThemeStore } from './stores/theme'
 
 const themeStore = useThemeStore()
 
+
 onMounted(() => {
   themeStore.initTheme()
 })
+if (process.client) {
+  window.addEventListener('load', () => {
+    if (!('serviceWorker' in navigator)) {
+      throw new Error('serviceWorker is not supported in current browser!')
+    }
+
+      console.log('loaded');
+    navigator.serviceWorker.register('/sw.js')
+  })
+}
 </script>
 
 <style>

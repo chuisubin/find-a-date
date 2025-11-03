@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-11-03",
   css: ["~/assets/css/main.css"],
@@ -62,6 +63,38 @@ export default defineNuxtConfig({
         {
           rel: "apple-touch-icon",
           href: "/mandarin.png",
+        },
+      ],
+    },
+  },
+  pwa: {
+    manifest: {
+      name: "擇個吉日",
+      short_name: "吉日",
+      description: "方便朋友協作夾日期的工具",
+      lang: "zh-HK",
+      display: "standalone",
+      background_color: "#ffffff",
+      theme_color: "#4CAF50",
+      icons: [
+        {
+          src: "/mandarin.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "/mandarin.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    },
+    workbox: {
+      runtimeCaching: [
+        {
+          urlPattern: ".*",
+          handler: "CacheFirst",
+          method: "GET",
         },
       ],
     },

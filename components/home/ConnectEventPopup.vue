@@ -46,7 +46,7 @@ async function handleConnectEvent() {
     }
     // 跳轉到 event page 並帶入 public code
     router.push(`/event/${eventCode.value.trim()}`);
-    emit('close');
+    
     eventCode.value = "";
   } catch (e) {
     errorMsg.value = "查詢聚會失敗，請確認代碼是否正確";

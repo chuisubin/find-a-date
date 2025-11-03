@@ -6,7 +6,7 @@
       class="container mx-auto flex flex-row justify-between items-center h-full relative"
     >
       <a href="/" class="flex flex-row items-center">
-        <img :src="mandarinIcon" class="w-7 h-7 mr-3 lg:mr-4" />
+        <img :src="mandarinIcon" class="w-7 h-7 mr-3 lg:mr-4" :draggable="false" />
         <span class="title"
           >擇個<span class="title text-primary-light dark:text-primary-dark"
             >吉</span

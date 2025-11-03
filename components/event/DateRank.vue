@@ -18,6 +18,7 @@
                 :src="mandarinImg" 
                 alt="Mandarin" 
                 class="w-6 h-6" 
+                :draggable="false"
               />
             </div>
             <div v-else class="flex flex-row justify-center w-6 lg:w-7">
@@ -26,7 +27,8 @@
             <span
               class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800  tracking-wide"
               :class="{
-                'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
+  'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
+                'hover:bg-yellow-200': isOwner && event.status === 'voting' &&item.count === memberCount,
                 'highlighted-date': item.count === memberCount
               }"
               @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
@@ -230,6 +232,6 @@ async function confirmFinalDateHandle() {
   text-decoration: underline;
 
   background-color: #fffbeb; /* Very light yellow background */
-  @apply ring-amber-400 hover:bg-yellow-200;
+  @apply ring-amber-400 ;
 }
 </style>

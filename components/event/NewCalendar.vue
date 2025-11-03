@@ -12,6 +12,7 @@
       @select-date="onSelectDate"
       :currentUser="currentUser"
       :totalMembers="props.event?.events_members.length || 0"
+      :decided_date="props.event?.decided_date"
     />
     
   </div>

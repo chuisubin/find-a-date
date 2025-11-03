@@ -66,7 +66,7 @@ export default defineNuxtConfig({
         },
         {
           rel: "manifest",
-          href: "/manifest.webmanifest",
+          href: "/manifest.json",
         },
       ],
     },

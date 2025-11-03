@@ -177,8 +177,6 @@ async function handleCreateEvent() {
     newEventDescription.value = "";
     newEventDeadlineDate.value = null;
     enableDateRange.value = [];
-
-    emit("close");
     //route to event page with public code
     router.push(`/event/${data.public_code}`)
   } catch (e) {

@@ -18,7 +18,8 @@
           class="calendar-day"
           :class="[
             highlightDates.includes(day.date) ? highlightBorderClass(dotsMap[day.date]) : '',
-            day.day !== '' && props.enableDates.includes(day.date) ? 'enabled' : 'disabled'
+            day.day !== '' && props.enableDates.includes(day.date) ? 'enabled' : 'disabled',
+            day.date === props.decided_date ? 'decided-date' : ''
           ]"
           :data-empty="day.day === '' ? 'true' : null"
           @click="day.day !== ''  ? handleSelectDate(day.date) : null"
@@ -85,6 +86,10 @@ const props = defineProps({
   totalMembers: {
     type: Number,
     default: 0,
+  },
+  decided_date: {
+    type: String,
+    default: null,
   },
 });
 const emit = defineEmits(['select-date']);
@@ -245,19 +250,19 @@ function highlightBorderClass(count) {
 
 /* Highlight border classes for enabled/highlighted dates */
 .highlight-border-1 {
-  font-weight: bold;
+ 
   border: 2px solid #ffe0b2; /* 淺橙色 */
 }
 .highlight-border-2 {
-  font-weight: bold;
+
   border: 2px solid #ffcc80; /* 中橙色 */
 }
 .highlight-border-3 {
-  font-weight: bold;
+ 
   border: 2px solid #ff8a65; /* 淺紅橙色 */
 }
 .highlight-border-4 {
-  font-weight: bold;
+ 
   border: 2px solid #d84315; /* 深紅色 */
 }
 
@@ -300,5 +305,9 @@ function highlightBorderClass(count) {
   transform: translateX(-50%);
   z-index: 2;
   @apply  top-1 left-1/2 -translate-x-1/2 lg:-translate-x-1/2  lg:top-0 lg:left-1/2;
+}
+
+.decided-date {
+  @apply bg-green-200  font-bold
 }
 </style>

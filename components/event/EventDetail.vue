@@ -142,30 +142,11 @@
   <!-- Popup for Invitation -->
   <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true">
     <div>
-      <div class="event-details relative min-w-72 lg:min-w-96  px-10 lg:px-12  py-12  w-fit h-auto  ">
-        <img :draggable="false" :src="cardImg" alt="Invitation Card" class="absolute inset-0 w-full h-full object-fill z-0" />
-        <div class=" relative z-10">
-        <h1 class="text-xl lg:text-3xl font-extrabold text-center text-primary-dark mb-4">
-          邀請函
-        </h1>
-        <h2 class="text-xl lg:text-2xl font-semibold  mb-2 lg:mb-4">
-          <span class="text-primary"
-            >{{ event.title || '' }}</span
-          >
-        </h2>
-        <p class="text-base lg:text-lg text-gray-700 mb-2 lg:mb-4" v-if="event.description">
-          {{ event?.description  }}
-          
-        </p>
-        <p class=" text-gray-700">
-          日期:
-          <span class=""
-            >{{ event.decided_date || '' }}</span
-          >
-        </p>
-        </div>
+      <h1 class="text-center text-lg lg:text-2xl mb-4">預覽</h1>
+      <div class="event-details relative    aspect-[3/2]  max-w-80  ">
+        <Invitation  :event="event" />
       </div>
-      <div class="popup-actions mt-6 flex justify-end gap-4">
+      <div class="popup-actions mt-4 flex justify-end gap-4">
         <button
           @click="downloadInvite"
           class="btn enter_btn "
@@ -187,17 +168,18 @@
   </Popup>
 </template>
 
-<script lang="ts" setup>
+<script  setup>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { updateEventFields } from "~/api/event";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import html2canvas from "html2canvas";
 import Popup from "~/components/Popup.vue";
-import cardImg from "~/assets/images/card.jpg";
-const props = defineProps<{
-  event: any;
-  isOwner: boolean;
-}>();
+
+import Invitation from "./Invitation.vue";
+const props = defineProps({
+  event: Object,
+  isOwner: Boolean,
+});
 const event = computed(() => props.event);
 
 
@@ -301,6 +283,7 @@ async function downloadInvite() {
   try {
     const canvas = await html2canvas(eventDetails, {
       backgroundColor: "#fff",
+      scale: 2, // Scale the image to double the resolution
     });
     const image = canvas.toDataURL("image/png");
 
@@ -324,6 +307,7 @@ async function shareInvite() {
   try {
     const canvas = await html2canvas(eventDetails, {
       backgroundColor: "#fff",
+      scale: 2, // Scale the image to double the resolution
     });
     const image = canvas.toDataURL("image/png");
 
@@ -332,7 +316,7 @@ async function shareInvite() {
         title: "分享邀請函",
         text: `查看聚會邀請函：${event.value?.title}`,
         files: [
-          new File([await (await fetch(image)).blob()], "event-details.png", {
+          new File([await (await fetch(image)).blob()], `event-${event.value?.title || "details"}.png`, {
             type: "image/png",
           }),
         ],

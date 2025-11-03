@@ -5,7 +5,7 @@
   "display": "standalone",
   "background_color": "#fcfcfc",
   "theme_color": "#fcfcfc",
-  "description": "多人協作選日期工具",
+  "description": "方便朋友協作夾日期的工具",
   "icons": [
     {
       "src": "mandarin.png",

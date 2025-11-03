@@ -3,8 +3,8 @@
   "short_name": "擇個吉日",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2563eb",
+  "background_color": "#fcfcfc",
+  "theme_color": "#fcfcfc",
   "description": "多人協作選日期工具",
   "icons": [
     {

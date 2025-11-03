@@ -34,6 +34,7 @@
     "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.7",
     "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.0.0",
     "postcss": "^8.0.0",

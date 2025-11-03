@@ -3,7 +3,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2025-11-03",
   css: ["~/assets/css/main.css"],
-  modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss"],
+  modules: ["@pinia/nuxt", "@nuxtjs/tailwindcss", "@vite-pwa/nuxt"],
   tailwindcss: {
     configPath: "tailwind.config.js",
     cssPath: "~/assets/css/main.css",
@@ -74,7 +74,7 @@ export default defineNuxtConfig({
   pwa: {
     manifest: {
       name: "擇個吉日",
-      short_name: "吉日",
+      short_name: "擇個吉日",
       description: "方便朋友協作夾日期的工具",
       lang: "zh-HK",
       display: "standalone",

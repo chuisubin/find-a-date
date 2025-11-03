@@ -30,6 +30,9 @@
           輸入代碼加入
         </button>
       </div>
+      <ClientOnly >
+        
+     
       <Popup
         v-model="showCreateEventPopup"
         @close="() => (showCreateEventPopup = false)"
@@ -45,6 +48,7 @@
           @close="() => (showConnectEventPopup = false)"
         />
       </Popup>
+       </ClientOnly>
       <div class="" v-if="eventList.length > 0">
         <MyEventListView :myEvents="eventList" />
       </div>

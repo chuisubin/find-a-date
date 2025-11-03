@@ -15,40 +15,20 @@
             required
           />
         </div>
-       
-        
-        <div class="mb-4">
-          <label class="block mb-1"
-            >截止日期 <span class="primary_text">*</span></label
-          >
-          <ClientOnly>
-            <DatePicker
-              placeholder="請選擇截止日期"
-              v-model:value="newEventDeadlineDate"
-              type="date"
-              format="YYYY-MM-DD"
-              :disabled-date="disableBeforeToday"
-              value-type="date"
-              class="w-full"
-              input-class="input w-full"
-              required
-            />
-          </ClientOnly>
-        </div>
 
         <div class="mb-4">
           <label class="block mb-1"
             >活動日期 <span class="primary_text">*</span></label
           >
           <div class="hidden lg:block">
-            <ClientOnly>
+           
               <DatePicker
                 v-model:value="enableDateRange"
-                type="date"
-                format="YYYY-MM-DD"
+                 type="date"
+              format="YYYY-MM-DD"
+              value-type="date"
                 :disabled-date="disableBeforeToday"
                 range
-                value-type="date"
                 class="w-full"
                 input-class="input w-full "
                 required
@@ -56,37 +36,60 @@
                 :multi-calendars="false"
                 :partial-update="true"
               />
-            </ClientOnly>
+       
           </div>
           <div class="lg:hidden flex flex-col gap-2">
-            <ClientOnly>
+           
               <DatePicker
                 v-model:value="mobileStartDate"
-                type="date"
-                format="YYYY-MM-DD"
+                 type="date"
+              format="YYYY-MM-DD"
+              value-type="date"
                 :disabled-date="date => disableBeforeToday(date) || (mobileEndDate ? date > mobileEndDate : false)"
-                value-type="date"
                 class="w-full"
                 input-class="input w-full "
                 required
                 placeholder="開始日期"
               />
-            </ClientOnly>
-            <ClientOnly>
+            
+           
               <DatePicker
                 v-model:value="mobileEndDate"
-                type="date"
-                format="YYYY-MM-DD"
+                  type="date"
+              format="YYYY-MM-DD"
+              value-type="date"
                 :disabled-date="date => disableBeforeToday(date) || (mobileStartDate ? date < mobileStartDate : false)"
-                value-type="date"
+               
                 class="w-full"
                 input-class="input w-full "
                 required
                 placeholder="結束日期"
               />
-            </ClientOnly>
+            
           </div>
         </div>
+
+        <div class="mb-4">
+          <label class="block mb-1"
+            >投票截止日期 <span class="primary_text">*</span><span class="text-xs text-gray-500">(請先選擇活動日期範圍)</span></label
+          >
+         
+            <DatePicker
+              placeholder="請選擇投票截止日期"
+              v-model:value="newEventDeadlineDate"
+              type="date"
+              format="YYYY-MM-DD"
+              value-type="date"
+              :disabled-date="date => disableBeforeToday(date) || (enableDateRange.length === 2 && date > enableDateRange[1])"
+              :disabled="enableDateRange.length !== 2"
+              
+              class="w-full"
+              input-class="input w-full"
+              required
+            />
+          
+        </div>
+
         <div class="mb-4">
           <label class="block mb-1">描述</label>
           <textarea
@@ -141,7 +144,6 @@ watch([mobileStartDate, mobileEndDate], ([start, end]) => {
 });
 
 async function handleCreateEvent() {
-  console.log("create");
   errorMsg.value = "";
   if (!newEventTitle.value.trim()) {
     errorMsg.value = "請輸入聚會標題";
@@ -160,20 +162,23 @@ async function handleCreateEvent() {
   let [startDate, endDate] = enableDateRange.value;
   // 格式化為 YYYY-MM-DD
   const deadlineDate = formatDateLocal(newEventDeadlineDate.value);
+  const start = formatDateLocal(startDate);
+  const end = formatDateLocal(endDate);
+
   try {
   const data=  await createEvent({
       title: newEventTitle.value,
       description: newEventDescription.value,
       deadline_date: deadlineDate,
-      enable_start_date: startDate,
-      enable_end_date: endDate,
+      enable_start_date: start,
+      enable_end_date: end,
     });
     newEventTitle.value = "";
     newEventDescription.value = "";
     newEventDeadlineDate.value = null;
     enableDateRange.value = [];
+
     emit("close");
-    toast.success("聚會創建成功");
     //route to event page with public code
     router.push(`/event/${data.public_code}`)
   } catch (e) {

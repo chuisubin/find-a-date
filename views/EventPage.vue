@@ -1,5 +1,9 @@
 <template>
-  <Header :currentUser="currentUser" :cleanUser="cleanUser" />
+  <Header
+    :currentUser="currentUser"
+    :cleanUser="cleanUser"
+    :setShowChooseUser="setShowChooseUser"
+  />
   <div class="w-full mx-auto pt-20 lg:max-w-screen-lg">
     <div
       v-if="loading"
@@ -36,7 +40,7 @@
         class="relative mt-4 w-full text-right"
       >
         <span
-          class="text-sm cursor-pointer  hover:text-error-text text-error-light font-bold"
+          class="text-sm cursor-pointer hover:text-error-text text-error-light font-bold"
           @click="showClosePopup = true"
         >
           關閉活動
@@ -49,6 +53,7 @@
           :event="event"
           :verifyPin="verifyPin"
           :createMember="createMember"
+          :setShowChooseUser="setShowChooseUser"
         />
       </div>
       <Popup v-model="showClosePopup" :showClose="true">
@@ -105,9 +110,7 @@ const {
 
 const showClosePopup = ref(false);
 
-const showChooseUser = computed(() => {
-  return !currentUser.value ?? null;
-});
+const showChooseUser = ref(false);
 
 watch(event, (val) => {
   if (val && val.id && typeof localStorage !== "undefined") {
@@ -120,19 +123,10 @@ watch(event, (val) => {
   }
 });
 
-watch(
-  currentUser,
-  (val) => {
-    if (typeof document !== "undefined") {
-      if (val) {
-        document.body.style.overflow = "";
-      } else {
-        document.body.style.overflow = "hidden";
-      }
-    }
-  },
-  { immediate: true }
-);
+
+const setShowChooseUser = (value) => {
+  showChooseUser.value = value;
+};
 
 function confirmClose() {
   showClosePopup.value = false;

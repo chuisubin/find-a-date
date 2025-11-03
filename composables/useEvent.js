@@ -31,10 +31,17 @@ export function useEvent() {
     loading.value = true;
     try {
       event.value = await fetchEventByPublicCode(route.params.code);
-      if (event.value?.events_members) {
-        members.value = event.value.events_members;
-      } else {
-        members.value = [];
+      if (event.value) {
+        if (event.value?.events_members) {
+          members.value = event.value.events_members;
+        } else {
+          members.value = [];
+        }
+        if (!currentUser.value) {
+          //如果還沒有 currentUser，才去嘗試從 localStorage 讀取
+          await getCurrentUserLocal();
+          console.log("getCurrentUserLocal");
+        }
       }
     } catch (e) {
       event.value = null;
@@ -47,10 +54,10 @@ export function useEvent() {
 
   onMounted(async () => {
     debouncedFetchEvent();
-    getCurrentUserLocal();
   });
 
   const getCurrentUserLocal = async () => {
+    console.log("eventCode", eventCode);
     if (eventCode) {
       let userMap = {};
       try {
@@ -60,11 +67,14 @@ export function useEvent() {
         userMap = {};
       }
       const userId = userMap[eventCode];
+      console.log("userMap", userMap);
+      console.log("userId", userId);
       if (userId) {
         try {
           const user = await fetchEventMemberById(userId);
           if (user) {
             currentUser.value = user;
+            console.log("user", user);
           } else {
             delete userMap[eventCode];
             localStorage.setItem("eventUserMap", JSON.stringify(userMap));

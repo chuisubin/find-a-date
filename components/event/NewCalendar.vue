@@ -204,6 +204,9 @@ const dotsMap = computed(() => {
 function onSelectDate(date) {
   // 只有 event.status 為 'voting' 才能選擇
   if (props.event?.status !== 'voting') return;
+  if (!props.currentUser) {
+    return
+  };
   if (!computedEnableDates.value.includes(date)) return;
   if (selectedDates.value.includes(date)) {
     selectedDates.value = selectedDates.value.filter(d => d !== date);

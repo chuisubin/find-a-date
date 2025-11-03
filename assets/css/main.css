@@ -89,3 +89,8 @@ body {
 .dark .red_btn {
   @apply bg-error-dark text-text-light hover:bg-error-light;
 }
+
+
+.pickdate_title {
+  @apply text-2xl lg:text-3xl font-bold;
+}

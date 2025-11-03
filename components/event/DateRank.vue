@@ -56,7 +56,7 @@
                 <img
                   :src="getAvatarSrc(member.avatar_name)"
                   alt="Avatar"
-                  class="w-6 h-6 rounded-full"
+                  class="w-6 h-6 rounded-full border-2 border-primary-light"
                 />
                 {{ member.username }}
               </li>

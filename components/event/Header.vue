@@ -7,8 +7,8 @@
     >
       <a href="/" class="flex flex-row items-center">
         <img :src="mandarinIcon" class="w-7 h-7 mr-3 lg:mr-4" :draggable="false" />
-        <span class="title"
-          >擇個<span class="title text-primary-light dark:text-primary-dark"
+        <span class="pickdate_title"
+          >擇個<span class="pickdate_title text-primary-light dark:text-primary-dark"
             >吉</span
           >日</span
         >
@@ -20,12 +20,22 @@
           class="flex flex-row items-center gap-2"
           @click="menuOpen = !menuOpen"
         >
-          <img :src="avatarSrc" class="w-8 h-8 rounded-full" />
+          <img :src="avatarSrc" class="w-8 h-8 rounded-full border-2 border-primary-light" />
           <span>{{ props.currentUser.username }}</span>
+          <font-awesome-icon
+            :icon="['fas', 'chevron-down']"
+            class="w-3 h-3" />
+        </button>
+        <button
+          v-else
+          class="btn enter_btn"
+          @click="() => props.setShowChooseUser(true)"
+        >
+          加入
         </button>
         <div
           v-if="menuOpen"
-          class="absolute top-0 right-0 mt-12 w-48 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-20"
+          class="absolute top-0 right-0 mt-12 w-36 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-20"
         >
           <div class="flex flex-col">
             <!-- <button
@@ -35,10 +45,10 @@
             切換{{ isDark ? '淺色' : '深色' }}模式
           </button> -->
             <button
-              class="px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="px-4 py-2 text-center hover:bg-gray-100 dark:hover:bg-gray-700"
               @click="handleMenuItemClick(props.cleanUser)"
             >
-              登出及切換用戶
+              登出
             </button>
           </div>
         </div>
@@ -54,6 +64,8 @@ import { useThemeStore } from "~/stores/theme";
 import { storeToRefs } from "pinia";
 import mandarinIcon from "~/assets/images/mandarin.png";
 import { avatarIconList } from "~/assets/images/avatar/index.js";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
 const themeStore = useThemeStore();
 
 const props = defineProps({
@@ -62,6 +74,10 @@ const props = defineProps({
     default: null,
   },
   cleanUser: {
+    type: Function,
+    default: null,
+  },
+  setShowChooseUser: {
     type: Function,
     default: null,
   },
@@ -110,7 +126,5 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.title {
-  @apply text-2xl lg:text-3xl font-bold;
-}
+
 </style>

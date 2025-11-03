@@ -13,7 +13,7 @@
               : ''
           "
         >
-            <img :src="getAvatarIconSrc(member)" class="w-8 h-8 rounded-full" />
+            <img :src="getAvatarIconSrc(member)" class="w-8 h-8 rounded-full border-2 border-primary-light" />
          <span>{{ member.username }}</span>
         
         </div>

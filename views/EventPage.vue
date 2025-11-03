@@ -30,10 +30,11 @@
           </div>
         </div>
       </div>
+      <div class="" v-if="members.length > 1">
       <DateRank :event="event" :isOwner="isOwner"
       :confirmFinalDate="confirmFinalDate"
       
-      />
+      /></div>
 
       <!-- <Popup v-model="showChooseUser" :enableClickOutside="false"  :showClose="false"> -->
       <div v-if="showChooseUser && event">

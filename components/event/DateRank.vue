@@ -1,29 +1,41 @@
 <template>
   <div class="mt-8">
     <div v-if="event && event.availabilities && event.availabilities.length" class="mb-8">
-      <h2 class="text-lg lg:text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
-        <font-awesome-icon :icon="['fa', 'crown']" class="text-yellow-500 w-6 h-6" />
+      <h2 class="text-lg lg:text-2xl font-bold mb-4  flex items-center gap-2">
         最多人共同選擇的日期
       </h2>
-      <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <p v-if="isOwner" class="text-gray-500 text-sm mb-4">點擊日期確認最終選擇</p>
+      <ul class="grid grid-cols-1  gap-4">
         <li
           v-for="(item, idx) in (showAll ? allDates : topDates)"
           :key="item.date"
-          class="rounded-lg shadow event_card flex items-center gap-4 transition"
+          class="rounded-lg shadow px-4 py-2 border flex items-center gap-1 lg:gap-4 transition"
+          :class="{ 'highlighted-item': item.count === maxCount }"
         >
-          <span class="font-bold lg:text-xl text-blue-600">{{ idx + 1 }}</span>
+          <div v-if="item.count === maxCount">
+            <img 
+              :src="mandarinImg" 
+              alt="Mandarin" 
+              class="w-6 h-6" 
+            />
+          </div>
+          <div v-else class="flex flex-row justify-center w-6 lg:w-7">
+            <span class="font-semibold lg:text-xl text-blue-600 ">{{ idx + 1 }}</span>
+          </div>
           <span
-            class="px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
+            class="px-2 lg:px-4 py-2 rounded-lg bg-blue-50 text-blue-800 font-mono lg:text-lg tracking-wide"
             :class="{
               'cursor-pointer hover:bg-blue-200 ring-2 ring-blue-400': isOwner && event.status === 'voting',
+              'highlighted-date': item.count === maxCount
             }"
             @click="isOwner && event.status === 'voting' ? openConfirmDate(item.date) : null"
           >
-            {{ item.date }}
+            {{ item.date }} ({{ getDayOfWeek(item.date) }})
           </span>
-          <span class="ml-auto flex items-center gap-1 text-sm">
+          <span class="ml-auto flex items-center gap-1 text-xs lg:text-sm ">
             <font-awesome-icon :icon="['fa', 'check']" class="text-green-500 w-4 h-4" />
-            {{ item.count }} 人可行
+            <template v-if="item.count === maxCount">齊人!</template>
+            <template v-else>{{ item.count }} 人可行</template>
           </span>
         </li>
       </ul>
@@ -67,6 +79,7 @@
 import { ref, computed } from "vue";
 import Popup from "~/components/Popup.vue";
 import { toast } from "vue3-toastify";
+import mandarinImg from '~/assets/images/mandarin.png';
 
 const props = defineProps({
   event: {
@@ -103,6 +116,7 @@ const allDates = computed(() => {
 });
 
 const topDates = computed(() => allDates.value.slice(0, 6));
+const maxCount = computed(() => (allDates.value.length > 0 ? allDates.value[0].count : 0));
 
 function setShowAll() {
   showAll.value = !showAll.value;
@@ -111,6 +125,12 @@ function setShowAll() {
 function openConfirmDate(date) {
   confirmDate.value = date;
   showConfirmDatePopup.value = true;
+}
+
+function getDayOfWeek(dateString) {
+  const days = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+  const date = new Date(dateString);
+  return days[date.getDay()];
 }
 
 async function confirmFinalDateHandle() {
@@ -140,5 +160,19 @@ async function confirmFinalDateHandle() {
 <style scoped>
 .heading {
   letter-spacing: 1px;
+}
+
+.highlighted-item {
+  background-color: #fef3c7; /* Light yellow background */
+  border: 2px solid #f59e0b; /* Amber border */
+  border-radius: 0.5rem;
+}
+
+.highlighted-date {
+  font-weight: bold;
+  color: #d97706; /* Amber text color */
+  text-decoration: underline;
+
+  background-color: #fffbeb; /* Very light yellow background */
 }
 </style>

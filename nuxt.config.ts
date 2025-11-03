@@ -64,6 +64,10 @@ export default defineNuxtConfig({
           rel: "apple-touch-icon",
           href: "/mandarin.png",
         },
+        {
+          rel: "manifest",
+          href: "/manifest.webmanifest",
+        },
       ],
     },
   },

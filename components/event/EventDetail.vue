@@ -174,6 +174,7 @@ import { updateEventFields } from "~/api/event";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import html2canvas from "html2canvas";
 import Popup from "~/components/Popup.vue";
+import { calculateDeadlineText } from "~/utils/dateFormat";
 
 import Invitation from "./Invitation.vue";
 const props = defineProps({
@@ -223,16 +224,7 @@ async function save() {
   }
 }
 
-const deadlineViewText = computed(() => {
-  if (!event.value?.deadline_date) return "";
-  const today = new Date();
-  const deadline = new Date(event.value.deadline_date);
-  const diffTime = deadline.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  if (diffDays > 0) return `剩餘 ${diffDays} 天`;
-  if (diffDays === 0) return "今天截止";
-  return "已截止";
-});
+const deadlineViewText = computed(() => calculateDeadlineText(event.value?.deadline_date));
 
 const shareLinkHandle = () => {
   if (typeof window === 'undefined') return;

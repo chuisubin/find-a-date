@@ -10,7 +10,7 @@
       >
      </div>
       <h1
-        class="mb-4 lg:mb-6 text-center text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold"
+        class="mb-4 lg:mb-6 text-center text-black dark:text-white text-2xl md:text-4xl lg:text-5xl font-bold"
       >
         輕鬆搞定下次聚會！
       </h1>

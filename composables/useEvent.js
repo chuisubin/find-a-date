@@ -76,13 +76,9 @@ export function useEvent() {
             currentUser.value = user;
             console.log("user", user);
           } else {
-            delete userMap[eventCode];
-            localStorage.setItem("eventUserMap", JSON.stringify(userMap));
             currentUser.value = null;
           }
         } catch (e) {
-          delete userMap[eventCode];
-          localStorage.setItem("eventUserMap", JSON.stringify(userMap));
           currentUser.value = null;
         }
       }

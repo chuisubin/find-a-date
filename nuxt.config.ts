@@ -92,6 +92,8 @@ export default defineNuxtConfig({
           type: "image/png",
         },
       ],
+      scope: "/",
+      handle_links: "preferred",
     },
     workbox: {
       runtimeCaching: [
@@ -103,4 +105,8 @@ export default defineNuxtConfig({
       ],
     },
   },
+  plugins: [
+    // ...existing plugins...
+    "~/plugins/url-handler.client.js",
+  ],
 });

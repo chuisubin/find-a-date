@@ -86,7 +86,7 @@ onMounted(async () => {
     const { data, error } = await supabase
       .from("events")
       .select(
-        "id, public_code, title, description, status, decided_date, events_members (id)"
+        "id, public_code, title, description, status, decided_date, deadline_date, events_members (id)"
       )
       .in("id", idList);
     if (!error && data) {

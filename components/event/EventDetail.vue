@@ -86,9 +86,9 @@
           v-if="event.status"
           class="px-3 py-1 rounded text-base font-semibold"
           :class="{
-            'bg-blue-100 text-blue-700': event.status === 'voting',
-            'bg-green-100 text-green-700': event.status === 'decided',
-            'bg-gray-200 text-gray-600': event.status === 'closed',
+            'bg-status-voting-bg text-status-voting-text': event.status === 'voting',
+            'bg-status-decided-bg text-status-decided-text': event.status === 'decided',
+            'bg-status-closed-bg text-status-closed-text': event.status === 'closed',
           }"
         >
           {{

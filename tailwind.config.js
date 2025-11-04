@@ -33,6 +33,20 @@ module.exports = {
         "text-dark": "#f6f7f8",
         "text-secondary-light": "#617589",
         "text-secondary-dark": "#a0b3c4",
+        status: {
+          voting: {
+            bg: "#f0f9ff",
+            text: "#0369a1",
+          },
+          decided: {
+            bg: "#ecfdf5",
+            text: "#047857",
+          },
+          closed: {
+            bg: "#fef2f2",
+            text: "#b91c1c",
+          },
+        },
       },
       fontFamily: {
         display: ["Work Sans", "Noto Sans", "sans-serif"],

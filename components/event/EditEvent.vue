@@ -98,10 +98,8 @@ async function save() {
       description: editedDesc.value,
       address: editedAddress.value.trim(), // Save the edited address
     });
-    console.log('res',res);
     if (res.data) { // if update success
       await props.fetchEvent(); // fetch updated event details
-      console.log('success');
       toast.success("編輯成功");
       errorMsg.value = "";
       emit("cancelEdit");

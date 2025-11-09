@@ -6,7 +6,6 @@ export async function fetchUserName(userId) {
     .select("id, username, email")
     .eq("id", userId)
     .maybeSingle();
-  console.log("fetchUserName", data, error);
   if (error || !data) return userId;
   return data?.username || data?.email || userId;
 }

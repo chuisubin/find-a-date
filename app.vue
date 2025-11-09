@@ -20,7 +20,6 @@ if (process.client) {
       throw new Error('serviceWorker is not supported in current browser!')
     }
 
-      console.log('loaded');
     navigator.serviceWorker.register('/sw.js')
   })
 }

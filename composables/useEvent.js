@@ -40,7 +40,6 @@ export function useEvent() {
         if (!currentUser.value) {
           //如果還沒有 currentUser，才去嘗試從 localStorage 讀取
           await getCurrentUserLocal();
-          console.log("getCurrentUserLocal");
         }
       }
     } catch (e) {
@@ -57,7 +56,6 @@ export function useEvent() {
   });
 
   const getCurrentUserLocal = async () => {
-    console.log("eventCode", eventCode);
     if (eventCode) {
       let userMap = {};
       try {
@@ -67,14 +65,12 @@ export function useEvent() {
         userMap = {};
       }
       const userId = userMap[eventCode];
-      console.log("userMap", userMap);
-      console.log("userId", userId);
+
       if (userId) {
         try {
           const user = await fetchEventMemberById(userId);
           if (user) {
             currentUser.value = user;
-            console.log("user", user);
           } else {
             currentUser.value = null;
           }
@@ -113,7 +109,6 @@ export function useEvent() {
 
   const verifyPin = async (payload) => {
     const res = await verifyEventMemberPin(payload);
-    console.log("data", res);
 
     if (res.data) {
       currentUser.value = res.data;

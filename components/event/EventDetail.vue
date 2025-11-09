@@ -2,34 +2,33 @@
   <div class="mb-10">
     <div class="w-full">
       <div
-        class="flex  flex-row lg:flex-row justify-between items-start gap-4 w-full border-b mb-4"
+        class="flex flex-row lg:flex-row justify-between items-start gap-4 w-full border-b mb-4"
       >
         <div class=" ">
           <h1
             class="whitespace-normal leading-normal mb-4 lg:mb-6 text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold"
-          :title="event.title"
+            :title="event.title"
           >
             {{ event.title }}
           </h1>
         </div>
         <div class="w-full flex-1 relative">
-          <div  class="flex justify-end">
+          <div class="flex justify-end">
             <button
-              v-if="isOwner && event.status === 'voting'" 
-              @click="()=>showEditPopup=true"
+              v-if="isOwner && event.status === 'voting'"
+              @click="() => (showEditPopup = true)"
               class="h-fit normal_btn flex flex-row items-center"
             >
               <font-awesome-icon
                 :icon="['far', 'pen-to-square']"
                 class="w-4 lg:w-5 lg:h-5"
               />
-           
             </button>
           </div>
         </div>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
-        <span class="">當前狀態:</span>
+        <span class="whitespace-nowrap">當前狀態:</span>
         <span
           v-if="event.status"
           class="px-3 py-1 rounded text-base font-semibold"
@@ -59,33 +58,36 @@
         </span>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
-        <span class="">報名截止日期:</span>
+        <span class="whitespace-nowrap">報名截止日期:</span>
         <span class="text-error-light dark:text-error-dark">
           {{ deadlineViewText }}
         </span>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
-        <span class="">公開代碼:</span>
-        <div   @click="openSharePopup"  class="flex flex-row items-center gap-1 text-primary-light underline cursor-pointer px-1">
-        <span>{{ event.public_code }}</span>
+        <span class="whitespace-nowrap">公開代碼:</span>
+        <div
+          @click="openSharePopup"
+          class="flex flex-row items-center gap-1 text-primary-light underline cursor-pointer px-1"
+        >
+          <span>{{ event.public_code }}</span>
           <font-awesome-icon
             :icon="['fas', 'share']"
-            class="w-4 h-4   inline-block"
-           
+            class="w-4 h-4 inline-block"
           />
-          </div>
+        </div>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
-        <span class="">地址:</span>
+        <span class="whitespace-nowrap">地址:</span>
         <span class="">{{ event.address }}</span>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-start gap-2">
-        <span class="">聚會描述:</span>
+        <span class="whitespace-nowrap">聚會描述:</span>
+        <div class="w-full break-words  overflow-hidden whitespace-pre-wrap">
         <span
-          class="mb-6  whitespace-pre-wrap"
-        >
-          {{ event.description }}
-        </span>
+          class="mb-6   "
+          v-html="formattedDescription"
+        ></span>
+        </div>
       </div>
 
       <div class="flex justify-end" v-if="event.status === 'decided'">
@@ -125,7 +127,11 @@
       <h1 class="text-center text-lg lg:text-2xl mb-4">分享聚會</h1>
       <div class="flex flex-col gap-4">
         <p class="text-center">公開代碼: {{ event.public_code }}</p>
-        <img :src="qrCodeData" alt="QR Code" class="mx-auto w-full h-auto aspect-square md:w-80 md:h-80" />
+        <img
+          :src="qrCodeData"
+          alt="QR Code"
+          class="mx-auto w-full h-auto aspect-square md:w-80 md:h-80"
+        />
         <button @click="shareLinkHandle" class="btn enter_btn">分享連結</button>
       </div>
     </div>
@@ -133,7 +139,11 @@
 
   <!--Popup for editing event -->
   <Popup v-model="showEditPopup" @close="cancelEdit" :showClose="true">
-   <EditEvent @cancelEdit="cancelEdit" :event="event" :fetchEvent="props.fetchEvent" />
+    <EditEvent
+      @cancelEdit="cancelEdit"
+      :event="event"
+      :fetchEvent="props.fetchEvent"
+    />
   </Popup>
 </template>
 
@@ -147,22 +157,32 @@ import { calculateDeadlineText } from "~/utils/dateFormat";
 import QRCode from "qrcode";
 import EditEvent from "./EditEvent.vue";
 import Invitation from "./Invitation.vue";
+import linkifyHtml from "linkify-html";
+
 const props = defineProps({
   event: Object,
   isOwner: Boolean,
   fetchEvent: Function,
-
 });
 const event = computed(() => props.event);
 
 const showEditPopup = ref(false);
 
-const descTextarea = ref(null);
-
 function cancelEdit() {
   showEditPopup.value = false;
 }
 
+const formattedDescription = computed(() => {
+  if (!event.value.description) return "";
+  // 使用正則表達式匹配 URL
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const text = event.value.description.replace(
+    urlRegex,
+    '<a href="$1" target="_blank" class="text-blue-500 underline">$1</a>'
+  );
+  console.log('text',text);
+  return text;
+});
 
 const deadlineViewText = computed(() =>
   calculateDeadlineText(event.value?.deadline_date)
@@ -279,17 +299,27 @@ function closeSharePopup() {
 }
 
 function generateQRCode(link) {
-  const qrCanvas = document.createElement('canvas');
+  const qrCanvas = document.createElement("canvas");
   QRCode.toCanvas(qrCanvas, link, { width: 200 });
   return qrCanvas.toDataURL();
 }
 
-const sharePopupLink = computed(() => `${window.location.origin}/event/${event.value.public_code}`);
+const sharePopupLink = computed(
+  () => `${window.location.origin}/event/${event.value.public_code}`
+);
 const qrCodeData = computed(() => generateQRCode(sharePopupLink.value));
 </script>
 
 <style scoped>
 .event-details {
   font-family: "Arial", sans-serif;
+}
+
+/* Ensure long links wrap properly */
+span[contenteditable="true"] a, .text-wrap a {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 </style>

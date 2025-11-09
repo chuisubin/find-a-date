@@ -8,7 +8,7 @@
       </div>
     </main>
     <footer
-      class=" bg-gray-200 dark:bg-gray-700 text-center py-4 mt-auto text-gray-600 dark:text-gray-300"
+      class="min-h-[6.25rem] flex flex-col  justify-center  bg-gray-200 dark:bg-gray-700 text-center mt-auto text-gray-600 dark:text-gray-300"
     >
       <p>Made with ❤️ - <a
           href="https://forms.gle/DsLENsXdWQbQoCnN6"

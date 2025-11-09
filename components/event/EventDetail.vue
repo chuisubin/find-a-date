@@ -125,7 +125,7 @@
       <h1 class="text-center text-lg lg:text-2xl mb-4">分享聚會</h1>
       <div class="flex flex-col gap-4">
         <p class="text-center">公開代碼: {{ event.public_code }}</p>
-        <img :src="qrCodeData" alt="QR Code" class="mx-auto" />
+        <img :src="qrCodeData" alt="QR Code" class="mx-auto w-full h-auto aspect-square md:w-80 md:h-80" />
         <button @click="shareLinkHandle" class="btn enter_btn">分享連結</button>
       </div>
     </div>

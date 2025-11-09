@@ -107,6 +107,7 @@ export default defineNuxtConfig({
   },
   plugins: [
     // ...existing plugins...
-    "~/plugins/url-handler.client.js",
+    // "~/plugins/url-handler.client.js",
+    "~/plugins/vue3-toastify.client.js", // Add this line
   ],
 });

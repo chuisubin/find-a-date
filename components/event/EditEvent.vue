@@ -38,10 +38,14 @@
           ></textarea>
         </div>
 
+        <div v-if="errorMsg" class="mb-4 text-red-500 text-sm">
+          {{ errorMsg }}
+        </div>
+
         <div class="flex justify-end gap-4">
           <button
             type="button"
-            @click="cancelEdit"
+            @click="()=>emit('cancelEdit')"
             class="btn cancel_btn flex flex-row items-center gap-2 whitespace-nowrap"
           >
             取消
@@ -61,7 +65,7 @@
 
 import { ref } from "vue";
 import { updateEventFields } from "~/api/event";
-import toast from 'vue3-toastify';
+import { toast } from "vue3-toastify";
 
 const props = defineProps({
   event: {
@@ -73,36 +77,39 @@ const props = defineProps({
       required: false,
     },
 });
-const emit = defineEmits(["cancelEdit",]);
+const emit = defineEmits(["cancelEdit"]);
 
 const editedTitle = ref(props.event?.title || "");
 const editedDesc = ref(props.event?.description || "");
 const editedAddress = ref(props.event?.address || "");
-
+const errorMsg = ref("");
 
 
 
 async function save() {
-  if (!editedTitle.value.trim() || !props.event?.id) return;
+  errorMsg.value = ""; // Clear previous error message
+  if (!editedTitle.value.trim() || !props.event?.id) {
+    errorMsg.value = "請輸入有效的聚會標題";
+    return;
+  }
   try {
-   const res= await updateEventFields(props.event.id, {
+    const res = await updateEventFields(props.event.id, {
       title: editedTitle.value.trim(),
       description: editedDesc.value,
       address: editedAddress.value.trim(), // Save the edited address
-   });
-
-      if (res.data) { //if update success
-
-        await props.fetchEvent()  // fetch updated event details
-        toast.success("編輯成功");
-        emit("cancelEdit");
-      } else {
-        toast.error("編輯失敗");
+    });
+    console.log('res',res);
+    if (res.data) { // if update success
+      await props.fetchEvent(); // fetch updated event details
+      console.log('success');
+      toast.success("編輯成功");
+      errorMsg.value = "";
+      emit("cancelEdit");
+    } else {
+      errorMsg.value = "編輯失敗，請稍後重試";
     }
-  
   } catch (e) {
-      // 可加 toast
-      toast.error("編輯失敗");
+    errorMsg.value = "catch 發生錯誤，請稍後重試";
   }
 }
 </script>

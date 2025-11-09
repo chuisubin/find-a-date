@@ -15,15 +15,15 @@
         <div class="w-full flex-1 relative">
           <div  class="flex justify-end">
             <button
-              v-if="isOwner && event.status === 'voting'"
+              v-if="isOwner && event.status === 'voting'" 
               @click="()=>showEditPopup=true"
-              class="h-fit normal_btn flex flex-row items-center gap-2"
+              class="h-fit normal_btn flex flex-row items-center"
             >
               <font-awesome-icon
                 :icon="['far', 'pen-to-square']"
                 class="w-4 lg:w-5 lg:h-5"
               />
-              <span class="hidden lg:block whitespace-nowrap">編輯</span>
+           
             </button>
           </div>
         </div>

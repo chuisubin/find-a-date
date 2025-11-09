@@ -33,6 +33,7 @@ export async function createEvent({
   deadline_date,
   enable_start_date,
   enable_end_date,
+  address,
 }) {
   //  建立 event
   const { data, error } = await supabase
@@ -45,6 +46,7 @@ export async function createEvent({
         enable_end_date,
         description,
         status: "voting",
+        address,
       },
     ])
     .select()
@@ -88,7 +90,8 @@ export async function updateEventFields(eventId, fields) {
     .from("events")
     .update(fields)
     .eq("id", eventId)
-    .select(); // 确保返回更新后的数据
+    .select()
+    .single(); // 确保返回更新后的数据
   return res;
 }
 

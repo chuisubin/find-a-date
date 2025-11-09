@@ -13,7 +13,7 @@
     </div>
     <div v-if="event">
       <div class="mb-4">
-        <EventDetail :event="event" :isOwner="isOwner" />
+        <EventDetail :event="event" :isOwner="isOwner" :fetchEvent="fetchEvent" />
         <div class="flex flex-col gap-4 lg:flex-row">
           <div class="w-full">
             <NewCalendar

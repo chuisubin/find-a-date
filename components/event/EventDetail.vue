@@ -2,48 +2,21 @@
   <div class="mb-10">
     <div class="w-full">
       <div
-        class="flex lg:flex-row justify-between items-start gap-4 w-full border-b mb-4"
-        :class="!editing ? 'flex-row ' : 'flex-col lg:flex-row'"
+        class="flex  flex-row lg:flex-row justify-between items-start gap-4 w-full border-b mb-4"
       >
         <div class=" ">
           <h1
             class="whitespace-normal leading-normal mb-4 lg:mb-6 text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold"
-            v-if="!editing"
+          :title="event.title"
           >
             {{ event.title }}
           </h1>
-          <input
-            v-model="editedTitle"
-            maxlength="20"
-            type="text"
-            placeholder="請輸入聚會標題"
-            class="border p-2 mb-4 lg:mb-6 text-black dark:text-white text-3xl md:text-5xl lg:text-6xl font-bold outline-none border-dashed border-primary-light dark:border-primary-dark bg-transparent w-full flex-shrink"
-            v-else
-          />
-          <p
-            v-if="!editing"
-            class="mb-6 sub_title_color text-base lg:text-xl whitespace-pre-wrap"
-          >
-            {{ event.description }}
-          </p>
-          <textarea
-            v-else
-            v-model="editedDesc"
-            maxlength="200"
-            placeholder="請輸入聚會描述..."
-            rows="3"
-            class="p-2 border border-dashed border-primary-light dark:border-primary-dark bg-transparent outline-none w-full flex-shrink resize-none"
-            :class="editing ? 'border' : ''"
-            ref="descTextarea"
-            @input="autoResizeDesc"
-            :disabled="!editing"
-          ></textarea>
         </div>
         <div class="w-full flex-1 relative">
-          <div v-if="!editing" class="flex justify-end">
+          <div  class="flex justify-end">
             <button
-              v-if="isOwner && !editing && event.status === 'voting'"
-              @click="startEdit"
+              v-if="isOwner && event.status === 'voting'"
+              @click="()=>showEditPopup=true"
               class="h-fit normal_btn flex flex-row items-center gap-2"
             >
               <font-awesome-icon
@@ -51,31 +24,6 @@
                 class="w-4 lg:w-5 lg:h-5"
               />
               <span class="hidden lg:block whitespace-nowrap">編輯</span>
-            </button>
-          </div>
-          <div
-            v-if="editing"
-            class="relative flex flex-row gap-2 lg:gap-4 justify-end items-center"
-          >
-            <button
-              @click="save"
-              class="enter_btn btn flex flex-row items-center gap-2 whitespace-nowrap"
-            >
-              <font-awesome-icon
-                :icon="['fa', 'check']"
-                class="w-4 lg:w-5 lg:h-5"
-              />
-              <span class="hidden lg:block">保存</span>
-            </button>
-            <button
-              @click="cancelEdit"
-              class="cancel_btn btn flex flex-row items-center gap-2 whitespace-nowrap"
-            >
-              <font-awesome-icon
-                :icon="['fa', 'xmark']"
-                class="w-4 lg:w-5 lg:h-5"
-              />
-              <span class="hidden lg:block">取消</span>
             </button>
           </div>
         </div>
@@ -86,9 +34,12 @@
           v-if="event.status"
           class="px-3 py-1 rounded text-base font-semibold"
           :class="{
-            'bg-status-voting-bg text-status-voting-text': event.status === 'voting',
-            'bg-status-decided-bg text-status-decided-text': event.status === 'decided',
-            'bg-status-closed-bg text-status-closed-text': event.status === 'closed',
+            'bg-status-voting-bg text-status-voting-text':
+              event.status === 'voting',
+            'bg-status-decided-bg text-status-decided-text':
+              event.status === 'decided',
+            'bg-status-closed-bg text-status-closed-text':
+              event.status === 'closed',
           }"
         >
           {{
@@ -115,20 +66,29 @@
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
         <span class="">公開代碼:</span>
+        <div   @click="openSharePopup"  class="flex flex-row items-center gap-1 text-primary-light underline cursor-pointer px-1">
         <span>{{ event.public_code }}</span>
-        <button
-          @click="shareLinkHandle"
-          class="copy-btn px-2 py-1 border rounded text-xs flex items-center gap-1"
-          style="cursor: pointer"
-        >
           <font-awesome-icon
             :icon="['fas', 'share']"
-            class="w-5 h-5 text-primary-light"
+            class="w-4 h-4   inline-block"
+           
           />
-          分享連結
-        </button>
+          </div>
       </div>
-      <div class="flex justify-end" v-if="event.status==='decided'">
+      <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-center gap-2">
+        <span class="">地址:</span>
+        <span class="">{{ event.address }}</span>
+      </div>
+      <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-start gap-2">
+        <span class="">簡介:</span>
+        <span
+          class="mb-6  whitespace-pre-wrap"
+        >
+          {{ event.description }}
+        </span>
+      </div>
+
+      <div class="flex justify-end" v-if="event.status === 'decided'">
         <button
           @click="openInvitePopup"
           class="download_btn normal_btn flex flex-row items-center gap-2"
@@ -143,92 +103,74 @@
   <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true">
     <div>
       <h1 class="text-center text-lg lg:text-2xl mb-4">預覽</h1>
-      <div class="event-details relative    aspect-[3/2]  max-w-80  ">
-        <Invitation  :event="event" />
+      <div class="event-details relative aspect-[3/2] max-w-80">
+        <Invitation :event="event" />
       </div>
       <div class="popup-actions mt-4 flex justify-end gap-4">
-        <button
-          @click="downloadInvite"
-          class="btn enter_btn "
-        >
-          下載
-        </button>
+        <button @click="downloadInvite" class="btn enter_btn">下載</button>
         <button
           @click="shareInvite"
-          class="btn enter_btn  items-center flex flex-row gap-2"
+          class="btn enter_btn items-center flex flex-row gap-2"
         >
-        <font-awesome-icon
-            :icon="['fas', 'share']"
-            class="w-5 h-5"
-          />
+          <font-awesome-icon :icon="['fas', 'share']" class="w-5 h-5" />
           分享
         </button>
       </div>
     </div>
   </Popup>
+
+  <!--Popup for Sharing-->
+  <Popup v-model="showSharePopup" @close="closeSharePopup" :showClose="true">
+    <div>
+      <h1 class="text-center text-lg lg:text-2xl mb-4">分享活動</h1>
+      <div class="flex flex-col gap-4">
+        <p class="text-center">公開代碼: {{ event.public_code }}</p>
+        <img :src="qrCodeData" alt="QR Code" class="mx-auto" />
+        <button @click="shareLinkHandle" class="btn enter_btn">分享連結</button>
+      </div>
+    </div>
+  </Popup>
+
+  <!--Popup for editing event -->
+  <Popup v-model="showEditPopup" @close="cancelEdit" :showClose="true">
+   <EditEvent @cancelEdit="cancelEdit" :event="event" :fetchEvent="props.fetchEvent" />
+  </Popup>
 </template>
 
-<script  setup>
+<script setup>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { updateEventFields } from "~/api/event";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import html2canvas from "html2canvas";
 import Popup from "~/components/Popup.vue";
 import { calculateDeadlineText } from "~/utils/dateFormat";
-
+import QRCode from "qrcode";
+import EditEvent from "./EditEvent.vue";
 import Invitation from "./Invitation.vue";
 const props = defineProps({
   event: Object,
   isOwner: Boolean,
+  fetchEvent: Function,
+
 });
 const event = computed(() => props.event);
 
+const showEditPopup = ref(false);
 
-const editing = ref(false);
-const editedTitle = ref(event.value?.title || "");
-const editedDesc = ref(event.value?.description || "");
 const descTextarea = ref(null);
 
-function startEdit() {
-  editedTitle.value = event.value?.title || "";
-  editedDesc.value = event.value?.description || "";
-  editing.value = true;
-  autoResizeDesc();
-}
 function cancelEdit() {
-  editing.value = false;
-}
-function autoResizeDesc() {
-  console.log("autoResizeDesc called");
-
-  nextTick(() => {
-    const el = descTextarea.value;
-    if (el) {
-      el.style.height = "auto";
-      el.style.height = el.scrollHeight + "px";
-    }
-  });
-}
-async function save() {
-  if (!editedTitle.value.trim() || !event.value?.id) return;
-  try {
-    await updateEventFields(event.value.id, {
-      title: editedTitle.value.trim(),
-      description: editedDesc.value,
-    });
-    event.value.title = editedTitle.value.trim();
-    event.value.description = editedDesc.value;
-    editing.value = false;
-  } catch (e) {
-    // 可加 toast
-  }
+  showEditPopup.value = false;
 }
 
-const deadlineViewText = computed(() => calculateDeadlineText(event.value?.deadline_date));
+
+const deadlineViewText = computed(() =>
+  calculateDeadlineText(event.value?.deadline_date)
+);
 
 const shareLinkHandle = () => {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   const url = `${window.location.origin}/event/${event.value.public_code}`;
   navigator.clipboard.writeText(url);
   if (navigator.share) {
@@ -243,7 +185,7 @@ const shareLinkHandle = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(url);
       alert("連結已複製，可分享給朋友！");
-    } else if (typeof document !== 'undefined') {
+    } else if (typeof document !== "undefined") {
       const textarea = document.createElement("textarea");
       textarea.value = url;
       document.body.appendChild(textarea);
@@ -308,9 +250,13 @@ async function shareInvite() {
         title: "分享邀請函",
         text: `查看聚會邀請函：${event.value?.title}`,
         files: [
-          new File([await (await fetch(image)).blob()], `event-${event.value?.title || "details"}.png`, {
-            type: "image/png",
-          }),
+          new File(
+            [await (await fetch(image)).blob()],
+            `event-${event.value?.title || "details"}.png`,
+            {
+              type: "image/png",
+            }
+          ),
         ],
       });
     } else {
@@ -321,10 +267,29 @@ async function shareInvite() {
     alert("分享失敗，請稍後重試。");
   }
 }
+
+const showSharePopup = ref(false);
+
+function openSharePopup() {
+  showSharePopup.value = true;
+}
+
+function closeSharePopup() {
+  showSharePopup.value = false;
+}
+
+function generateQRCode(link) {
+  const qrCanvas = document.createElement('canvas');
+  QRCode.toCanvas(qrCanvas, link, { width: 200 });
+  return qrCanvas.toDataURL();
+}
+
+const sharePopupLink = computed(() => `${window.location.origin}/event/${event.value.public_code}`);
+const qrCodeData = computed(() => generateQRCode(sharePopupLink.value));
 </script>
 
-<style>
+<style scoped>
 .event-details {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 </style>

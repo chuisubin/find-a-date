@@ -15,12 +15,16 @@
     <div class=" relative z-20 w-full h-full flex flex-col justify-center items-center text-center px-6 py-10">
       <h1 class="text-2xl font-extrabold text-primary-dark mb-2">邀請函</h1>
       <h2 class="text-xl font-semibold text-primary-light mb-1">{{ event.title || '' }}</h2>
+      <p class="text-sm text-gray-700" v-if="event.address !== ''">
+        地址: <span class="font-medium">{{ event.address }}</span>
+      </p>
       <p class="text-sm text-gray-700 mb-4 whitespace-pre-wrap" v-if="event.description">
         {{ event.description }}
       </p>
       <p class="text-sm  text-gray-700">
         日期: <span class="font-medium">{{ event.decided_date || '' }}</span>
       </p>
+    
     </div>
   </div>
 </template>

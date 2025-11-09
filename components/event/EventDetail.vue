@@ -80,7 +80,7 @@
         <span class="">{{ event.address }}</span>
       </div>
       <div class="border-b pb-2 lg:pb-4 mb-4 flex flex-row items-start gap-2">
-        <span class="">簡介:</span>
+        <span class="">聚會描述:</span>
         <span
           class="mb-6  whitespace-pre-wrap"
         >
@@ -122,7 +122,7 @@
   <!--Popup for Sharing-->
   <Popup v-model="showSharePopup" @close="closeSharePopup" :showClose="true">
     <div>
-      <h1 class="text-center text-lg lg:text-2xl mb-4">分享活動</h1>
+      <h1 class="text-center text-lg lg:text-2xl mb-4">分享聚會</h1>
       <div class="flex flex-col gap-4">
         <p class="text-center">公開代碼: {{ event.public_code }}</p>
         <img :src="qrCodeData" alt="QR Code" class="mx-auto" />
@@ -176,7 +176,7 @@ const shareLinkHandle = () => {
   if (navigator.share) {
     navigator
       .share({
-        title: "分享活動",
+        title: "分享聚會連結",
         url,
       })
       .catch(() => {});

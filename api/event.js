@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-// 設定最終日期並決定活動
+// 設定最終日期並決定聚會
 export async function updateEventFinalDate(eventId, date) {
   const { error } = await supabase
     .from("events")

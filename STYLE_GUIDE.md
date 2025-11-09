@@ -19,7 +19,7 @@
 - 按鈕圓角（rounded），字體中等（text-base），padding 統一（px-3 py-1）。
 - 主要操作（確認、保存）：綠色（bg-green-500 text-white）。
 - 取消、關閉：灰色（bg-gray-400 text-white）。
-- 危險操作（刪除、關閉活動）：紅色（bg-red-500 text-white）。
+- 危險操作（刪除、關閉聚會）：紅色（bg-red-500 text-white）。
 - 編輯類按鈕可用筆 icon（Font Awesome），不需文字。
 
 ## Icon 樣式

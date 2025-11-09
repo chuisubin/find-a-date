@@ -42,7 +42,7 @@
                   v-else-if="event.status === 'closed'"
                   class="status bg-status-closed-bg text-status-closed-text"
                 >
-                  活動已結束
+                  聚會已結束
                 </span>
               </div>
               <div class="font-bold text-lg lg:text-2xl truncate">

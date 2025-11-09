@@ -77,7 +77,7 @@
           <div class="mb-6">
             你確定要將
             <span class="font-bold text-blue-700">{{ confirmDate }}</span>
-            設為最終活動日期嗎？
+            設為最終聚會日期嗎？
           </div>
           <div class="flex gap-3 justify-end">
             <button

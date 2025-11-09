@@ -18,7 +18,7 @@
 
       <div class="mb-4">
         <label class="block mb-1"
-          >活動日期 <span class="primary_text">*</span></label
+          >聚會日期 <span class="primary_text">*</span></label
         >
         <div class="hidden lg:block">
           <DatePicker
@@ -31,7 +31,7 @@
             class="w-full"
             input-class="input w-full "
             required
-            placeholder="請選擇活動日期範圍"
+            placeholder="請選擇聚會日期範圍"
             :multi-calendars="false"
             :partial-update="true"
           />
@@ -75,7 +75,7 @@
         <label class="block mb-1"
           >投票截止日期 <span class="primary_text">*</span
           ><span class="text-xs text-gray-500"
-            >(請先選擇活動日期範圍)</span
+            >(請先選擇聚會日期範圍)</span
           ></label
         >
 
@@ -101,7 +101,7 @@
           >地址 <span class="primary_text">*</span></label
         >
         <input
-          placeholder="請輸入活動地址"
+          placeholder="請輸入聚會地址"
           v-model="newEventAddress"
           maxlength="100"
           type="text"
@@ -110,7 +110,7 @@
         />
       </div>
       <div class="mb-4">
-        <label class="block mb-1">描述</label>
+        <label class="block mb-1">聚會描述</label>
         <textarea
           v-model="newEventDescription"
           class="input w-full resize-none"

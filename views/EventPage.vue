@@ -43,7 +43,7 @@
           class="text-sm cursor-pointer hover:text-error-text text-error-light font-bold"
           @click="showClosePopup = true"
         >
-          關閉活動
+          關閉聚會
         </span>
       </div>
 
@@ -64,7 +64,7 @@
             警告
           </h2>
           <div class="mb-4 text-center">
-            你確定要關閉此活動嗎？<br />此操作不可復原，所有人將無法再編輯或投票。
+            你確定要關閉此聚會嗎？<br />此操作不可復原，所有人將無法再編輯或投票。
           </div>
           <div class="flex gap-2 justify-end">
             <button class="btn cancel_btn" @click="showClosePopup = false">

@@ -91,6 +91,9 @@
       </div>
 
       <div class="flex justify-end" v-if="event.status === 'decided'">
+        <!-- <button>
+          生成ics
+        </button> -->
         <button
           @click="openInvitePopup"
           class="download_btn normal_btn flex flex-row items-center gap-2"
@@ -103,9 +106,10 @@
 
   <!-- Popup for Invitation -->
   <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true">
-    <div>
-      <h1 class="text-center text-lg lg:text-2xl mb-4">預覽</h1>
-      <div class="event-details relative aspect-[3/2] max-w-80">
+    <div >
+      <h1 class="text-center text-lg lg:text-2xl mb-2">預覽</h1>
+      <h3 class="text-gray-600 text-sm  lg:text-base text-center mb-4">將邀請函分享給朋友們吧</h3>
+      <div class="event-details relative w-full lg:min-w-96 ">
         <Invitation :event="event" />
       </div>
       <div class="popup-actions mt-4 flex justify-end gap-4">
@@ -157,7 +161,6 @@ import { calculateDeadlineText } from "~/utils/dateFormat";
 import QRCode from "qrcode";
 import EditEvent from "./EditEvent.vue";
 import Invitation from "./Invitation.vue";
-import linkifyHtml from "linkify-html";
 
 const props = defineProps({
   event: Object,
@@ -236,7 +239,7 @@ async function downloadInvite() {
 
   try {
     const canvas = await html2canvas(eventDetails, {
-      backgroundColor: "#fff",
+      backgroundColor: null, // 設置背景透明
       scale: 2, // Scale the image to double the resolution
     });
     const image = canvas.toDataURL("image/png");
@@ -260,7 +263,7 @@ async function shareInvite() {
 
   try {
     const canvas = await html2canvas(eventDetails, {
-      backgroundColor: "#fff",
+      backgroundColor: null, // 設置背景透明
       scale: 2, // Scale the image to double the resolution
     });
     const image = canvas.toDataURL("image/png");

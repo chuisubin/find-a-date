@@ -3,43 +3,62 @@
     <div v-for="offset in cols" :key="offset" class="calendar">
       <div class="calendar-header">
         <button v-if="offset === 1" @click="prevMonth" class="calendar-nav-btn">
-          <FontAwesomeIcon :icon="['fa', 'chevron-left']" class="w-4 h-4 lg:w-5 lg:h-5" />
-        </button><div v-else></div>
-        <span>{{ getYearMonth(offset - 1).year }} 年 {{ getYearMonth(offset - 1).month + 1 }} 月</span>
+          <FontAwesomeIcon
+            :icon="['fa', 'chevron-left']"
+            class="w-4 h-4 lg:w-5 lg:h-5"
+          />
+        </button>
+        <div v-else></div>
+        <span
+          >{{ getYearMonth(offset - 1).year }} 年
+          {{ getYearMonth(offset - 1).month + 1 }} 月</span
+        >
         <button v-if="offset === 1" @click="nextMonth" class="calendar-nav-btn">
-          <FontAwesomeIcon :icon="['fa', 'chevron-right']" class="w-4 h-4 lg:w-5 lg:h-5" />
-        </button><div v-else></div>
+          <FontAwesomeIcon
+            :icon="['fa', 'chevron-right']"
+            class="w-4 h-4 lg:w-5 lg:h-5"
+          />
+        </button>
+        <div v-else></div>
       </div>
       <div class="calendar-grid">
-        <div class="calendar-weekday" v-for="w in weekdays" :key="w">{{ w }}</div>
+        <div class="calendar-weekday" v-for="w in weekdays" :key="w">
+          {{ w }}
+        </div>
         <div
           v-for="day in getDays(offset - 1)"
           :key="day.date"
           class="calendar-day"
           :class="[
-            highlightDates.includes(day.date) ? highlightBorderClass(dotsMap[day.date]) : '',
-            day.day !== '' && props.enableDates.includes(day.date) ? 'enabled' : 'disabled',
-            day.date === props.decided_date ? 'decided-date' : ''
+            highlightDates.includes(day.date)
+              ? highlightBorderClass(dotsMap[day.date])
+              : '',
+            day.day !== '' && props.enableDates.includes(day.date)
+              ? 'enabled'
+              : 'disabled',
+            day.date === props.decided_date ? 'decided-date' : '',
+            modelValue.includes(day.date) ? 'selected-date' : '',
           ]"
           :data-empty="day.day === '' ? 'true' : null"
-          @click="day.day !== ''  ? handleSelectDate(day.date) : null"
+          @click="day.day !== '' ? handleSelectDate(day.date) : null"
           @mouseenter="day.day !== '' ? (hoveredDate = day.date) : null"
           @mouseleave="day.day !== '' ? (hoveredDate = null) : null"
         >
-        <span :title="dotsMap[day.date]??''" class="absolute -top-2  bg-primary-light -right-2 text-xs text-white   rounded-full px-1.5"
-         v-if="dotsMap[day.date] > 1">
-                {{ dotsMap[day.date] }}
-        </span>
-        <div
-          class=""
-        >
-          {{ day.day }}
-        </div>
-        
-        <FontAwesomeIcon v-if="modelValue.includes(day.date)"
-          :icon="['fa', 'check']"
-          class="w-4 h-4 lg:w-6 lg:h-6 text-red-500 calendar-selected-tick " />
-       
+          <span
+            :title="dotsMap[day.date] ?? ''"
+            class="absolute -top-2 bg-primary-light -right-2 text-xs text-white rounded-full px-1.5"
+            v-if="dotsMap[day.date] > 1"
+          >
+            {{ dotsMap[day.date] }}
+          </span>
+          <div class="">
+            {{ day.day }}
+          </div>
+          <font-awesome-icon
+            v-if="day.date === props.decided_date"
+            icon="fa-regular fa-circle"
+            class="calendar-selected-tick"
+          />
         </div>
       </div>
     </div>
@@ -47,8 +66,7 @@
 </template>
 
 <script setup>
-
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 const props = defineProps({
   enableDates: {
@@ -92,20 +110,28 @@ const props = defineProps({
     default: null,
   },
 });
-const emit = defineEmits(['select-date']);
+const emit = defineEmits(["select-date"]);
 
 const today = new Date();
 const year = ref(props.initYear ?? today.getFullYear());
-const month = ref(props.initMonth !== null ? props.initMonth : today.getMonth());
+const month = ref(
+  props.initMonth !== null ? props.initMonth : today.getMonth()
+);
 const hoveredDate = ref(null);
-const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
 
-watch(() => props.initYear, (val) => {
-  if (val !== null) year.value = val;
-});
-watch(() => props.initMonth, (val) => {
-  if (val !== null) month.value = val;
-});
+watch(
+  () => props.initYear,
+  (val) => {
+    if (val !== null) year.value = val;
+  }
+);
+watch(
+  () => props.initMonth,
+  (val) => {
+    if (val !== null) month.value = val;
+  }
+);
 
 function getYearMonth(offset) {
   let y = year.value;
@@ -127,17 +153,19 @@ function getDays(offset) {
   const lastDay = new Date(y, m + 1, 0);
   const daysArr = [];
   for (let i = 0; i < firstDay.getDay(); i++) {
-    daysArr.push({ day: '', date: `empty-${offset}-${i}` });
+    daysArr.push({ day: "", date: `empty-${offset}-${i}` });
   }
   for (let d = 1; d <= lastDay.getDate(); d++) {
-    const dateStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(
+      d
+    ).padStart(2, "0")}`;
     daysArr.push({ day: d, date: dateStr });
   }
   return daysArr;
 }
 
 function handleSelectDate(date) {
-  emit('select-date', date);
+  emit("select-date", date);
 }
 
 function prevMonth() {
@@ -186,12 +214,12 @@ const dotsMap = computed(() => {
 
 // 根據人數比例決定 highlight border class
 function highlightBorderClass(count) {
-  if (!count || count < 1 || props.totalMembers <= 1) return '';
-  const ratio = count / (props.totalMembers - 1);// 除去自己
-  if (ratio < 0.25) return 'highlight-border-1';
-  if (ratio < 0.5) return 'highlight-border-2';
-  if (ratio < 0.75) return 'highlight-border-3';
-  return 'highlight-border-4';
+  if (!count || count < 1 || props.totalMembers <= 1) return "";
+  const ratio = count / (props.totalMembers - 1); // 除去自己
+  if (ratio < 0.25) return "highlight-border-1";
+  if (ratio < 0.5) return "highlight-border-2";
+  if (ratio < 0.75) return "highlight-border-3";
+  return "highlight-border-4";
 }
 </script>
 
@@ -204,9 +232,8 @@ function highlightBorderClass(count) {
 .calendar {
   width: 100%;
   border-radius: 8px;
- padding: 16px;
- @apply text-sm lg:text-base
-
+  padding: 16px;
+  @apply text-sm lg:text-base;
 }
 .calendar-header {
   display: flex;
@@ -244,31 +271,24 @@ function highlightBorderClass(count) {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid transparent; 
+  border: 2px solid transparent;
 }
-
 
 /* Highlight border classes for enabled/highlighted dates */
 .highlight-border-1 {
- 
   border: 2px solid #ffe0b2; /* 淺橙色 */
 }
 .highlight-border-2 {
-
   border: 2px solid #ffcc80; /* 中橙色 */
 }
 .highlight-border-3 {
- 
   border: 2px solid #ff8a65; /* 淺紅橙色 */
 }
 .highlight-border-4 {
- 
   border: 2px solid #d84315; /* 深紅色 */
 }
 
-
 .calendar-day.enabled {
-
   cursor: pointer;
   opacity: 1;
   pointer-events: auto;
@@ -301,13 +321,18 @@ function highlightBorderClass(count) {
 
 .calendar-selected-tick {
   position: absolute;
-
+  color: #d84315;
   transform: translateX(-50%);
   z-index: 2;
-  @apply  top-1 left-1/2 -translate-x-1/2 lg:-translate-x-1/2  lg:top-0 lg:left-1/2;
+  @apply h-full w-full  left-1/2 -translate-x-1/2 lg:-translate-x-1/2   lg:left-1/2;
 }
 
 .decided-date {
-  @apply bg-green-200  font-bold
+  /* @apply text-status-decided-bg bg-orange-500   font-bold */
+  @apply font-bold text-[#d84315];
+}
+
+.selected-date {
+  @apply bg-[#ffe0b2];
 }
 </style>

@@ -5,6 +5,7 @@ import {
   faSquare,
   faSquareCheck,
   faPenToSquare,
+  faCircle,
 } from "@fortawesome/free-regular-svg-icons";
 import {
   faCheck,
@@ -39,7 +40,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     faPlus,
     faChevronDown,
     faChevronUp,
-    faShare
+    faShare,
+    faCircle
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

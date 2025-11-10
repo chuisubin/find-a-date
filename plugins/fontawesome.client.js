@@ -20,6 +20,8 @@ import {
   faChevronDown,
   faChevronUp,
   faShare,
+  faMapMarkedAlt,
+  faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -41,7 +43,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronDown,
     faChevronUp,
     faShare,
-    faCircle
+    faCircle,
+    faMapMarkedAlt,
+    faCalendarAlt
   );
 
   nuxtApp.vueApp.component("FontAwesomeIcon", FontAwesomeIcon);

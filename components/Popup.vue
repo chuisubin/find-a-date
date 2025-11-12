@@ -1,6 +1,6 @@
 <template>
-  <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-white/10 transition-all" @mousedown.self="handleClickOutside">
-    <div class="bg-background-light dark:bg-background-dark rounded  max-w-full min-w-[300px] relative lg:w-auto ">
+  <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-white/10 transition-all  max-h-screen overflow-auto" @mousedown.self="handleClickOutside">
+    <div class="bg-background-light dark:bg-background-dark rounded  max-w-full min-w-[300px] relative lg:w-auto  ">
       
       <div class="flex flex-row justify-end pt-2 lg:pt-4 px-2 lg:px-5" v-if="props.showClose">
       <button
@@ -46,22 +46,14 @@ function handleClickOutside(e) {
   }
 }
 
-// Optional: ESC key to close
-function onKeydown(e) {
-  if (e.key === 'Escape' && visible.value) {
-    close();
-  }
-}
-
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('keydown', onKeydown);
+  if (typeof document !== "undefined") {
+    document.body.style.overflow = "hidden";
   }
 });
-
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('keydown', onKeydown);
+  if (typeof document !== "undefined") {
+    document.body.style.overflow = "";
   }
 });
 </script>

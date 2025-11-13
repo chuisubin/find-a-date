@@ -105,7 +105,7 @@
   </div>
 
   <!-- Popup for Invitation -->
-  <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true">
+  <Popup v-model="showInvitePopup" @close="closeInvitePopup" :showClose="true" :isCentered="false">
     <div >
       <h1 class="text-center text-lg lg:text-2xl mb-2">預覽</h1>
       <h3 class="text-gray-600 text-sm  lg:text-base text-center mb-4">將邀請函分享給朋友們吧</h3>
@@ -142,7 +142,7 @@
   </Popup>
 
   <!--Popup for editing event -->
-  <Popup v-model="showEditPopup" @close="cancelEdit" :showClose="true">
+  <Popup v-model="showEditPopup" @close="cancelEdit" :showClose="true"  :isCentered="false">
     <EditEvent
       @cancelEdit="cancelEdit"
       :event="event"

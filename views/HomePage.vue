@@ -35,12 +35,15 @@
      
       <Popup
         v-model="showCreateEventPopup"
+         :isCentered="false"
+
         @close="() => (showCreateEventPopup = false)"
       >
         <CreateEventPopup 
       /></Popup>
       <Popup
-        v-model="showConnectEventPopup"
+        v-model="showConnectEventPopup" 
+        :isCentered="true"
         @close="() => (showConnectEventPopup = false)"
       >
         <ConnectEventPopup
